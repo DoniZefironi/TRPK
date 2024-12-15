@@ -1,233 +1,154 @@
 const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
-const User = sequelize.define('user', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    username: {type: DataTypes.STRING, allowNull: false},
-    permissions: {type: DataTypes.STRING, allowNull: false},
-    email: {type: DataTypes.STRING, unique: true, allowNull: false},
-    password: {type: DataTypes.STRING, allowNull: false},
-    roles: {type: DataTypes.STRING, defaultValue: "USER"},
-})
+// User Model
+const User = sequelize.define('User', {
+  id_user: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  username: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false },
+  password: { type: DataTypes.STRING, allowNull: false },
+  role: { type: DataTypes.STRING },
+  permissions: { type: DataTypes.STRING },
+});
 
-const MaterialsLibrary = sequelize.define('materialsLibrary', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    topic_materials: {type: DataTypes.STRING, allowNull: false},
-})
+// Class Model
+const Class = sequelize.define('Class', {
+  id_class: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_user: { type: DataTypes.INTEGER, allowNull: false },
+  name_class: { type: DataTypes.STRING },
+  list_user: { type: DataTypes.STRING },
+});
 
-const Forum = sequelize.define('forum', { 
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    rules: {type: DataTypes.STRING, allowNull: false},
-})
+// Lesson Model
+const Lesson = sequelize.define('Lesson', {
+  id_lesson: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  name: { type: DataTypes.STRING },
+  id_class: { type: DataTypes.INTEGER, allowNull: false },
+  topic_lesson: { type: DataTypes.STRING },
+  id_materials: { type: DataTypes.INTEGER },
+});
 
-// Объекты электроники
-const ElectronicsProject = sequelize.define('electronicsProject', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    deadlines: {type: DataTypes.DATE, allowNull: false}, 
-    name: {type: DataTypes.STRING, allowNull: false},
-})
+// Career Guidance Model
+const CareerGuidance = sequelize.define('CareerGuidance', {
+  date_career_guidance: { type: DataTypes.DATE },
+  topic_career_guidance: { type: DataTypes.STRING },
+  consultants: { type: DataTypes.STRING },
+  id_class: { type: DataTypes.INTEGER, allowNull: false },
+});
 
-const TasksProject = sequelize.define('tasksProject', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    description: {type: DataTypes.STRING, allowNull: false},
-    name: {type: DataTypes.STRING, allowNull: false},
-    status: {type: DataTypes.STRING, allowNull: false},
-    deadline: {type: DataTypes.DATE, allowNull: false}, 
-})
+// Forum Model
+const Forum = sequelize.define('Forum', {
+  rules: { type: DataTypes.STRING },
+  section: { type: DataTypes.STRING },
+});
 
-const EmulatorElectronics = sequelize.define('emulatorElectronics', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    device_type: {type: DataTypes.STRING, allowNull: false},
-    functionality: {type: DataTypes.STRING, allowNull: false},
-})
+// Forum Section Model
+const ForumSection = sequelize.define('ForumSection', {
+  subsections: { type: DataTypes.STRING },
+  topic_subsections: { type: DataTypes.STRING },
+  moderators: { type: DataTypes.STRING },
+  id_user: { type: DataTypes.INTEGER },
+  name: { type: DataTypes.STRING },
+});
 
-const EmulatorLog = sequelize.define('emulatorLog', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    timestamp: {type: DataTypes.DATE, allowNull: false}, 
-    action: {type: DataTypes.STRING, allowNull: false},
-    status: {type: DataTypes.STRING, allowNull: false},
-})
+// Journal Model
+const Journal = sequelize.define('Journal', {
+  id_class: { type: DataTypes.INTEGER },
+  grades: { type: DataTypes.STRING },
+  id_lesson: { type: DataTypes.INTEGER },
+  change_date: { type: DataTypes.DATE },
+});
 
-const EmulatorConfiguration = sequelize.define('emulatorConfiguration', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    settings: {type: DataTypes.TEXT, allowNull: false}, 
-})
+// Schedule Model
+const Schedule = sequelize.define('Schedule', {
+  id_lesson: { type: DataTypes.INTEGER },
+  id_class: { type: DataTypes.INTEGER },
+  id_elective: { type: DataTypes.INTEGER },
+  date: { type: DataTypes.DATE },
+});
 
-const ElectronicsMagazine = sequelize.define('electronicsMagazine', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    grades: {type: DataTypes.FLOAT, allowNull: false}, 
-    change_date: {type: DataTypes.DATE, allowNull: false}, 
-    academic_performance: {type: DataTypes.FLOAT, allowNull: false}, 
-})
+// Olympiad Model
+const Olympiad = sequelize.define('Olympiad', {
+  id_user: { type: DataTypes.INTEGER },
+  name: { type: DataTypes.STRING },
+  id_olympiads: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  topic_olympiads: { type: DataTypes.STRING },
+  date: { type: DataTypes.DATE },
+});
 
-const ElectronicsGroup = sequelize.define('electronicsGroup', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-})
+// Olympiad Results Model
+const OlympiadResults = sequelize.define('OlympiadResults', {
+  id_result: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_olympiads: { type: DataTypes.INTEGER },
+  team_name: { type: DataTypes.STRING },
+  score: { type: DataTypes.FLOAT },
+  position: { type: DataTypes.INTEGER },
+});
 
-const ElectronicsClasses = sequelize.define('electronicsClasses', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    topic_classes: {type: DataTypes.STRING, allowNull: false},
-})
+// Elective Model
+const Elective = sequelize.define('Elective', {
+  id_user: { type: DataTypes.INTEGER },
+  name: { type: DataTypes.STRING },
+  topic_elective: { type: DataTypes.STRING },
+});
 
-const Hackathon = sequelize.define('hackathon', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    topic: {type: DataTypes.STRING, allowNull: false},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-    organizers: {type: DataTypes.STRING, allowNull: false},
-})
+// Materials Library Model
+const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
+  id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  topic_materials: { type: DataTypes.STRING },
+});
 
-const HackathonResults = sequelize.define('hackathonResults', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    team_name: {type: DataTypes.STRING, allowNull: false},
-    score: {type: DataTypes.FLOAT, allowNull: false}, 
-    position: {type: DataTypes.STRING, allowNull: false},
-})
+/**
+ * Relationships
+ */
+User.hasMany(Class, { foreignKey: 'id_user' });
+Class.belongsTo(User, { foreignKey: 'id_user' });
 
-const ElectronicsSchedule = sequelize.define('electronicsSchedule', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-})
+Lesson.belongsTo(Class, { foreignKey: 'id_class' });
+Class.hasMany(Lesson, { foreignKey: 'id_class' });
 
-const Electronicsforumsection = sequelize.define('electronicsforumsection', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    subsections: {type: DataTypes.STRING, allowNull: false},
-    posts: {type: DataTypes.TEXT, allowNull: false}, 
-    moderators: {type: DataTypes.STRING, allowNull: false},
-})
+Lesson.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
+MaterialsLibrary.hasMany(Lesson, { foreignKey: 'id_materials' });
 
-// Объекты по школе
-const CareerGuidance = sequelize.define('careerGuidance', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-    topic: {type: DataTypes.STRING, allowNull: false},
-    consultans: {type: DataTypes.STRING, allowNull: false},
-})
+CareerGuidance.belongsTo(Class, { foreignKey: 'id_class' });
+Class.hasMany(CareerGuidance, { foreignKey: 'id_class' });
 
-const Class = sequelize.define('class', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-})
+Forum.hasMany(ForumSection, { foreignKey: 'id_forum' });
+ForumSection.belongsTo(Forum, { foreignKey: 'id_forum' });
 
-const JournalComputerScience = sequelize.define('journalComputerScience', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-    grades: {type: DataTypes.FLOAT, allowNull: false}, 
-})
+Schedule.belongsTo(Class, { foreignKey: 'id_class' });
+Class.hasMany(Schedule, { foreignKey: 'id_class' });
 
-const ComputerScienceSchedule = sequelize.define('computerScienceSchedule', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-})
+Olympiad.belongsTo(User, { foreignKey: 'id_user' });
+User.hasMany(Olympiad, { foreignKey: 'id_user' });
 
-const Electives = sequelize.define('electives', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    topic_elective: {type: DataTypes.STRING, allowNull: false},
-})
+OlympiadResults.belongsTo(Olympiad, { foreignKey: 'id_olympiads' });
+Olympiad.hasMany(OlympiadResults, { foreignKey: 'id_olympiads' });
 
-const ComputerScienceLessons = sequelize.define('computerScienceLessons', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    topic_lesson: {type: DataTypes.STRING, allowNull: false},
-})
+Elective.belongsTo(User, { foreignKey: 'id_user' });
+User.hasMany(Elective, { foreignKey: 'id_user' });
 
-const Olympics = sequelize.define('olympics', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    topic_olympiads: {type: DataTypes.STRING, allowNull: false},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-})
+Journal.belongsTo(Class, { foreignKey: 'id_class' });
+Journal.belongsTo(Lesson, { foreignKey: 'id_lesson' });
 
-const Olympiadresults = sequelize.define('olympiadresults', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    team_name: {type: DataTypes.STRING, allowNull: false},
-    score: {type: DataTypes.FLOAT, allowNull: false}, 
-    position: {type: DataTypes.STRING, allowNull: false},
-})
-
-const ComputerScienceforumsection = sequelize.define('computerScienceforumsection', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    subsections: {type: DataTypes.STRING, allowNull: false},
-    posts: {type: DataTypes.TEXT, allowNull: false}, 
-    moderators: {type: DataTypes.STRING, allowNull: false},
-})
-
-// Объекты IoT
-const IoTCourseMagazine = sequelize.define('ioTCourseMagazine', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    grades: {type: DataTypes.FLOAT, allowNull: false}, 
-    date: {type: DataTypes.DATE, allowNull: false}, 
-    academic_performance: {type: DataTypes.FLOAT, allowNull: false}, 
-})
-
-const IoTSchedule = sequelize.define('ioTSchedule', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-})
-
-const Userrating = sequelize.define('userrating', {
-    id: {type : DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    score: {type: DataTypes.FLOAT, allowNull: false}, 
-    period: {type : DataTypes.STRING, allowNull: false},
-})
-
-const IoTforumsection = sequelize.define('ioTforumsection', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    subsections: {type: DataTypes.STRING, allowNull: false},
-    posts: {type: DataTypes.TEXT, allowNull: false}, 
-    moderators: {type: DataTypes.STRING, allowNull: false},
-})
-
-const internshipprogram = sequelize.define('internshipprogram', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    description: {type: DataTypes.TEXT, allowNull: false}, 
-    duration: {type: DataTypes.STRING, allowNull: false},
-    start_date_application: {type: DataTypes.DATE, allowNull: false}, 
-    end_date_application: {type: DataTypes.DATE, allowNull: false}, 
-    capacity: {type: DataTypes.INTEGER, allowNull: false}, 
-    requirements: {type: DataTypes.STRING, allowNull: false},
-    specialization: {type: DataTypes.STRING, allowNull: false},
-})
-
-const Applicationsforinternships = sequelize.define('applicationsforinternships', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    contacts: {type: DataTypes.STRING, allowNull: false},
-    date: {type: DataTypes.DATE, allowNull: false}, 
-    status: {type: DataTypes.STRING, allowNull: false},
-    resume_link: {type: DataTypes.STRING, allowNull: false},
-})
-
-const IoTProjects = sequelize.define('ioTProjects', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, allowNull: false},
-    team_members: {type: DataTypes.STRING, allowNull: false},
-    description: {type: DataTypes.TEXT, allowNull: false}, 
-})
-
-const IoTclasses = sequelize.define('ioTclasses', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    lecture_title: {type: DataTypes.STRING, allowNull: false},
-    slides: {type: DataTypes.TEXT, allowNull: false}, 
-    duration: {type: DataTypes.INTEGER, allowNull: false}, 
-})
-
-
-
-Syllabus.hasMany(Subject)
-Subject.belongsTo(Syllabus)
-
-Subject.hasOne(Methodological_rec)
-Methodological_rec.belongsTo(Subject)
-
-Methodological_rec.belongsToMany(User, {through: User_methodological})
-User.belongsToMany(Methodological_rec, {through: User_methodological})
-
-Methodological_rec.belongsToMany(Speciality, {through: Speciality_method})
-Speciality.belongsToMany(Methodological_rec, {through: Speciality_method})
+/**
+ * Sync All Models
+ */
+sequelize.sync({ alter: true }).then(() => {
+  console.log('Database & tables updated!');
+});
 
 module.exports = {
-
-}
+  User,
+  Class,
+  Lesson,
+  CareerGuidance,
+  Forum,
+  ForumSection,
+  Journal,
+  Schedule,
+  Olympiad,
+  OlympiadResults,
+  Elective,
+  MaterialsLibrary,
+};
