@@ -54,7 +54,7 @@ const ForumSection = sequelize.define('ForumSection', {
 // Journal Model
 const Journal = sequelize.define('Journal', {
   id_class: { type: DataTypes.INTEGER },
-  grades: { type: DataTypes.STRING },
+  grades: { type: DataTypes.JSONB },
   id_lesson: { type: DataTypes.INTEGER },
   change_date: { type: DataTypes.DATE },
 });
@@ -131,12 +131,6 @@ User.hasMany(Elective, { foreignKey: 'id_user' });
 Journal.belongsTo(Class, { foreignKey: 'id_class' });
 Journal.belongsTo(Lesson, { foreignKey: 'id_lesson' });
 
-/**
- * Sync All Models
- */
-sequelize.sync({ alter: true }).then(() => {
-  console.log('Database & tables updated!');
-});
 
 module.exports = {
   User,
