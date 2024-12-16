@@ -72,6 +72,7 @@ const HackathonResults = sequelize.define('HackathonResults', {
 });
 
 const Schedule = sequelize.define('Schedule', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_classes: { type: DataTypes.INTEGER },
   id_group: { type: DataTypes.INTEGER },
   date: { type: DataTypes.DATE }
