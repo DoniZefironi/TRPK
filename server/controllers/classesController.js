@@ -1,25 +1,25 @@
-const { Lesson } = require('../models/models'); // Убедитесь, что путь к модели указан правильно
+const { Classes } = require('../models/models'); // Убедитесь, что путь к модели указан правильно
 const ApiError = require('../error/ApiError');
 
-class LessonController {
+class ClassesController {
     // Создать урок
-    async createLesson(req, res, next) {
+    async createClasses(req, res, next) {
         try {
-            const { name, id_class, topic_lesson, id_materials } = req.body;
+            const { name, id_group, topic_classes, id_materials } = req.body;
 
             // Проверяем обязательные поля
             if (!id_class) {
                 return next(ApiError.badRequest('Поле id_class обязательно'));
             }
 
-            const newLesson = await Lesson.create({
+            const newClasses = await Classes.create({
                 name,
-                id_class,
-                topic_lesson,
+                id_group,
+                topic_classes,
                 id_materials,
             });
 
-            res.status(201).json(newLesson);
+            res.status(201).json(newClasses);
         } catch (error) {
             console.error(error);
             next(ApiError.internal('Ошибка создания урока'));
@@ -27,37 +27,37 @@ class LessonController {
     }
 
     // Получить все уроки
-    async getLessons(req, res, next) {
+    async getClasses(req, res, next) {
         try {
-            const lessons = await Lesson.findAll();
-            res.status(200).json(lessons);
+            const classes = await Classes.findAll();
+            res.status(200).json(classes);
         } catch (error) {
             console.error(error);
             next(ApiError.internal('Ошибка получения уроков'));
         }
     }
     // Обновить урок
-async updateLesson(req, res, next) {
+async updateClasses(req, res, next) {
     try {
         const { id } = req.params;
-        const { name, id_class, topic_lesson, id_materials } = req.body;
+        const { name, id_class, topic_classes, id_materials } = req.body;
 
         // Найти урок по ID
-        const lesson = await Lesson.findByPk(id);
+        const classes = await Classes.findByPk(id);
 
-        if (!lesson) {
+        if (!classes) {
             return next(ApiError.notFound('Урок не найден'));
         }
 
         // Обновить урок
-        await lesson.update({
-            name: name || lesson.name,
-            id_class: id_class || lesson.id_class,
-            topic_lesson: topic_lesson || lesson.topic_lesson,
-            id_materials: id_materials || lesson.id_materials,
+        await classes.update({
+            name: name || classes.name,
+            id_class: id_class || classes.id_class,
+            topic_classes: topic_classes || classes.topic_classes,
+            id_materials: id_materials || classes.id_materials,
         });
 
-        res.status(200).json(lesson);
+        res.status(200).json(classes);
     } catch (error) {
         console.error(error);
         next(ApiError.internal('Ошибка обновления урока'));
@@ -65,16 +65,16 @@ async updateLesson(req, res, next) {
 }
 
     // Получить урок по ID
-    async getLessonById(req, res, next) {
+    async getClassesById(req, res, next) {
         try {
             const { id } = req.params;
-            const lesson = await Lesson.findByPk(id);
+            const classes = await Classes.findByPk(id);
 
-            if (!lesson) {
+            if (!classes) {
                 return next(ApiError.notFound('Урок не найден'));
             }
 
-            res.status(200).json(lesson);
+            res.status(200).json(classes);
         } catch (error) {
             console.error(error);
             next(ApiError.internal('Ошибка получения урока'));
@@ -82,10 +82,10 @@ async updateLesson(req, res, next) {
     }
 
     // Удалить урок
-    async deleteLesson(req, res, next) {
+    async deleteClasses(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await Lesson.destroy({ where: { id_lesson: id } });
+            const deleted = await Classes.destroy({ where: { topic_classes: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Урок не найден'));
@@ -99,4 +99,4 @@ async updateLesson(req, res, next) {
     }
 }
 
-module.exports = new LessonController();
+module.exports = new ClassesController();

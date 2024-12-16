@@ -5,17 +5,18 @@ class JournalController {
     // Создать запись журнала
     async createJournal(req, res, next) {
         try {
-            const { id_class, grades, id_lesson, change_date } = req.body;
+            const { id_group, grades, id_classes, change_date, academic_performance } = req.body;
 
-            if (!id_class || !id_lesson) {
-                return next(ApiError.badRequest('Поля id_class и id_lesson обязательны'));
+            if (!id_group || !id_classes) {
+                return next(ApiError.badRequest('Поля id_group и id_classes обязательны'));
             }
 
             const newJournal = await Journal.create({
-                id_class,
+                id_group,
                 grades, // JSONB поле
-                id_lesson,
+                id_classes,
                 change_date,
+                academic_performance,
             });
 
             res.status(201).json(newJournal);
@@ -57,7 +58,7 @@ class JournalController {
     async updateJournal(req, res, next) {
         try {
             const { id } = req.params;
-            const { id_class, grades, id_lesson, change_date } = req.body;
+            const { id_group, grades, id_classes, change_date, academic_performance } = req.body;
 
             const journal = await Journal.findByPk(id);
 
@@ -67,10 +68,11 @@ class JournalController {
 
             // Обновить JSONB поле и другие данные
             await journal.update({
-                id_class: id_class !== undefined ? id_class : journal.id_class,
+                id_group: id_group !== undefined ? id_group : journal.id_group,
                 grades: grades !== undefined ? grades : journal.grades, // Обновляем JSONB
-                id_lesson: id_lesson !== undefined ? id_lesson : journal.id_lesson,
+                id_classes: id_classes !== undefined ? id_classes : journal.id_classes,
                 change_date: change_date !== undefined ? change_date : journal.change_date,
+                academic_performance: academic_performance !== undefined ? academic_performance : journal.academic_performance,
             });
 
             res.status(200).json(journal);

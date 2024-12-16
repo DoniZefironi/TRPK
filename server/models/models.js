@@ -1,148 +1,154 @@
 const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
-// User Model
 const User = sequelize.define('User', {
   id_user: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   username: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
   role: { type: DataTypes.STRING },
-  permissions: { type: DataTypes.STRING },
+  permissions: { type: DataTypes.STRING }
 });
 
-// Class Model
-const Class = sequelize.define('Class', {
-  id_class: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_user: { type: DataTypes.INTEGER, allowNull: false },
-  name_class: { type: DataTypes.STRING },
-  list_user: { type: DataTypes.STRING },
+const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
+  id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  topic_materials: { type: DataTypes.STRING }
 });
 
-// Lesson Model
-const Lesson = sequelize.define('Lesson', {
-  id_lesson: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING },
-  id_class: { type: DataTypes.INTEGER, allowNull: false },
-  topic_lesson: { type: DataTypes.STRING },
-  id_materials: { type: DataTypes.INTEGER },
-});
-
-// Career Guidance Model
-const CareerGuidance = sequelize.define('CareerGuidance', {
-  date_career_guidance: { type: DataTypes.DATE },
-  topic_career_guidance: { type: DataTypes.STRING },
-  consultants: { type: DataTypes.STRING },
-  id_class: { type: DataTypes.INTEGER, allowNull: false },
-});
-
-// Forum Model
 const Forum = sequelize.define('Forum', {
+  id_forum: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   rules: { type: DataTypes.STRING },
-  section: { type: DataTypes.STRING },
+  section: { type: DataTypes.STRING }
 });
 
-// Forum Section Model
 const ForumSection = sequelize.define('ForumSection', {
+  id_section: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  name: {type: DataTypes.STRING},
   subsections: { type: DataTypes.STRING },
   topic_subsections: { type: DataTypes.STRING },
   moderators: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER },
-  name: { type: DataTypes.STRING },
+  id_user: { type: DataTypes.INTEGER }
 });
 
-// Journal Model
+const Group = sequelize.define('Group', {
+  id_group: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_user: { type: DataTypes.INTEGER },
+  name_group: { type: DataTypes.STRING },
+  list_user: { type: DataTypes.STRING }
+});
+
+const Classes = sequelize.define('Classes', {
+  id_classes: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_group: { type: DataTypes.INTEGER },
+  topic_classes: { type: DataTypes.STRING },
+  id_materials: { type: DataTypes.INTEGER },
+  name: {type: DataTypes.STRING}
+});
+
 const Journal = sequelize.define('Journal', {
-  id_class: { type: DataTypes.INTEGER },
-  grades: { type: DataTypes.JSONB },
-  id_lesson: { type: DataTypes.INTEGER },
+  id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_group: { type: DataTypes.INTEGER },
+  grades: { type: DataTypes.STRING },
+  id_classes: { type: DataTypes.INTEGER },
   change_date: { type: DataTypes.DATE },
+  academic_performance: { type: DataTypes.STRING }
 });
 
-// Schedule Model
-const Schedule = sequelize.define('Schedule', {
-  id_lesson: { type: DataTypes.INTEGER },
-  id_class: { type: DataTypes.INTEGER },
-  id_elective: { type: DataTypes.INTEGER },
+const Hackathon = sequelize.define('Hackathon', {
+  id_hackathon: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  topic: { type: DataTypes.STRING },
   date: { type: DataTypes.DATE },
+  organizers: { type: DataTypes.STRING },
+  id_user: { type: DataTypes.INTEGER }
 });
 
-// Olympiad Model
-const Olympiad = sequelize.define('Olympiad', {
-  id_user: { type: DataTypes.INTEGER },
-  name: { type: DataTypes.STRING },
-  id_olympiads: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  topic_olympiads: { type: DataTypes.STRING },
-  date: { type: DataTypes.DATE },
-});
-
-// Olympiad Results Model
-const OlympiadResults = sequelize.define('OlympiadResults', {
+const HackathonResults = sequelize.define('HackathonResults', {
   id_result: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_olympiads: { type: DataTypes.INTEGER },
+  id_hackathon: { type: DataTypes.INTEGER },
   team_name: { type: DataTypes.STRING },
+  project_name: { type: DataTypes.STRING },
   score: { type: DataTypes.FLOAT },
-  position: { type: DataTypes.INTEGER },
+  position: { type: DataTypes.INTEGER }
 });
 
-// Elective Model
-const Elective = sequelize.define('Elective', {
+const Schedule = sequelize.define('Schedule', {
+  id_classes: { type: DataTypes.INTEGER },
+  id_group: { type: DataTypes.INTEGER },
+  date: { type: DataTypes.DATE }
+});
+
+const Project = sequelize.define('Project', {
+  id_project: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_user: { type: DataTypes.INTEGER },
+  deadlines: { type: DataTypes.DATE },
   name: { type: DataTypes.STRING },
-  topic_elective: { type: DataTypes.STRING },
+  id_emulator: { type: DataTypes.INTEGER }
 });
 
-// Materials Library Model
-const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
-  id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  topic_materials: { type: DataTypes.STRING },
+const Emulator = sequelize.define('Emulator', {
+  id_emulator: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  device_type: { type: DataTypes.STRING },
+  functionality: { type: DataTypes.STRING }
 });
 
-/**
- * Relationships
- */
-User.hasMany(Class, { foreignKey: 'id_user' });
-Class.belongsTo(User, { foreignKey: 'id_user' });
+const EmulatorLog = sequelize.define('EmulatorLog', {
+  id_log: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_emulator: { type: DataTypes.INTEGER },
+  timestamp: { type: DataTypes.DATE },
+  action: { type: DataTypes.STRING },
+  status: { type: DataTypes.STRING }
+});
 
-Lesson.belongsTo(Class, { foreignKey: 'id_class' });
-Class.hasMany(Lesson, { foreignKey: 'id_class' });
+const EmulatorConfiguration = sequelize.define('EmulatorConfiguration', {
+  id_config: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_emulator: { type: DataTypes.INTEGER },
+  config_name: { type: DataTypes.STRING },
+  settings: { type: DataTypes.STRING }
+});
 
-Lesson.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
-MaterialsLibrary.hasMany(Lesson, { foreignKey: 'id_materials' });
 
-CareerGuidance.belongsTo(Class, { foreignKey: 'id_class' });
-Class.hasMany(CareerGuidance, { foreignKey: 'id_class' });
+User.hasMany(Group, { foreignKey: 'id_user' });
+User.hasMany(Project, { foreignKey: 'id_user' });
+User.hasMany(Hackathon, { foreignKey: 'id_user' });
+
+Hackathon.hasMany(HackathonResults, { foreignKey: 'id_hackathon' });
+HackathonResults.belongsTo(Hackathon, { foreignKey: 'id_hackathon' });
+
+Group.hasMany(Classes, { foreignKey: 'id_group' });
+Classes.belongsTo(Group, { foreignKey: 'id_group' });
+
+Classes.hasMany(Schedule, { foreignKey: 'id_classes' });
+Schedule.belongsTo(Classes, { foreignKey: 'id_classes' });
+
+Project.belongsTo(Emulator, { foreignKey: 'id_emulator' });
+Emulator.hasMany(Project, { foreignKey: 'id_emulator' });
+
+Emulator.hasMany(EmulatorLog, { foreignKey: 'id_emulator' });
+EmulatorLog.belongsTo(Emulator, { foreignKey: 'id_emulator' });
+
+Emulator.hasMany(EmulatorConfiguration, { foreignKey: 'id_emulator' });
+EmulatorConfiguration.belongsTo(Emulator, { foreignKey: 'id_emulator' });
+
+MaterialsLibrary.hasMany(Classes, { foreignKey: 'id_material' });
+Classes.belongsTo(MaterialsLibrary, { foreignKey: 'id_material' });
 
 Forum.hasMany(ForumSection, { foreignKey: 'id_forum' });
 ForumSection.belongsTo(Forum, { foreignKey: 'id_forum' });
 
-Schedule.belongsTo(Class, { foreignKey: 'id_class' });
-Class.hasMany(Schedule, { foreignKey: 'id_class' });
-
-Olympiad.belongsTo(User, { foreignKey: 'id_user' });
-User.hasMany(Olympiad, { foreignKey: 'id_user' });
-
-OlympiadResults.belongsTo(Olympiad, { foreignKey: 'id_olympiads' });
-Olympiad.hasMany(OlympiadResults, { foreignKey: 'id_olympiads' });
-
-Elective.belongsTo(User, { foreignKey: 'id_user' });
-User.hasMany(Elective, { foreignKey: 'id_user' });
-
-Journal.belongsTo(Class, { foreignKey: 'id_class' });
-Journal.belongsTo(Lesson, { foreignKey: 'id_lesson' });
-
 
 module.exports = {
   User,
-  Class,
-  Lesson,
-  CareerGuidance,
+  MaterialsLibrary,
   Forum,
   ForumSection,
+  Group,
+  Classes,
   Journal,
+  Hackathon,
+  HackathonResults,
   Schedule,
-  Olympiad,
-  OlympiadResults,
-  Elective,
-  MaterialsLibrary,
+  Project,
+  Emulator,
+  EmulatorLog,
+  EmulatorConfiguration
 };

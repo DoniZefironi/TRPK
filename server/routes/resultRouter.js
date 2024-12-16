@@ -1,21 +1,11 @@
 const Router = require('express');
+const router = new Router();
 const resultController = require('../controllers/resultController');
 
-const router = new Router();
-
-// Создать результат олимпиады
-router.post('/', resultController.createResult);
-
-// Получить все результаты
-router.get('/', resultController.getResults);
-
-// Получить результат по ID
-router.get('/:id', resultController.getResultById);
-
-// Обновить результат
-router.put('/:id', resultController.updateResult);
-
-// Удалить результат
-router.delete('/:id', resultController.deleteResult);
+router.post('/', resultController.createResult);           // Создать результат
+router.get('/', resultController.getResults);              // Получить все результаты
+router.get('/:id', resultController.getResultById);        // Получить результат по ID
+router.put('/:id', resultController.updateResult);         // Обновить результат
+router.delete('/:id', resultController.deleteResult);      // Удалить результат
 
 module.exports = router;

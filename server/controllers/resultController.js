@@ -1,20 +1,21 @@
-const { OlympiadResults } = require('../models/models'); // Проверьте правильность пути
+const { HackathonResults } = require('../models/models'); // Проверьте путь к модели
 const ApiError = require('../error/ApiError');
 
 class ResultController {
-    // Создать результат олимпиады
+    // Создать результат хакатона
     async createResult(req, res, next) {
         try {
-            const { id_olympiads, team_name, score, position } = req.body;
+            const { id_hackathon, team_name, project_name, score, position } = req.body;
 
             // Проверка обязательных полей
-            if (!id_olympiads || !team_name || score === undefined || position === undefined) {
-                return next(ApiError.badRequest('Поля id_olympiads, team_name, score и position обязательны'));
+            if (!id_hackathon || !team_name || !project_name || score === undefined || position === undefined) {
+                return next(ApiError.badRequest('Все поля обязательны: id_hackathon, team_name, project_name, score, position'));
             }
 
-            const newResult = await OlympiadResults.create({
-                id_olympiads,
+            const newResult = await HackathonResults.create({
+                id_hackathon,
                 team_name,
+                project_name,
                 score,
                 position,
             });
@@ -22,53 +23,55 @@ class ResultController {
             res.status(201).json(newResult);
         } catch (error) {
             console.error(error);
-            next(ApiError.internal('Ошибка создания результата олимпиады'));
+            next(ApiError.internal('Ошибка создания результата хакатона'));
         }
     }
 
-    // Получить все результаты олимпиады
+    // Получить все результаты
     async getResults(req, res, next) {
         try {
-            const results = await OlympiadResults.findAll();
+            const results = await HackathonResults.findAll();
             res.status(200).json(results);
         } catch (error) {
             console.error(error);
-            next(ApiError.internal('Ошибка получения результатов олимпиады'));
+            next(ApiError.internal('Ошибка получения результатов'));
         }
     }
 
-    // Получить результат олимпиады по ID
+    // Получить результат по ID
     async getResultById(req, res, next) {
         try {
             const { id } = req.params;
-            const result = await OlympiadResults.findByPk(id);
+
+            const result = await HackathonResults.findByPk(id);
 
             if (!result) {
-                return next(ApiError.notFound('Результат олимпиады не найден'));
+                return next(ApiError.notFound('Результат не найден'));
             }
 
             res.status(200).json(result);
         } catch (error) {
             console.error(error);
-            next(ApiError.internal('Ошибка получения результата олимпиады'));
+            next(ApiError.internal('Ошибка получения результата'));
         }
     }
 
-    // Обновить результат олимпиады
+    // Обновить результат
     async updateResult(req, res, next) {
         try {
             const { id } = req.params;
-            const { id_olympiads, team_name, score, position } = req.body;
+            const { id_hackathon, team_name, project_name, score, position } = req.body;
 
-            const result = await OlympiadResults.findByPk(id);
+            const result = await HackathonResults.findByPk(id);
 
             if (!result) {
-                return next(ApiError.notFound('Результат олимпиады не найден'));
+                return next(ApiError.notFound('Результат не найден'));
             }
 
             await result.update({
-                id_olympiads: id_olympiads !== undefined ? id_olympiads : result.id_olympiads,
-                team_name: team_name !== undefined ? team_name : result.team_name,
+                id_hackathon: id_hackathon || result.id_hackathon,
+                team_name: team_name || result.team_name,
+                project_name: project_name || result.project_name,
                 score: score !== undefined ? score : result.score,
                 position: position !== undefined ? position : result.position,
             });
@@ -76,24 +79,25 @@ class ResultController {
             res.status(200).json(result);
         } catch (error) {
             console.error(error);
-            next(ApiError.internal('Ошибка обновления результата олимпиады'));
+            next(ApiError.internal('Ошибка обновления результата'));
         }
     }
 
-    // Удалить результат олимпиады
+    // Удалить результат
     async deleteResult(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await OlympiadResults.destroy({ where: { id_result: id } });
+
+            const deleted = await HackathonResults.destroy({ where: { id_result: id } });
 
             if (!deleted) {
-                return next(ApiError.notFound('Результат олимпиады не найден'));
+                return next(ApiError.notFound('Результат не найден'));
             }
 
-            res.status(200).json({ message: 'Результат олимпиады успешно удален' });
+            res.status(200).json({ message: 'Результат успешно удалён' });
         } catch (error) {
             console.error(error);
-            next(ApiError.internal('Ошибка удаления результата олимпиады'));
+            next(ApiError.internal('Ошибка удаления результата'));
         }
     }
 }
