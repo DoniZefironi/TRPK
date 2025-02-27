@@ -1,5 +1,5 @@
-const { Emulator } = require('../models/models'); // Проверьте правильность пути к модели
-const ApiError = require('../error/ApiError');
+const { Emulator } = require('../../models/models'); // Проверьте правильность пути к модели
+const ApiError = require('../../error/ApiError');
 
 class EmulatorController {
     // Создать эмулятор

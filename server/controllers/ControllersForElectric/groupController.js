@@ -1,5 +1,5 @@
-const { Group } = require('../models/models'); // Убедитесь, что путь корректный
-const ApiError = require('../error/ApiError');
+const { Group } = require('../../models/models'); // Убедитесь, что путь корректный
+const ApiError = require('../../error/ApiError');
 
 class GroupController {
     // Создать группу

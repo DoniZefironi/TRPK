@@ -1,5 +1,5 @@
-const { MaterialsLibrary } = require('../models/models');
-const ApiError = require('../error/ApiError');
+const { MaterialsLibrary } = require('../../models/models');
+const ApiError = require('../../error/ApiError');
 
 class MaterialController {
     async createMaterial(req, res, next) {

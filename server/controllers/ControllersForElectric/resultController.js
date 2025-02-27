@@ -1,5 +1,5 @@
-const { HackathonResults } = require('../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
+const { HackathonResults } = require('../../models/models'); // Проверьте путь к модели
+const ApiError = require('../../error/ApiError');
 
 class ResultController {
     // Создать результат хакатона

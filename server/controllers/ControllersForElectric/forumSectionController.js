@@ -1,5 +1,5 @@
-const { ForumSection } = require('../models/models'); // Убедитесь, что путь к модели указан верно
-const ApiError = require('../error/ApiError');
+const { ForumSection } = require('../../models/models'); // Убедитесь, что путь к модели указан верно
+const ApiError = require('../../error/ApiError');
 
 class ForumSectionController {
     // Создать секцию форума

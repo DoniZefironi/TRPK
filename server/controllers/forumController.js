@@ -1,5 +1,5 @@
-const { Forum } = require('../models/models'); 
-const ApiError = require('../error/ApiError');
+const { Forum } = require('../../models/models'); 
+const ApiError = require('../../error/ApiError');
 
 class ForumController {
     // Создать форум

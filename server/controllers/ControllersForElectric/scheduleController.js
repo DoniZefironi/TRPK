@@ -1,5 +1,5 @@
-const { Schedule } = require('../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
+const { Schedule } = require('../../models/models'); // Проверьте путь к модели
+const ApiError = require('../../error/ApiError');
 
 class ScheduleController {
     // Создать расписание

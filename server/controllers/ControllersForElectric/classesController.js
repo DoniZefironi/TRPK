@@ -1,5 +1,5 @@
-const { Classes } = require('../models/models'); // Убедитесь, что путь к модели указан правильно
-const ApiError = require('../error/ApiError');
+const { Classes } = require('../../models/models'); // Убедитесь, что путь к модели указан правильно
+const ApiError = require('../../error/ApiError');
 
 class ClassesController {
     // Создать урок

@@ -1,5 +1,5 @@
-const { EmulatorLog } = require('../models/models'); // Проверьте правильность пути к модели
-const ApiError = require('../error/ApiError');
+const { EmulatorLog } = require('../../models/models'); // Проверьте правильность пути к модели
+const ApiError = require('../../error/ApiError');
 
 class EmulatorLogController {
     // Создать лог эмулятора

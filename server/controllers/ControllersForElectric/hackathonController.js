@@ -1,5 +1,5 @@
-const { Hackathon } = require('../models/models'); // Убедитесь, что путь корректный
-const ApiError = require('../error/ApiError');
+const { Hackathon } = require('../../models/models'); // Убедитесь, что путь корректный
+const ApiError = require('../../error/ApiError');
 
 class HackathonController {
     // Создать хакатон

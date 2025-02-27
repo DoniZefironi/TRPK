@@ -1,5 +1,5 @@
-const { Project } = require('../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
+const { Project } = require('../../models/models'); // Проверьте путь к модели
+const ApiError = require('../../error/ApiError');
 
 class ProjectController {
     // Создать проект
