@@ -1,7 +1,7 @@
-const { Emulator } = require('../../models/models'); // Проверьте правильность пути к модели
+const { EmulatorElectric } = require('../../models/models'); // Проверьте правильность пути к модели
 const ApiError = require('../../error/ApiError');
 
-class EmulatorController {
+class EmulatorElectricController {
     // Создать эмулятор
     async createEmulator(req, res, next) {
         try {
@@ -11,7 +11,7 @@ class EmulatorController {
                 return next(ApiError.badRequest('Поля device_type и functionality обязательны'));
             }
 
-            const newEmulator = await Emulator.create({
+            const newEmulator = await EmulatorElectric.create({
                 device_type,
                 functionality,
             });
@@ -26,7 +26,7 @@ class EmulatorController {
     // Получить все эмуляторы
     async getEmulators(req, res, next) {
         try {
-            const emulators = await Emulator.findAll();
+            const emulators = await EmulatorElectric.findAll();
             res.status(200).json(emulators);
         } catch (error) {
             console.error(error);
@@ -39,7 +39,7 @@ class EmulatorController {
         try {
             const { id } = req.params;
 
-            const emulator = await Emulator.findByPk(id);
+            const emulator = await EmulatorElectric.findByPk(id);
 
             if (!emulator) {
                 return next(ApiError.notFound('Эмулятор не найден'));
@@ -58,7 +58,7 @@ class EmulatorController {
             const { id } = req.params;
             const { device_type, functionality } = req.body;
 
-            const emulator = await Emulator.findByPk(id);
+            const emulator = await EmulatorElectric.findByPk(id);
 
             if (!emulator) {
                 return next(ApiError.notFound('Эмулятор не найден'));
@@ -81,7 +81,7 @@ class EmulatorController {
         try {
             const { id } = req.params;
 
-            const deleted = await Emulator.destroy({ where: { id_emulator: id } });
+            const deleted = await EmulatorElectric.destroy({ where: { id_emulator: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Эмулятор не найден'));
@@ -95,4 +95,4 @@ class EmulatorController {
     }
 }
 
-module.exports = new EmulatorController();
+module.exports = new EmulatorElectricController();

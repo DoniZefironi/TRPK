@@ -1,11 +1,11 @@
 const Router = require('express');
 const router = new Router();
-const resultController = require('../controllers/resultController');
+const resultController = require('../../controllers/ControllersForElectric/resultElectricController');
 
-router.post('/', resultController.createResult);           // Создать результат
-router.get('/', resultController.getResults);              // Получить все результаты
-router.get('/:id', resultController.getResultById);        // Получить результат по ID
-router.put('/:id', resultController.updateResult);         // Обновить результат
-router.delete('/:id', resultController.deleteResult);      // Удалить результат
+router.post('/', resultController.createResult);         
+router.get('/', resultController.getResults);             
+router.get('/:id', resultController.getResultById);      
+router.put('/:id', resultController.updateResult);       
+router.delete('/:id', resultController.deleteResult);     
 
 module.exports = router;

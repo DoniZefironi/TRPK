@@ -1,11 +1,11 @@
 const Router = require('express');
 const router = new Router();
-const groupController = require('../controllers/groupController');
+const groupController = require('../../controllers/ControllersForElectric/groupElectricController');
 
-router.post('/', groupController.createGroup);           // Создать группу
-router.get('/', groupController.getGroups);              // Получить все группы
-router.get('/:id', groupController.getGroupById);        // Получить группу по ID
-router.put('/:id', groupController.updateGroup);         // Обновить группу
-router.delete('/:id', groupController.deleteGroup);      // Удалить группу
+router.post('/', groupController.createGroup);          
+router.get('/', groupController.getGroups);            
+router.get('/:id', groupController.getGroupById);        
+router.put('/:id', groupController.updateGroup);         
+router.delete('/:id', groupController.deleteGroup);     
 
 module.exports = router;

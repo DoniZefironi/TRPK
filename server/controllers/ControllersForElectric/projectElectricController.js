@@ -1,7 +1,7 @@
-const { Project } = require('../../models/models'); // Проверьте путь к модели
+const { ProjectElectric } = require('../../models/models'); // Проверьте путь к модели
 const ApiError = require('../../error/ApiError');
 
-class ProjectController {
+class ProjectElectricController {
     // Создать проект
     async createProject(req, res, next) {
         try {
@@ -12,7 +12,7 @@ class ProjectController {
                 return next(ApiError.badRequest('Поля id_user и name обязательны'));
             }
 
-            const newProject = await Project.create({
+            const newProject = await ProjectElectric.create({
                 id_user,
                 deadlines,
                 name,
@@ -29,7 +29,7 @@ class ProjectController {
     // Получить все проекты
     async getProjects(req, res, next) {
         try {
-            const projects = await Project.findAll();
+            const projects = await ProjectElectric.findAll();
             res.status(200).json(projects);
         } catch (error) {
             console.error(error);
@@ -42,7 +42,7 @@ class ProjectController {
         try {
             const { id } = req.params;
 
-            const project = await Project.findByPk(id);
+            const project = await ProjectElectric.findByPk(id);
 
             if (!project) {
                 return next(ApiError.notFound('Проект не найден'));
@@ -61,7 +61,7 @@ class ProjectController {
             const { id } = req.params;
             const { id_user, deadlines, name, id_emulator } = req.body;
 
-            const project = await Project.findByPk(id);
+            const project = await ProjectElectric.findByPk(id);
 
             if (!project) {
                 return next(ApiError.notFound('Проект не найден'));
@@ -86,7 +86,7 @@ class ProjectController {
         try {
             const { id } = req.params;
 
-            const deleted = await Project.destroy({ where: { id_project: id } });
+            const deleted = await ProjectElectric.destroy({ where: { id_project: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Проект не найден'));
@@ -100,4 +100,4 @@ class ProjectController {
     }
 }
 
-module.exports = new ProjectController();
+module.exports = new ProjectElectricController();

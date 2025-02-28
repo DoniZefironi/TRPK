@@ -1,7 +1,7 @@
-const { EmulatorLog } = require('../../models/models'); // Проверьте правильность пути к модели
+const { EmulatorLogElectric } = require('../../models/models'); // Проверьте правильность пути к модели
 const ApiError = require('../../error/ApiError');
 
-class EmulatorLogController {
+class EmulatorLogElectricController {
     // Создать лог эмулятора
     async createEmulatorLog(req, res, next) {
         try {
@@ -11,7 +11,7 @@ class EmulatorLogController {
                 return next(ApiError.badRequest('Поля id_emulator, action и status обязательны'));
             }
 
-            const newLog = await EmulatorLog.create({
+            const newLog = await EmulatorLogElectric.create({
                 id_emulator,
                 timestamp: timestamp || new Date(),
                 action,
@@ -28,7 +28,7 @@ class EmulatorLogController {
     // Получить все логи эмулятора
     async getEmulatorLogs(req, res, next) {
         try {
-            const logs = await EmulatorLog.findAll();
+            const logs = await EmulatorLogElectric.findAll();
             res.status(200).json(logs);
         } catch (error) {
             console.error(error);
@@ -40,7 +40,7 @@ class EmulatorLogController {
     async getEmulatorLogById(req, res, next) {
         try {
             const { id } = req.params;
-            const log = await EmulatorLog.findByPk(id);
+            const log = await EmulatorLogElectric.findByPk(id);
 
             if (!log) {
                 return next(ApiError.notFound('Лог эмулятора не найден'));
@@ -59,7 +59,7 @@ class EmulatorLogController {
             const { id } = req.params;
             const { id_emulator, timestamp, action, status } = req.body;
 
-            const log = await EmulatorLog.findByPk(id);
+            const log = await EmulatorLogElectric.findByPk(id);
 
             if (!log) {
                 return next(ApiError.notFound('Лог эмулятора не найден'));
@@ -84,7 +84,7 @@ class EmulatorLogController {
         try {
             const { id } = req.params;
 
-            const deleted = await EmulatorLog.destroy({ where: { id_log: id } });
+            const deleted = await EmulatorLogElectric.destroy({ where: { id_log: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Лог эмулятора не найден'));
@@ -98,4 +98,4 @@ class EmulatorLogController {
     }
 }
 
-module.exports = new EmulatorLogController();
+module.exports = new EmulatorLogElectricController();

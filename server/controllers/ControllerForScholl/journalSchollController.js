@@ -1,22 +1,21 @@
-const { Journal } = require('../../models/models'); // Проверьте путь к модели
-const ApiError = require('../../error/ApiError');
+const { JournalScholl } = require('../models/models'); // Проверьте путь к модели
+const ApiError = require('../error/ApiError');
 
-class JournalController {
+class JournalSchollController {
     // Создать запись журнала
     async createJournal(req, res, next) {
         try {
-            const { id_group, grades, id_classes, change_date, academic_performance } = req.body;
+            const { id_class, grades, id_lesson, change_date } = req.body;
 
-            if (!id_group || !id_classes) {
-                return next(ApiError.badRequest('Поля id_group и id_classes обязательны'));
+            if (!id_class || !id_lesson) {
+                return next(ApiError.badRequest('Поля id_class и id_lesson обязательны'));
             }
 
-            const newJournal = await Journal.create({
-                id_group,
+            const newJournal = await JournalScholl.create({
+                id_class,
                 grades, // JSONB поле
-                id_classes,
+                id_lesson,
                 change_date,
-                academic_performance,
             });
 
             res.status(201).json(newJournal);
@@ -29,7 +28,7 @@ class JournalController {
     // Получить все записи журнала
     async getJournals(req, res, next) {
         try {
-            const journals = await Journal.findAll();
+            const journals = await JournalScholl.findAll();
             res.status(200).json(journals);
         } catch (error) {
             console.error(error);
@@ -41,7 +40,7 @@ class JournalController {
     async getJournalById(req, res, next) {
         try {
             const { id } = req.params;
-            const journal = await Journal.findByPk(id);
+            const journal = await JournalScholl.findByPk(id);
 
             if (!journal) {
                 return next(ApiError.notFound('Запись журнала не найдена'));
@@ -58,9 +57,9 @@ class JournalController {
     async updateJournal(req, res, next) {
         try {
             const { id } = req.params;
-            const { id_group, grades, id_classes, change_date, academic_performance } = req.body;
+            const { id_class, grades, id_lesson, change_date } = req.body;
 
-            const journal = await Journal.findByPk(id);
+            const journal = await JournalScholl.findByPk(id);
 
             if (!journal) {
                 return next(ApiError.notFound('Запись журнала не найдена'));
@@ -68,11 +67,10 @@ class JournalController {
 
             // Обновить JSONB поле и другие данные
             await journal.update({
-                id_group: id_group !== undefined ? id_group : journal.id_group,
+                id_class: id_class !== undefined ? id_class : journal.id_class,
                 grades: grades !== undefined ? grades : journal.grades, // Обновляем JSONB
-                id_classes: id_classes !== undefined ? id_classes : journal.id_classes,
+                id_lesson: id_lesson !== undefined ? id_lesson : journal.id_lesson,
                 change_date: change_date !== undefined ? change_date : journal.change_date,
-                academic_performance: academic_performance !== undefined ? academic_performance : journal.academic_performance,
             });
 
             res.status(200).json(journal);
@@ -86,7 +84,7 @@ class JournalController {
     async deleteJournal(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await Journal.destroy({ where: { id } });
+            const deleted = await JournalScholl.destroy({ where: { id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Запись журнала не найдена'));
@@ -100,4 +98,4 @@ class JournalController {
     }
 }
 
-module.exports = new JournalController();
+module.exports = new JournalSchollController();

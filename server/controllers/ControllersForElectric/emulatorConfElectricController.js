@@ -1,7 +1,7 @@
-const { EmulatorConfiguration } = require('../../models/models'); // Проверьте правильность пути к модели
+const { EmulatorConfigurationElectric } = require('../../models/models'); // Проверьте правильность пути к модели
 const ApiError = require('../../error/ApiError');
 
-class EmulatorConfController {
+class EmulatorConfElectricController {
     // Создать конфигурацию эмулятора
     async createEmulatorConfig(req, res, next) {
         try {
@@ -11,7 +11,7 @@ class EmulatorConfController {
                 return next(ApiError.badRequest('Поля id_emulator, config_name и settings обязательны'));
             }
 
-            const newConfig = await EmulatorConfiguration.create({
+            const newConfig = await EmulatorConfigurationElectric.create({
                 id_emulator,
                 config_name,
                 settings,
@@ -27,7 +27,7 @@ class EmulatorConfController {
     // Получить все конфигурации эмулятора
     async getEmulatorConfigs(req, res, next) {
         try {
-            const configs = await EmulatorConfiguration.findAll();
+            const configs = await EmulatorConfigurationElectric.findAll();
             res.status(200).json(configs);
         } catch (error) {
             console.error(error);
@@ -39,7 +39,7 @@ class EmulatorConfController {
     async getEmulatorConfigById(req, res, next) {
         try {
             const { id } = req.params;
-            const config = await EmulatorConfiguration.findByPk(id);
+            const config = await EmulatorConfigurationElectric.findByPk(id);
 
             if (!config) {
                 return next(ApiError.notFound('Конфигурация эмулятора не найдена'));
@@ -58,7 +58,7 @@ class EmulatorConfController {
             const { id } = req.params;
             const { id_emulator, config_name, settings } = req.body;
 
-            const config = await EmulatorConfiguration.findByPk(id);
+            const config = await EmulatorConfigurationElectric.findByPk(id);
 
             if (!config) {
                 return next(ApiError.notFound('Конфигурация эмулятора не найдена'));
@@ -82,7 +82,7 @@ class EmulatorConfController {
         try {
             const { id } = req.params;
 
-            const deleted = await EmulatorConfiguration.destroy({ where: { id_config: id } });
+            const deleted = await EmulatorConfigurationElectric.destroy({ where: { id_config: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Конфигурация эмулятора не найдена'));
@@ -96,4 +96,4 @@ class EmulatorConfController {
     }
 }
 
-module.exports = new EmulatorConfController();
+module.exports = new EmulatorConfElectricController();

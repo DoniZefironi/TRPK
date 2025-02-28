@@ -1,7 +1,7 @@
-const { ForumSection } = require('../../models/models'); // Убедитесь, что путь к модели указан верно
-const ApiError = require('../../error/ApiError');
+const { ForumSectionScholl } = require('../../models/models'); // Убедитесь, что путь к модели указан верно
+const ApiError = require('../error/ApiError');
 
-class ForumSectionController {
+class ForumSectionSchollController {
     // Создать секцию форума
     async createForumSection(req, res, next) {
         try {
@@ -12,7 +12,7 @@ class ForumSectionController {
                 return next(ApiError.badRequest('Поле name обязательно'));
             }
 
-            const newForumSection = await ForumSection.create({
+            const newForumSection = await ForumSectionScholl.create({
                 subsections,
                 topic_subsections,
                 moderators,
@@ -30,7 +30,7 @@ class ForumSectionController {
     // Получить все секции форума
     async getForumSections(req, res, next) {
         try {
-            const forumSections = await ForumSection.findAll();
+            const forumSections = await ForumSectionScholl.findAll();
             res.status(200).json(forumSections);
         } catch (error) {
             console.error(error);
@@ -42,7 +42,7 @@ class ForumSectionController {
     async getForumSectionById(req, res, next) {
         try {
             const { id } = req.params;
-            const forumSection = await ForumSection.findByPk(id);
+            const forumSection = await ForumSectionScholl.findByPk(id);
 
             if (!forumSection) {
                 return next(ApiError.notFound('Секция форума не найдена'));
@@ -59,7 +59,7 @@ class ForumSectionController {
     async deleteForumSection(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await ForumSection.destroy({ where: { id } });
+            const deleted = await ForumSectionScholl.destroy({ where: { id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Секция форума не найдена'));
@@ -78,7 +78,7 @@ class ForumSectionController {
             const { id } = req.params;
             const { subsections, topic_subsections, moderators, id_user, name } = req.body;
 
-            const forumSection = await ForumSection.findByPk(id);
+            const forumSection = await ForumSectionScholl.findByPk(id);
 
             if (!forumSection) {
                 return next(ApiError.notFound('Секция форума не найдена'));
@@ -100,4 +100,4 @@ class ForumSectionController {
     }
 }
 
-module.exports = new ForumSectionController();
+module.exports = new ForumSectionSchollController();

@@ -1,7 +1,7 @@
-const { Group } = require('../../models/models'); // Убедитесь, что путь корректный
-const ApiError = require('../../error/ApiError');
+const { GroupIoT } = require('../../models/models'); // Убедитесь, что путь корректный
+const ApiError = require('../error/ApiError');
 
-class GroupController {
+class GroupIoTController {
     // Создать группу
     async createGroup(req, res, next) {
         try {
@@ -12,7 +12,7 @@ class GroupController {
                 return next(ApiError.badRequest('Поле name_group обязательно'));
             }
 
-            const newGroup = await Group.create({
+            const newGroup = await GroupIoT.create({
                 id_user,
                 name_group,
                 list_user,
@@ -28,7 +28,7 @@ class GroupController {
     // Получить все группы
     async getGroups(req, res, next) {
         try {
-            const groups = await Group.findAll();
+            const groups = await GroupIoT.findAll();
             res.status(200).json(groups);
         } catch (error) {
             console.error(error);
@@ -41,7 +41,7 @@ class GroupController {
         try {
             const { id } = req.params;
 
-            const group = await Group.findByPk(id);
+            const group = await GroupIoT.findByPk(id);
 
             if (!group) {
                 return next(ApiError.notFound('Группа не найдена'));
@@ -60,7 +60,7 @@ class GroupController {
             const { id } = req.params;
             const { id_user, name_group, list_user } = req.body;
 
-            const group = await Group.findByPk(id);
+            const group = await GroupIoT.findByPk(id);
 
             if (!group) {
                 return next(ApiError.notFound('Группа не найдена'));
@@ -84,7 +84,7 @@ class GroupController {
         try {
             const { id } = req.params;
 
-            const deleted = await Group.destroy({ where: { id_group: id } });
+            const deleted = await GroupIoT.destroy({ where: { id_group: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Группа не найдена'));
@@ -98,4 +98,4 @@ class GroupController {
     }
 }
 
-module.exports = new GroupController();
+module.exports = new GroupIoTController();

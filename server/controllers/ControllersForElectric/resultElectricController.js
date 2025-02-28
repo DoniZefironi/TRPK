@@ -1,7 +1,7 @@
-const { HackathonResults } = require('../../models/models'); // Проверьте путь к модели
+const { HackathonResultsElectric } = require('../../models/models'); // Проверьте путь к модели
 const ApiError = require('../../error/ApiError');
 
-class ResultController {
+class ResultElectricController {
     // Создать результат хакатона
     async createResult(req, res, next) {
         try {
@@ -12,7 +12,7 @@ class ResultController {
                 return next(ApiError.badRequest('Все поля обязательны: id_hackathon, team_name, project_name, score, position'));
             }
 
-            const newResult = await HackathonResults.create({
+            const newResult = await HackathonResultsElectric.create({
                 id_hackathon,
                 team_name,
                 project_name,
@@ -30,7 +30,7 @@ class ResultController {
     // Получить все результаты
     async getResults(req, res, next) {
         try {
-            const results = await HackathonResults.findAll();
+            const results = await HackathonResultsElectric.findAll();
             res.status(200).json(results);
         } catch (error) {
             console.error(error);
@@ -43,7 +43,7 @@ class ResultController {
         try {
             const { id } = req.params;
 
-            const result = await HackathonResults.findByPk(id);
+            const result = await HackathonResultsElectric.findByPk(id);
 
             if (!result) {
                 return next(ApiError.notFound('Результат не найден'));
@@ -62,7 +62,7 @@ class ResultController {
             const { id } = req.params;
             const { id_hackathon, team_name, project_name, score, position } = req.body;
 
-            const result = await HackathonResults.findByPk(id);
+            const result = await HackathonResultsElectric.findByPk(id);
 
             if (!result) {
                 return next(ApiError.notFound('Результат не найден'));
@@ -88,7 +88,7 @@ class ResultController {
         try {
             const { id } = req.params;
 
-            const deleted = await HackathonResults.destroy({ where: { id_result: id } });
+            const deleted = await HackathonResultsElectric.destroy({ where: { id_result: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Результат не найден'));
@@ -102,4 +102,4 @@ class ResultController {
     }
 }
 
-module.exports = new ResultController();
+module.exports = new ResultElectricController();

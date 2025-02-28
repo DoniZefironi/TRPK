@@ -1,11 +1,11 @@
 const Router = require('express');
 const router = new Router();
-const projectController = require('../controllers/projectController.js');
+const projectController = require('../../controllers/ControllersForElectric/projectElectricController');
 
-router.post('/', projectController.createProject);           // Создать проект
-router.get('/', projectController.getProjects);              // Получить все проекты
-router.get('/:id', projectController.getProjectById);        // Получить проект по ID
-router.put('/:id', projectController.updateProject);         // Обновить проект
-router.delete('/:id', projectController.deleteProject);      // Удалить проект
+router.post('/', projectController.createProject);       
+router.get('/', projectController.getProjects);       
+router.get('/:id', projectController.getProjectById); 
+router.put('/:id', projectController.updateProject);       
+router.delete('/:id', projectController.deleteProject);    
 
 module.exports = router;

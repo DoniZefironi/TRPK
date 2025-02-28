@@ -1,7 +1,7 @@
-const { Hackathon } = require('../../models/models'); // Убедитесь, что путь корректный
+const { HackathonElectric } = require('../../models/models'); // Убедитесь, что путь корректный
 const ApiError = require('../../error/ApiError');
 
-class HackathonController {
+class HackathonElectricController {
     // Создать хакатон
     async createHackathon(req, res, next) {
         try {
@@ -12,7 +12,7 @@ class HackathonController {
                 return next(ApiError.badRequest('Поля topic, date и organizers обязательны'));
             }
 
-            const newHackathon = await Hackathon.create({
+            const newHackathon = await HackathonElectric.create({
                 topic,
                 date,
                 organizers,
@@ -29,7 +29,7 @@ class HackathonController {
     // Получить все хакатоны
     async getHackathons(req, res, next) {
         try {
-            const hackathons = await Hackathon.findAll();
+            const hackathons = await HackathonElectric.findAll();
             res.status(200).json(hackathons);
         } catch (error) {
             console.error(error);
@@ -42,7 +42,7 @@ class HackathonController {
         try {
             const { id } = req.params;
 
-            const hackathon = await Hackathon.findByPk(id);
+            const hackathon = await HackathonElectric.findByPk(id);
 
             if (!hackathon) {
                 return next(ApiError.notFound('Хакатон не найден'));
@@ -61,7 +61,7 @@ class HackathonController {
             const { id } = req.params;
             const { topic, date, organizers, id_user } = req.body;
 
-            const hackathon = await Hackathon.findByPk(id);
+            const hackathon = await HackathonElectric.findByPk(id);
 
             if (!hackathon) {
                 return next(ApiError.notFound('Хакатон не найден'));
@@ -86,7 +86,7 @@ class HackathonController {
         try {
             const { id } = req.params;
 
-            const deleted = await Hackathon.destroy({ where: { id_hackathon: id } });
+            const deleted = await HackathonElectric.destroy({ where: { id_hackathon: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Хакатон не найден'));
@@ -100,4 +100,4 @@ class HackathonController {
     }
 }
 
-module.exports = new HackathonController();
+module.exports = new HackathonElectricController();

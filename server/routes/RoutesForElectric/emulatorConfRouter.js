@@ -1,11 +1,11 @@
 const Router = require('express');
 const router = new Router();
-const emulatorConfController = require('../controllers/emulatorConfController');
+const emulatorConfController = require('../../controllers/ControllersForElectric/emulatorConfElectricController');
 
-router.post('/', emulatorConfController.createEmulatorConfig);         // Создать конфигурацию
-router.get('/', emulatorConfController.getEmulatorConfigs);            // Получить все конфигурации
-router.get('/:id', emulatorConfController.getEmulatorConfigById);      // Получить конфигурацию по ID
-router.put('/:id', emulatorConfController.updateEmulatorConfig);       // Обновить конфигурацию
-router.delete('/:id', emulatorConfController.deleteEmulatorConfig);    // Удалить конфигурацию
+router.post('/', emulatorConfController.createEmulatorConfig);       
+router.get('/', emulatorConfController.getEmulatorConfigs);            
+router.get('/:id', emulatorConfController.getEmulatorConfigById);      
+router.put('/:id', emulatorConfController.updateEmulatorConfig);       
+router.delete('/:id', emulatorConfController.deleteEmulatorConfig);    
 
 module.exports = router;

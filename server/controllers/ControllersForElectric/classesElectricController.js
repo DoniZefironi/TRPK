@@ -1,7 +1,7 @@
-const { Classes } = require('../../models/models'); // Убедитесь, что путь к модели указан правильно
+const { ClassesElectric } = require('../../models/models'); // Убедитесь, что путь к модели указан правильно
 const ApiError = require('../../error/ApiError');
 
-class ClassesController {
+class ClassesElectricController {
     // Создать урок
     async createClasses(req, res, next) {
         try {
@@ -12,7 +12,7 @@ class ClassesController {
                 return next(ApiError.badRequest('Поле id_class обязательно'));
             }
 
-            const newClasses = await Classes.create({
+            const newClasses = await ClassesElectric.create({
                 name,
                 id_group,
                 topic_classes,
@@ -29,7 +29,7 @@ class ClassesController {
     // Получить все уроки
     async getClasses(req, res, next) {
         try {
-            const classes = await Classes.findAll();
+            const classes = await ClassesElectric.findAll();
             res.status(200).json(classes);
         } catch (error) {
             console.error(error);
@@ -43,7 +43,7 @@ async updateClasses(req, res, next) {
         const { name, id_class, topic_classes, id_materials } = req.body;
 
         // Найти урок по ID
-        const classes = await Classes.findByPk(id);
+        const classes = await ClassesElectric.findByPk(id);
 
         if (!classes) {
             return next(ApiError.notFound('Урок не найден'));
@@ -68,7 +68,7 @@ async updateClasses(req, res, next) {
     async getClassesById(req, res, next) {
         try {
             const { id } = req.params;
-            const classes = await Classes.findByPk(id);
+            const classes = await ClassesElectric.findByPk(id);
 
             if (!classes) {
                 return next(ApiError.notFound('Урок не найден'));
@@ -85,7 +85,7 @@ async updateClasses(req, res, next) {
     async deleteClasses(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await Classes.destroy({ where: { topic_classes: id } });
+            const deleted = await ClassesElectric.destroy({ where: { topic_classes: id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Урок не найден'));
@@ -99,4 +99,4 @@ async updateClasses(req, res, next) {
     }
 }
 
-module.exports = new ClassesController();
+module.exports = new ClassesElectricController();

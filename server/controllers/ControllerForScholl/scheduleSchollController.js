@@ -1,20 +1,21 @@
-const { Schedule } = require('../../models/models'); // Проверьте путь к модели
-const ApiError = require('../../error/ApiError');
+const { ScheduleScholl } = require('../../models/models'); // Проверьте путь к модели
+const ApiError = require('../error/ApiError');
 
-class ScheduleController {
+class ScheduleSchollController {
     // Создать расписание
     async createSchedule(req, res, next) {
         try {
-            const { id_groupes, id_group, date } = req.body;
+            const { id_lesson, id_class, id_elective, date } = req.body;
 
             // Проверка обязательных полей
-            if (!id_group || !date) {
-                return next(ApiError.badRequest('Поля id_group и date обязательны'));
+            if (!id_class || !date) {
+                return next(ApiError.badRequest('Поля id_class и date обязательны'));
             }
 
-            const newSchedule = await Schedule.create({
-                id_groupes,
-                id_group,
+            const newSchedule = await ScheduleScholl.create({
+                id_lesson,
+                id_class,
+                id_elective,
                 date,
             });
 
@@ -28,7 +29,7 @@ class ScheduleController {
     // Получить все записи расписания
     async getSchedules(req, res, next) {
         try {
-            const schedules = await Schedule.findAll();
+            const schedules = await ScheduleScholl.findAll();
             res.status(200).json(schedules);
         } catch (error) {
             console.error(error);
@@ -40,7 +41,7 @@ class ScheduleController {
     async getScheduleById(req, res, next) {
         try {
             const { id } = req.params;
-            const schedule = await Schedule.findByPk(id);
+            const schedule = await ScheduleScholl.findByPk(id);
 
             if (!schedule) {
                 return next(ApiError.notFound('Запись расписания не найдена'));
@@ -57,17 +58,18 @@ class ScheduleController {
     async updateSchedule(req, res, next) {
         try {
             const { id } = req.params;
-            const { id_groupes, id_group, date } = req.body;
+            const { id_lesson, id_class, id_elective, date } = req.body;
 
-            const schedule = await Schedule.findByPk(id);
+            const schedule = await ScheduleScholl.findByPk(id);
 
             if (!schedule) {
                 return next(ApiError.notFound('Запись расписания не найдена'));
             }
 
             await schedule.update({
-                id_groupes: id_groupes !== undefined ? id_groupes : schedule.id_groupes,
-                id_group: id_group !== undefined ? id_group : schedule.id_group,
+                id_lesson: id_lesson !== undefined ? id_lesson : schedule.id_lesson,
+                id_class: id_class !== undefined ? id_class : schedule.id_class,
+                id_elective: id_elective !== undefined ? id_elective : schedule.id_elective,
                 date: date !== undefined ? date : schedule.date,
             });
 
@@ -82,7 +84,7 @@ class ScheduleController {
     async deleteSchedule(req, res, next) {
         try {
             const { id } = req.params;
-            const deleted = await Schedule.destroy({ where: { id } });
+            const deleted = await ScheduleScholl.destroy({ where: { id } });
 
             if (!deleted) {
                 return next(ApiError.notFound('Запись расписания не найдена'));
@@ -96,4 +98,4 @@ class ScheduleController {
     }
 }
 
-module.exports = new ScheduleController();
+module.exports = new ScheduleSchollController();
