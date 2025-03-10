@@ -1,14 +1,6 @@
 import React from 'react';
 
-interface CourseCardProps {
-  image: string;
-  category: string;
-  title: string;
-  price: number;
-  author: string;
-}
-
-const CourseCard: React.FC<CourseCardProps> = ({ image, category, title, price, author }) => {
+const CourseCard = ({ image, category, title, price, author }) => {
   return (
     <div className="course-card bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative overflow-hidden">
