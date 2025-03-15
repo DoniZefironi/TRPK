@@ -1,0 +1,56 @@
+/* Секция "О нас" */
+.about-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+  }
+  
+  .about-content {
+    max-width: 50%;
+  }
+  
+  .about-title {
+    font-size: 28px;
+    color: #ff4d4f;
+    margin-bottom: 10px;
+  }
+  
+  .about-subtitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .about-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+  }
+  
+  .about-list li {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .about-button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .about-button:hover {
+    background-color: #e03d3e;
+  }
+  
+  .about-image img {
+    max-width: 400px;
+    height: auto;
+    border-radius: 10px;
+  }
+  

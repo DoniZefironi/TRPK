@@ -1,16 +1,12 @@
 import React from 'react';
-import Hero from '../../components/Hero/Hero.jsx';
-import Features from '../../components/Features/Features.jsx';
-import Courses from '../../components/Courses/Courses.jsx';
-import Events from '../../components/Events/Events.jsx';
+import Landing from '../../components/Landing/Landing';
+import About from '../../components/About/About'
 
 const Main = () => {
     return (
         <>
-            <Hero />
-          <Features />
-          <Courses />
-          <Events />
+            <Landing />
+            <About />
         </>
           );
         };

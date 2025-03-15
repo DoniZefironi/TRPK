@@ -2,19 +2,19 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header/Header.jsx';
 import Footer from './components/Footer/Footer.jsx'
-import Main from './pages/Main/Main.tsx';
+import Main from './pages/Main/Main.jsx';
 import './App.css';
 
 const App = () => {
     return (
         <div className="App">
-            <Header />
+            {/* <Header /> */}
             <main>
                 <Routes>
                     <Route path="/" element={<Main />} />
                 </Routes>
             </main>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 };
