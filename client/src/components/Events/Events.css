@@ -1,0 +1,88 @@
+/* Секция мероприятий */
+.events-section {
+    background: linear-gradient(to bottom, #ffecec, #ffffff);
+    padding: 50px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    text-align: center;
+  }
+  
+  .events-title {
+    font-size: 28px;
+    color: #ff4d4f;
+    margin-bottom: 10px;
+  }
+  
+  .events-subtitle {
+    font-size: 22px;
+    margin-bottom: 30px;
+  }
+  
+  .events-list {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .event-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    flex: 1;
+  }
+  
+  .event-date,
+  .event-time {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 5px;
+  }
+  
+  .event-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .event-description {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+  
+  .event-button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .event-button:hover {
+    background-color: #e03d3e;
+  }
+  
+  /* Секция "Хотите еще?" */
+  .more-events {
+    margin-top: 30px;
+  }
+  
+  .view-all-button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .view-all-button:hover {
+    background-color: #e03d3e;
+  }
+  

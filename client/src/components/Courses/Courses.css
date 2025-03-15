@@ -1,0 +1,73 @@
+/* Общий стиль секции */
+.courses-section {
+    background-color: #f8f8f8;
+    padding: 40px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .view-all-button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .view-all-button:hover {
+    background-color: #e03d3e;
+  }
+  
+  /* Список карточек курсов */
+  .courses-list {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  /* Карточка курса */
+  .course-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+    max-width: 300px;
+  }
+  
+  .course-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .course-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .course-teacher,
+  .course-price {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  

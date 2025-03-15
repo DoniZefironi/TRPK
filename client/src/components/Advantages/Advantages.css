@@ -1,0 +1,70 @@
+/* Общий контейнер секции */
+.advantages-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Левый контент */
+  .advantages-content {
+    max-width: 60%;
+  }
+  
+  .advantages-title {
+    font-size: 28px;
+    color: #ff4d4f;
+    margin-bottom: 10px;
+  }
+  
+  .advantages-subtitle {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  
+  .advantages-icons {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .advantage {
+    text-align: center;
+    max-width: 150px;
+  }
+  
+  .advantage img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .advantage p {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Блок о репетиторах */
+  .tutors-section {
+    margin-top: 20px;
+  }
+  
+  .tutors-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .tutors-description {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  /* Правая иллюстрация */
+  .advantages-illustration img {
+    max-width: 400px;
+    height: auto;
+    border-radius: 10px;
+  }
+  
