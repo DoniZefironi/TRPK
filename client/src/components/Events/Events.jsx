@@ -1,5 +1,5 @@
 import React from 'react';
-import './EventsSection.css'; // Подключение файла со стилями
+import './Events.css'; // Подключение файла со стилями
 
 const EventsSection = () => {
   const events = [

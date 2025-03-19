@@ -1,0 +1,83 @@
+/* Секция отзывов */
+.testimonials-section {
+    text-align: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+  }
+  
+  .testimonials-title {
+    font-size: 28px;
+    color: #ff4d4f;
+    margin-bottom: 10px;
+  }
+  
+  .testimonials-subtitle {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  /* Карточка отзыва */
+  .testimonial-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .arrow-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .arrow-button img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .testimonial-content {
+    text-align: left;
+    max-width: 400px;
+  }
+  
+  .testimonial-text {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .testimonial-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .user-info {
+    text-align: left;
+  }
+  
+  .user-name {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .user-position {
+    font-size: 14px;
+    color: #777;
+  }
+  

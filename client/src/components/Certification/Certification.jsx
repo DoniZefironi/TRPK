@@ -1,12 +1,12 @@
 import React from 'react';
-import './CertificationTeamSection.css';
-import certificateImage from 'path/to/certificate-image.png'; // Путь к изображению сертификата
-import delmarLogo from 'path/to/delmar-logo.png'; // Путь к логотипам
-import sentinalLogo from 'path/to/sentinal-logo.png';
-import nationalLogo from 'path/to/national-logo.png';
-import tutor1Image from 'path/to/tutor1.png'; // Путь к фотографиям репетиторов
-import tutor2Image from 'path/to/tutor2.png';
-import tutor3Image from 'path/to/tutor3.png';
+import './Certification.css';
+import certificateImage from '../../img/certificate.png'; // Путь к изображению сертификата
+import delmarLogo from '../../img/del.png'; // Путь к логотипам
+import sentinalLogo from '../../img/sentinal.png';
+import nationalLogo from '../../img/national.png';
+import tutor1Image from '../../img/liz.jpg'; // Путь к фотографиям репетиторов
+import tutor2Image from '../../img/mat.png';
+import tutor3Image from '../../img/iam.png';
 
 const CertificationTeamSection = () => {
   return (

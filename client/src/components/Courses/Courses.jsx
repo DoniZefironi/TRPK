@@ -1,8 +1,8 @@
 import React from 'react';
-import './CoursesSection.css';
-import animeImage from 'path/to/anime-character.png'; // Путь к изображению
-import raccoonImage from 'path/to/raccoon.png';
-import plushToyImage from 'path/to/plush-toy.png';
+import './Courses.css';
+import animeImage from '../../img/liz.jpg'; // Путь к изображению
+import raccoonImage from '../../img/mat.png';
+import plushToyImage from '../../img/iam.png';
 
 const CoursesSection = () => {
   const courses = [

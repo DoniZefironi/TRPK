@@ -54,15 +54,22 @@
   /* Главная секция */
   .main-section {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 50px;
   }
   
   .main-content {
-    max-width: 60%;
+    max-width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
   }
-  
+  .main-title{
+    text-align: start;
+    width: 80%;
+  }
   .play-showreel {
     display: flex;
     align-items: center;

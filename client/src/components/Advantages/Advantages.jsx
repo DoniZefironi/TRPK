@@ -1,10 +1,10 @@
 import React from 'react';
-import './AdvantagesSection.css';
-import tutorIcon from 'path/to/tutor-icon.png'; // Замените на путь к значкам
-import feedbackIcon from 'path/to/feedback-icon.png';
-import libraryIcon from 'path/to/library-icon.png';
-import communityIcon from 'path/to/community-icon.png';
-import illustration from 'path/to/illustration.png';
+import './Advantages.css';
+import tutorIcon from '../../img/Star.png'; 
+import feedbackIcon from '../../img/like.png';
+import libraryIcon from '../../img/Layouts.png';
+import communityIcon from '../../img/Chat.png';
+import illustration from '../../img/illustration1.png';
 
 const AdvantagesSection = () => {
   return (

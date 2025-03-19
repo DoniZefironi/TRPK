@@ -1,41 +1,22 @@
 import React from 'react';
-import './Landing.css'; 
+import './Landing.css';
+import illustration from '../../img/illustration.png'; 
 
-const LandingPage = () => {
+const Landing = () => {
   return (
-    <div className="landing-page">
-      <header className="navbar">
-        <nav className="menu">
-          <a href="#about-us">О нас</a>
-          <a href="#courses">Курсы</a>
-          <a href="#events">События</a>
-          <a href="#blog">Блог</a>
-          <a href="#contacts">Контакты</a>
-        </nav>
-        <div className="auth-buttons">
-          <button className="consultation-btn">Получить консультацию</button>
-          <a href="#login">Войти / Зарегистрироваться</a>
+    <main className="main-section">
+      <div className="main-content">
+        <h1 className="main-title">Онлайн-школа информатики и вычислительной техники</h1>
+        <div className="action-buttons">
+          <button className="about-btn">О нас</button>
+          <button className="choose-course-btn">Выбрать курс</button>
         </div>
-      </header>
-
-      <main className="main-section">
-        <div className="main-content">
-          <div className="play-showreel">
-            <button className="play-btn">▶</button>
-            <span>Воспроизвести шоурил</span>
-          </div>
-          <h1 className="main-heading">Онлайн-школа информатики и вычислительной техники</h1>
-          <div className="action-buttons">
-            <button className="about-btn">О нас</button>
-            <button className="courses-btn">Выбрать курс</button>
-          </div>
-        </div>
-        <div className="main-image">
-          <img src="path/to/illustration.png" alt="Иллюстрация людей с компьютером" />
-        </div>
-      </main>
-    </div>
+      </div>
+      <div className="main-image">
+        <img src={illustration} alt="Иллюстрация человека за компьютером" />
+      </div>
+    </main>
   );
 };
 
-export default LandingPage;
+export default Landing;

@@ -1,6 +1,6 @@
 import React from 'react';
 import './About.css'; 
-import illustration from 'path/to/illustration.png'; 
+import illustration from '../../img/woman.png'; 
 
 const AboutSection = () => {
   return (

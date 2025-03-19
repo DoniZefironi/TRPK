@@ -1,0 +1,105 @@
+/* Общий стиль футера */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 50px 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .footer-column {
+    margin-bottom: 30px;
+  }
+  
+  .footer-logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-description {
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  
+  .social-icons img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  /* Заголовки колонок */
+  .footer-heading {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  /* Ссылки */
+  .footer-links {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 10px;
+  }
+  
+  .footer-links a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+  }
+  
+  .footer-links a:hover {
+    color: #ff4d4f;
+  }
+  
+  /* Контакты */
+  .footer-contact {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  /* Подписка */
+  .footer-newsletter-description {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  
+  .footer-subscription {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .footer-input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    flex: 1;
+  }
+  
+  .footer-button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .footer-button:hover {
+    background-color: #e03d3e;
+  }
+  
+  /* Нижняя строка копирайта */
+  .footer-bottom {
+    margin-top: 20px;
+    font-size: 12px;
+    text-align: center;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+  }
+  
