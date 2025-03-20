@@ -1,18 +1,18 @@
 import React from 'react';
 import './Certification.css';
-import certificateImage from '../../img/certificate.png'; // Путь к изображению сертификата
-import delmarLogo from '../../img/del.png'; // Путь к логотипам
+import certificateImage from '../../img/certificate.png'; 
+import delmarLogo from '../../img/del.png'; 
 import sentinalLogo from '../../img/sentinal.png';
 import nationalLogo from '../../img/national.png';
-import tutor1Image from '../../img/liz.jpg'; // Путь к фотографиям репетиторов
+import tutor1Image from '../../img/liz.jpg'; 
 import tutor2Image from '../../img/mat.png';
 import tutor3Image from '../../img/iam.png';
 
 const CertificationTeamSection = () => {
   return (
     <section className="certification-team-section">
-      {/* Секция сертификатов */}
       <div className="certification-section">
+        <div className='cert'>
         <h2 className="certification-title">СЕРТИФИКАТ CREATEX</h2>
         <h3 className="certification-subtitle">Ваша экспертиза будет подтверждена</h3>
         <p className="certification-text">
@@ -23,12 +23,12 @@ const CertificationTeamSection = () => {
           <img src={sentinalLogo} alt="Sentinal Consulting" />
           <img src={nationalLogo} alt="National" />
         </div>
+        </div>
         <div className="certificate-image">
           <img src={certificateImage} alt="Сертификат" />
         </div>
       </div>
 
-      {/* Секция команды репетиторов */}
       <div className="team-section">
         <h2 className="team-title">ЛУЧШИЕ РЕПЕТИТОРЫ ВСЕ ЗДЕСЬ</h2>
         <h3 className="team-subtitle">Познакомьтесь с нашей командой</h3>

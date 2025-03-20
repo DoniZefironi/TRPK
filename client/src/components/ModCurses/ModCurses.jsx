@@ -1,9 +1,8 @@
 import React from 'react';
-import './Courses.css';
+import './ModCurses.css';
 import animeImage from '../../img/liz.jpg'; 
 import raccoonImage from '../../img/mat.png';
 import plushToyImage from '../../img/iam.png';
-import { Link } from 'react-router-dom';
 
 const CoursesSection = () => {
   const courses = [
@@ -32,12 +31,9 @@ const CoursesSection = () => {
 
   return (
     <section className="courses-section">
-      <h2 className="section-title">Готовы учиться?</h2>
+      <h2 className="section-title">Приятной учебы!</h2>
       <div className="section-header">
-        <h2 className="section-title2">Избранные курсы</h2>
-        <Link to="/course">
-    <button className="view-all-button-courses">Посмотреть все курсы</button>
-</Link>
+        <h2 className="section-title2">Наши онлайн-курсы</h2>
       </div>
       <div className="courses-list">
         {courses.map((course, index) => (

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Subscription.css';
-import leftIllustration from '../../img/left.png'; // Путь к левой иллюстрации
-import rightIllustration from '../../img/right.png'; // Путь к правой иллюстрации
+import leftIllustration from '../../img/left.png';
+import rightIllustration from '../../img/right.png'; 
 
 const SubscriptionSection = () => {
   return (

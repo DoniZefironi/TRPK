@@ -10,6 +10,7 @@ import linkedinIcon from '../../img/Linked-In.png';
 const Footer = () => {
   return (
     <footer className="footer">
+      <div className='footer-top'>
       <div className="footer-column">
         <img src={logo} alt="Createx Logo" className="footer-logo" />
         <p className="footer-description">
@@ -66,6 +67,7 @@ const Footer = () => {
           />
           <button className="footer-button">Подписаться</button>
         </div>
+      </div>
       </div>
 
       <div className="footer-bottom">

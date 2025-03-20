@@ -1,16 +1,16 @@
-/* Общая стилизация секции */
+
 .subscription-section {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to bottom, #ffecef, #ffffff);
-    padding: 50px 20px;
+    align-items: end;
+    background-image: linear-gradient(to right, #fc8f8b, #fca574);
+    padding: 0px 20px;
     text-align: center;
   }
   
   .illustration-container {
     flex: 1;
-    max-width: 150px;
+    max-width: 250px;
   }
   
   .illustration-container img {
@@ -18,29 +18,35 @@
     height: auto;
   }
   
-  /* Центрированное содержимое */
   .subscription-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     flex: 2;
-    padding: 20px;
+    padding: 100px 20px;
   }
   
   .subscription-title {
-    font-size: 28px;
+    font-size: 22px;
+    color: #333;
     font-weight: bold;
-    color: #ff4d4f;
     margin-bottom: 10px;
   }
   
   .subscription-subtitle {
-    font-size: 22px;
+    font-size: 45px;
+    font-weight: bold;
     margin-bottom: 20px;
     color: #333;
+    width: 60%;
   }
   
   .subscription-form {
     display: flex;
     justify-content: center;
     gap: 10px;
+    width: 40%;
   }
   
   .email-input {
