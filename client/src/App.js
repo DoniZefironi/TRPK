@@ -4,6 +4,7 @@ import Main from './pages/Main/Main.jsx';
 import './App.css';
 import CoursesSection from './pages/Curses/Curses.jsx';
 import Contacts from './pages/Contacts/Contacts.jsx';
+import Events from './pages/Events/Events.jsx'
 
 const App = () => {
     return (
@@ -14,6 +15,7 @@ const App = () => {
                     <Route path="/" element={<Main />} />
                     <Route path="/course" element={<CoursesSection/>} />
                     <Route path="/contacts" element={<Contacts/>} />
+                    <Route path="/events" element={<Events/>} />
                 </Routes>
             </main>
             {/* <Footer /> */}

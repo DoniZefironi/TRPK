@@ -1,5 +1,6 @@
 import React from 'react';
-import './Events.css'; // Подключение файла со стилями
+import './Events.css'; 
+import { Link } from 'react-router-dom';
 
 const EventsSection = () => {
   const events = [
@@ -46,7 +47,9 @@ const EventsSection = () => {
       </div>
       <div className="more-events">
         <p>Хотите еще?</p>
+        <Link to="/events">
         <button className="view-all-button">Просмотреть все события</button>
+        </Link>
       </div>
     </section>
   );

@@ -42,9 +42,11 @@ const GroupElectric = sequelize.define('GroupElectric', {
 const ClassesElectric = sequelize.define('ClassesElectric', {
   id_classes: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_group: { type: DataTypes.INTEGER },
-  topic_classes: { type: DataTypes.STRING },
+  title: { type: DataTypes.STRING },
   id_materials: { type: DataTypes.INTEGER },
-  name: {type: DataTypes.STRING}
+  description: {type: DataTypes.STRING},
+  time: {type: DataTypes.STRING},
+  date: {type: DataTypes.STRING}
 });
 
 const JournalElectric = sequelize.define('JournalElectric', {
