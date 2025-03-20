@@ -1,31 +1,37 @@
 /* Секция "О нас" */
 .about-section {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 50px;
     background-color: #f9f9f9;
+    gap: 100px;
   }
   
   .about-content {
     max-width: 50%;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
   }
   
   .about-title {
-    font-size: 28px;
-    color: #ff4d4f;
+    font-size: 16px;
     margin-bottom: 10px;
   }
   
   .about-subtitle {
-    font-size: 24px;
+    font-size: 44px;
     margin-bottom: 20px;
   }
   
   .about-list {
+    width: 80%;
     list-style: none;
     padding: 0;
     margin: 0 0 20px 0;
+    text-align: start;
   }
   
   .about-list li {
@@ -49,8 +55,11 @@
   }
   
   .about-image img {
-    max-width: 400px;
+    max-width: 700px;
     height: auto;
     border-radius: 10px;
   }
   
+  .check{
+    margin-right: 10px;
+  }

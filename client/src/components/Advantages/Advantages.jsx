@@ -30,15 +30,17 @@ const AdvantagesSection = () => {
             <p>Сообщество</p>
           </div>
         </div>
+        <div className='img-text'>
         <div className="tutors-section">
           <h3 className="tutors-title">Только практикующие репетиторы</h3>
           <p className="tutors-description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam id sem nec tortor semper tincidunt.
+          Urna nisi, arcu cras nunc. Aenean quam est lobortis mi non fames dictum suspendisse. Morbi mauris cras massa ut dolor quis sociis mollis augue. Nunc, sodales tortor sit diam mi amet massa. Fermentum diam diam sociis vestibulum. Nulla nisl accumsan, id dignissim massa ut amet. Amet enim, nisi tempus vehicula.
           </p>
         </div>
-      </div>
-      <div className="advantages-illustration">
+        <div className="advantages-illustration">
         <img src={illustration} alt="Онлайн-обучение с преподавателем" />
+      </div>
+        </div>
       </div>
     </section>
   );

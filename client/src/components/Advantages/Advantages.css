@@ -1,15 +1,16 @@
-/* Общий контейнер секции */
+
 .advantages-section {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 50px;
+    padding-top: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
     background-color: #f9f9f9;
   }
   
-  /* Левый контент */
   .advantages-content {
-    max-width: 60%;
+    max-width: 68%;
   }
   
   .advantages-title {
@@ -25,13 +26,22 @@
   
   .advantages-icons {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
     margin-bottom: 30px;
   }
   
   .advantage {
-    text-align: center;
-    max-width: 150px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+    width: 100%;
+  }
+  .advantage :hover{
+    border-color:#ff4d4f;
   }
   
   .advantage img {
@@ -43,28 +53,35 @@
   .advantage p {
     font-size: 16px;
     color: #333;
+    text-align: start;
   }
   
-  /* Блок о репетиторах */
   .tutors-section {
     margin-top: 20px;
+    text-align: start;
   }
   
   .tutors-title {
-    font-size: 22px;
+    font-size: 36px;
+    font-weight: bold;
     margin-bottom: 10px;
     color: #333;
   }
   
   .tutors-description {
-    font-size: 16px;
+    font-size: 20px;
     color: #666;
   }
   
-  /* Правая иллюстрация */
   .advantages-illustration img {
-    max-width: 400px;
+    max-width: 600px;
     height: auto;
     border-radius: 10px;
   }
   
+  .img-text{
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    align-items: center;
+  }
