@@ -5,6 +5,7 @@ import './App.css';
 import CoursesSection from './pages/Curses/Curses.jsx';
 import Contacts from './pages/Contacts/Contacts.jsx';
 import Events from './pages/Events/Events.jsx'
+import About from './pages/About/About.jsx';
 
 const App = () => {
     return (
@@ -16,6 +17,7 @@ const App = () => {
                     <Route path="/course" element={<CoursesSection/>} />
                     <Route path="/contacts" element={<Contacts/>} />
                     <Route path="/events" element={<Events/>} />
+                    <Route path="/about" element={<About/>} />
                 </Routes>
             </main>
             {/* <Footer /> */}

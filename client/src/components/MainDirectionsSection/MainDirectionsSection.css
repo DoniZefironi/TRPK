@@ -1,0 +1,75 @@
+/* Секция основных направлений */
+.main-directions-section {
+    padding: 50px;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .section-title {
+    font-size: 28px;
+    color: #ff4d4f;
+    margin-bottom: 10px;
+  }
+  
+  .section-subtitle {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  .directions-list {
+    display: flex;
+    justify-content: center;
+    gap: 70px;
+    flex-wrap: wrap;
+  }
+  
+  .direction-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    max-width: 300px;
+    flex: 1;
+  }
+  
+  .direction-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    border-radius: 10px;
+  }
+  
+  .direction-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .direction-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .direction-button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .direction-button:hover {
+    background-color: #e03d3e;
+  }
+  

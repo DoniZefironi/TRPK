@@ -13,7 +13,9 @@ const Header = () => {
       </div>
       </Link>
       <nav className="navigation">
+      <Link to="/about">
         <a href="#about-us">О нас</a>
+        </Link>
         <a href="#courses">Курсы</a>
         <a href="#events">События</a>
         <a href="#blog">Блог</a>
