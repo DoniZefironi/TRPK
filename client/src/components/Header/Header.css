@@ -30,6 +30,9 @@
     align-items: center;
     gap: 5px;
   }
+  .regi p{
+    margin: 0;
+  }
   .header-actions {
     display: flex;
     align-items: center;
