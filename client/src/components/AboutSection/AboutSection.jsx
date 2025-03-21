@@ -19,7 +19,7 @@ const AboutSection = () => {
           <button className="view-courses-btn">Просмотр курсов</button>
         </div>
       </div>
-      <div className="about-image">
+      <div className="about-image1">
         <img src={illustration} alt="Иллюстрация человека за компьютером" />
       </div>
     </section>

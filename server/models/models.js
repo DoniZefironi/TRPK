@@ -6,19 +6,35 @@ const User = sequelize.define('User', {
   username: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.STRING },
-  permissions: { type: DataTypes.STRING }
+  role: { type: DataTypes.STRING, defaultValue: 'USER' }, // Роль пользователя (например, admin, user)
+  permissions: { type: DataTypes.STRING, allowNull: false }, // Права доступа
+  avatar: { type: DataTypes.STRING, allowNull: true }, // Ссылка на аватар
+  phone: { type: DataTypes.STRING, allowNull: true }, // Номер телефона
+  birthdate: { type: DataTypes.DATEONLY, allowNull: true }, // Дата рождения
+  location: { type: DataTypes.STRING, allowNull: true }, // Местоположение (например, город и страна)
+  bio: { type: DataTypes.TEXT, allowNull: true }, // Биография или описание профиля
+  status: { type: DataTypes.STRING, defaultValue: 'active' }, // Статус учетной записи
+  website: { type: DataTypes.STRING, allowNull: true }, // Личная ссылка на вебсайт или портфолио
+  linkedin: { type: DataTypes.STRING, allowNull: true }, // Ссылка на LinkedIn
+  telegram: { type: DataTypes.STRING, allowNull: true }, // Telegram handle
+  last_login: { type: DataTypes.DATE, allowNull: true }, // Последнее время входа
+  joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }, // Дата регистрации
 });
 
 const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
   id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  topic_materials: { type: DataTypes.STRING }
+  topic_materials: { type: DataTypes.STRING },
+  title: { type: DataTypes.STRING},
+  description: { type: DataTypes.TEXT, allowNull: true },
+  file_url: { type: DataTypes.STRING, allowNull: true },
+  upload_date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
 const Forum = sequelize.define('Forum', {
   id_forum: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   rules: { type: DataTypes.STRING },
-  section: { type: DataTypes.STRING }
+  section: { type: DataTypes.STRING },
+  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
 ///////////////////// Electic
@@ -29,14 +45,17 @@ const ForumSectionElectric = sequelize.define('ForumSectionElectric', {
   subsections: { type: DataTypes.STRING },
   topic_subsections: { type: DataTypes.STRING },
   moderators: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER }
+  id_user: { type: DataTypes.INTEGER },
+  creation_date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
 const GroupElectric = sequelize.define('GroupElectric', {
   id_group: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_user: { type: DataTypes.INTEGER },
   name_group: { type: DataTypes.STRING },
-  list_user: { type: DataTypes.STRING }
+  list_user: { type: DataTypes.STRING },
+  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  description: { type: DataTypes.TEXT, allowNull: true },
 });
 
 const ClassesElectric = sequelize.define('ClassesElectric', {
@@ -79,7 +98,8 @@ const ScheduleElectric = sequelize.define('ScheduleElectric', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_classes: { type: DataTypes.INTEGER },
   id_group: { type: DataTypes.INTEGER },
-  date: { type: DataTypes.DATE }
+  date: { type: DataTypes.DATE },
+  time: { type: DataTypes.TIME, allowNull: true },
 });
 
 const ProjectElectric = sequelize.define('ProjectElectric', {
@@ -87,28 +107,9 @@ const ProjectElectric = sequelize.define('ProjectElectric', {
   id_user: { type: DataTypes.INTEGER },
   deadlines: { type: DataTypes.DATE },
   name: { type: DataTypes.STRING },
-  id_emulator: { type: DataTypes.INTEGER }
-});
-
-const EmulatorElectric = sequelize.define('EmulatorElectric', {
-  id_emulator: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  device_type: { type: DataTypes.STRING },
-  functionality: { type: DataTypes.STRING }
-});
-
-const EmulatorLogElectric = sequelize.define('EmulatorLogElectric', {
-  id_log: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_emulator: { type: DataTypes.INTEGER },
-  timestamp: { type: DataTypes.DATE },
-  action: { type: DataTypes.STRING },
-  status: { type: DataTypes.STRING }
-});
-
-const EmulatorConfigurationElectric = sequelize.define('EmulatorConfigurationElectric', {
-  id_config: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_emulator: { type: DataTypes.INTEGER },
-  config_name: { type: DataTypes.STRING },
-  settings: { type: DataTypes.STRING }
+  description: { type: DataTypes.TEXT, allowNull: true },
+  status: { type: DataTypes.STRING, defaultValue: 'in_progress' },
 });
 
 /////////////////////////

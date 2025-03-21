@@ -66,6 +66,7 @@
     text-align: start;
     flex: 1;
     max-width: 400px;
+    cursor: pointer;
   }
   
   .course-image {
