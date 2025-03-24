@@ -3,7 +3,7 @@ import './Header.css';
 import logo from '../../img/logo.png';
 import prof from '../../img/Profile.png';
 import { Link } from 'react-router-dom';
-import LoginModal from '../../components/LoginModal/LoginModal'; 
+import LoginModal from '../../components/LoginModal/LoginModal';
 import RegisterModal from '../../components/RegistrationModal/RegistrationModal';
 
 const Header = () => {
@@ -18,17 +18,11 @@ const Header = () => {
         </div>
       </Link>
       <nav className="navigation">
-        <Link to="/about">
-          <a href="#about-us">О нас</a>
-        </Link>
-        <Link to="/course">
-          <a href="#courses">Курсы</a>
-        </Link>
+        <Link to="/about">О нас</Link>
+        <Link to="/course">Курсы</Link>
         <a href="#events">События</a>
         <a href="#blog">Блог</a>
-        <Link to="/contacts">
-          <a href="#contacts">Контакты</a>
-        </Link>
+        <Link to="/contacts">Контакты</Link>
       </nav>
       <div className="header-actions">
         <button className="consultation-btn">Получить консультацию</button>
@@ -42,8 +36,12 @@ const Header = () => {
           </button>
         </div>
       </div>
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
-      <RegisterModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
+      {isLoginModalOpen && (
+        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      )}
+      {isRegisterModalOpen && (
+        <RegisterModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
+      )}
     </header>
   );
 };

@@ -79,8 +79,7 @@
   color: #666;
 }
 
-.login-btn,
-.register-btn {
+.login-btn {
   background: #ff4d4f;
   color: #fff;
   border: none;
@@ -90,8 +89,7 @@
   cursor: pointer;
 }
 
-.login-btn:hover,
-.register-btn:hover {
+.login-btn:hover {
   background: #e03d3e;
 }
 
