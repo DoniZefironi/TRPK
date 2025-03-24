@@ -1,5 +1,5 @@
 const { UserRatingIoT } = require('../../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class RatingIoTController {
     // Создать рейтинг пользователя

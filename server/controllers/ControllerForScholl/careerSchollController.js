@@ -1,5 +1,5 @@
 const { CareerGuidanceScholl } = require('../../models/models'); 
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class CareerSchollController {
     // Создать запись профориентации

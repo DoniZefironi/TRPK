@@ -1,5 +1,5 @@
 const { GroupIoT } = require('../../models/models'); // Убедитесь, что путь корректный
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class GroupIoTController {
     // Создать группу

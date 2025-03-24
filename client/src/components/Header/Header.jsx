@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Header.css';
 import logo from '../../img/logo.png';
 import prof from '../../img/Profile.png';
 import { Link } from 'react-router-dom';
-import LoginModal from '../../components/LoginModal/LoginModal';
-import RegisterModal from '../../components/RegistrationModal/RegistrationModal';
 
 const Header = () => {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   return (
     <header className="header">
@@ -28,20 +24,9 @@ const Header = () => {
         <button className="consultation-btn">Получить консультацию</button>
         <div className="regi">
           <img src={prof} alt="Профиль" />
-          <button onClick={() => setIsLoginModalOpen(true)} className="login-link">
-            Войти
-          </button>
-          <button onClick={() => setIsRegisterModalOpen(true)} className="register-link">
-            Зарегистрироваться
-          </button>
+          <Link to="/auth">Войти / Зарегистрироваться</Link>
         </div>
       </div>
-      {isLoginModalOpen && (
-        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
-      )}
-      {isRegisterModalOpen && (
-        <RegisterModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
-      )}
     </header>
   );
 };

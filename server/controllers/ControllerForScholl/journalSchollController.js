@@ -1,5 +1,5 @@
-const { JournalScholl } = require('../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
+const { JournalScholl } = require('../../models/models'); // Проверьте путь к модели
+const ApiError = require('../../error/ApiError');
 
 class JournalSchollController {
     // Создать запись журнала

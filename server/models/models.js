@@ -107,7 +107,6 @@ const ProjectElectric = sequelize.define('ProjectElectric', {
   id_user: { type: DataTypes.INTEGER },
   deadlines: { type: DataTypes.DATE },
   name: { type: DataTypes.STRING },
-  id_emulator: { type: DataTypes.INTEGER },
   description: { type: DataTypes.TEXT, allowNull: true },
   status: { type: DataTypes.STRING, defaultValue: 'in_progress' },
 });
@@ -257,15 +256,6 @@ ClassesElectric.belongsTo(GroupElectric, { foreignKey: 'id_group' });
 ClassesElectric.hasMany(ScheduleElectric, { foreignKey: 'id_classes' });
 ScheduleElectric.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
 
-ProjectElectric.belongsTo(EmulatorElectric, { foreignKey: 'id_emulator' });
-EmulatorElectric.hasMany(ProjectElectric, { foreignKey: 'id_emulator' });
-
-EmulatorElectric.hasMany(EmulatorLogElectric, { foreignKey: 'id_emulator' });
-EmulatorLogElectric.belongsTo(EmulatorElectric, { foreignKey: 'id_emulator' });
-
-EmulatorElectric.hasMany(EmulatorConfigurationElectric, { foreignKey: 'id_emulator' });
-EmulatorConfigurationElectric.belongsTo(EmulatorElectric, { foreignKey: 'id_emulator' });
-
 MaterialsLibrary.hasMany(ClassesElectric, { foreignKey: 'id_material' });
 ClassesElectric.belongsTo(MaterialsLibrary, { foreignKey: 'id_material' });
 
@@ -349,9 +339,6 @@ module.exports = {
   HackathonResultsElectric,
   ScheduleElectric,
   ProjectElectric,
-  EmulatorElectric,
-  EmulatorLogElectric,
-  EmulatorConfigurationElectric,
   //////////// IoT
   InternshipApplicationIoT,
   InternshipProgramIoT,

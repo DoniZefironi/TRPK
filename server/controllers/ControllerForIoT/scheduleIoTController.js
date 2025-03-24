@@ -1,6 +1,5 @@
 const { ScheduleIoT } = require('../../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
-
+const ApiError = require('../../error/ApiError');
 class ScheduleIoTController {
     // Создать расписание
     async createSchedule(req, res, next) {

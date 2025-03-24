@@ -1,5 +1,5 @@
 const { ForumSectionIoT } = require('../../models/models'); // Убедитесь, что путь к модели указан верно
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class ForumSectionIoTController {
     // Создать секцию форума

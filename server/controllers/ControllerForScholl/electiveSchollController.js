@@ -1,5 +1,5 @@
 const { ElectiveScholl } = require('../../models/models'); // Проверьте правильность пути
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class ElectiveSchollController {
     // Создать электив

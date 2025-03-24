@@ -1,5 +1,5 @@
-const { User } = require('../../models/models'); // Подключение модели User
-const ApiError = require('../../error/ApiError'); // Подключение класса ApiError
+const { User } = require('../models/models'); // Подключение модели User
+const ApiError = require('../error/ApiError'); // Подключение класса ApiError
 
 // Контроллер для управления пользователями
 const userController = {

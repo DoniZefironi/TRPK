@@ -1,5 +1,5 @@
 const { IoTJournal } = require('../../models/models'); // Проверьте путь к модели
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class JournalIoTController {
     // Создать запись журнала

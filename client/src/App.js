@@ -6,6 +6,7 @@ import CoursesSection from './pages/Curses/Curses.jsx';
 import Contacts from './pages/Contacts/Contacts.jsx';
 import Events from './pages/Events/Events.jsx'
 import About from './pages/About/About.jsx';
+import AuthPage from './pages/Auth/Auth.jsx';
 
 const App = () => {
     return (
@@ -18,6 +19,7 @@ const App = () => {
                     <Route path="/contacts" element={<Contacts/>} />
                     <Route path="/events" element={<Events/>} />
                     <Route path="/about" element={<About/>} />
+                    <Route path="/auth" element={<AuthPage />} />
                 </Routes>
             </main>
             {/* <Footer /> */}

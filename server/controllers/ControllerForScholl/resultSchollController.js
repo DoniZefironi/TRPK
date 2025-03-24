@@ -1,5 +1,5 @@
 const { OlympiadResultsScholl } = require('../../models/models'); // Проверьте правильность пути
-const ApiError = require('../error/ApiError');
+const ApiError = require('../../error/ApiError');
 
 class ResultSchollController {
     // Создать результат олимпиады
