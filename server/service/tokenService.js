@@ -1,67 +1,56 @@
-const jwt = require("jsonwebtoken");
-const {Refresh_Token} = require("../models/models");
+const jwt = require('jsonwebtoken');
+const { RefreshToken } = require('../models/models');
+
 class TokenService {
-
-generateToken(payload) {
+  generateToken(payload) {
     const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '30m' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '10d' });
-    return {
-        accessToken,
-        refreshToken
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+    return { accessToken, refreshToken };
+  }
+
+  validateAccessToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  validateRefreshToken(token) {
+    try {
+      return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async saveToken(userId, refreshToken) {
+    try {
+        console.log('Сохранение токена для пользователя:', userId, 'Токен:', refreshToken);
+
+        const tokenData = await RefreshToken.findOne({ where: { id_user: userId } });
+        if (tokenData) {
+            tokenData.refresh_token = refreshToken;
+            await tokenData.save();
+            console.log('Токен обновлен успешно');
+        } else {
+            await RefreshToken.create({ id_user: userId, refresh_token: refreshToken });
+            console.log('Токен создан успешно');
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения токена:', error);
+        throw new Error('Ошибка сохранения токена');
     }
 }
-   validateAccessToken(accessToken){
-    try{
-        const userData = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
-        return userData;
-    }
-    catch(err){
-        return null;
-    }
-   }
-    validateRefreshToken(refreshToken){
-        try{
-            const userData = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-            return userData;
-        }
-        catch(err){
-            return null;
-        }
-    }
-    async saveToken(user_id, refreshToken) {
-        try {
-            console.log("Saving token for user_id:", user_id);
-            console.log("Refresh Token:", refreshToken);
 
-            const tokenData = await Refresh_Token.findOne({ where: { id_user: user_id } });
-            console.log("Refresh Token tokenData:", tokenData);
-            if (tokenData) {
-                console.log("Updating existing token");
-                tokenData.refresh_token = refreshToken;
-                await tokenData.save();
-            } else {
-                console.log("Creating new token");
-                await Refresh_Token.create({ id_user: user_id, refresh_token: refreshToken });
-            }
-        } catch (error) {
-            console.error("Error saving token:", error);
-        }
-    }
-    async removeToken(refreshToken) {
-        const tokenData = await Refresh_Token.destroy({
-            where: {
-                refresh_token: refreshToken
-            }
-        });
-        return tokenData;
-    }
-    async findToken(refreshToken){
-        const tokenData = await Refresh_Token.findOne({where: {refresh_token: refreshToken}})
-        console.log('Заход с поиском')
-        console.log(refreshToken)
-        console.log(tokenData)
-        return tokenData;
-    }
 
+  async removeToken(refreshToken) {
+    return await RefreshToken.destroy({ where: { refresh_token: refreshToken } });
+  }
+
+  async findToken(refreshToken) {
+    return await RefreshToken.findOne({ where: { refresh_token: refreshToken } });
+  }
 }
-module.exports =  new TokenService();
+
+module.exports = new TokenService();

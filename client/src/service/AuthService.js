@@ -1,78 +1,22 @@
-import $api from "../http/index";
-import { API_ENDPOINTS } from "../http/apiEndpoints";
+import axios from 'axios';
 
-export default class AuthService {
-    static async login(email, password) {
-        try {
-            const response = await $api.post(API_ENDPOINTS.USER.LOGIN, { email, password });
-            console.log('Login response:', response.data);
-            const authResponse = {
-                accessToken: response.data.accessToken,
-                refreshToken: response.data.refreshToken,
-                user: {
-                    id: response.data.user.id,
-                    email: response.data.user.email,
-                    firstname: response.data.user.firstname,
-                    lastname: response.data.user.lastname,
-                    delivery_address: response.data.user.delivery_address,
-                    phone_number: response.data.user.phone_number,
-                    role: response.data.user.role 
-                },
-            };
-            return authResponse;
-        } catch (error) {
-            if (error.response) {
-                console.error("Server Error:", error.response.data);
-                throw new Error(error.response.data.message || "Неизвестная ошибка при авторизации");
-            } else if (error.request) {
-                console.error("Request Error:", error.request);
-                throw new Error("Не удалось установить соединение с сервером");
-            } else {
-                console.error("Error:", error.message);
-                throw new Error("Ошибка при настройке запроса");
-            }
-        }
-    }
+const API_URL = 'http://localhost:2280/api/user';
 
-    static async registration(email, password, firstname, lastname, delivery_address, phone_number) {
-        try {
-            const response = await $api.post(API_ENDPOINTS.USER.REGISTRATION, { email, password, firstname, lastname, delivery_address, phone_number });
+export const register = async (userData) => {
+  const response = await axios.post(`${API_URL}/register`, userData);
+  return response.data;
+};
 
-            const authResponse = {
-                accessToken: response.data.accessToken,
-                refreshToken: response.data.refreshToken,
-                user: {
-                    id: response.data.user.id,
-                    email: response.data.user.email,
-                    firstname: response.data.user.firstname,
-                    lastname: response.data.user.lastname,
-                    delivery_address: response.data.user.delivery_address,
-                    phone_number: response.data.user.phone_number,
-                    role: response.data.user.role 
-                },
-            };
-            return authResponse;
-        } catch (error) {
-            if (error.response) {
-                console.error("Server Error:", error.response.data);
-                throw new Error(error.response.data.message || "Неизвестная ошибка при регистрации");
-            } else if (error.request) {
-                console.error("Request Error:", error.request);
-                throw new Error("Не удалось установить соединение с сервером");
-            } else {
-                console.error("Error:", error.message);
-                throw new Error("Ошибка при настройке запроса");
-            }
-        }
-    }
+export const login = async (userData) => {
+  const response = await axios.post(`${API_URL}/login`, userData);
+  return response.data;
+};
 
-    static async logout() {
-        try {
-            const response = await $api.post(API_ENDPOINTS.USER.LOGOUT);
-            return response.data;
-        } catch (error) {
-            console.error("Logout failed:", error);
-            throw error;
-        }
-    }
-}
+export const refreshToken = async (token) => {
+  const response = await axios.post(`${API_URL}/refresh`, { refreshToken: token });
+  return response.data;
+};
+
+export const logout = async (token) => {
+  await axios.post(`${API_URL}/logout`, { refreshToken: token });
+};

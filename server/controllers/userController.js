@@ -1,98 +1,105 @@
-const { User } = require('../models/models'); // Подключение модели User
-const ApiError = require('../error/ApiError'); // Подключение класса ApiError
+const bcrypt = require('bcryptjs');
+const { User } = require('../models/models');
+const tokenService = require('../service/tokenService');
+const ApiError = require('../error/ApiError');
+const UserDto = require('../dtos/UserDto');
 
-// Контроллер для управления пользователями
-const userController = {
-  // Получить всех пользователей
-  async getAllUsers(req, res, next) {
+class UserController {
+
+  async register(req, res, next) {
     try {
-      const users = await User.findAll();
-      res.status(200).json(users);
-    } catch (error) {
-      next(ApiError.internal('Ошибка получения пользователей'));
-    }
-  },
+      console.log('Регистрация пользователя:', req.body);
+      const { username, email, password, permissions } = req.body;
+      const allowedCourses = ['electronics', 'informatics', 'IoT'];
 
-  // Получить пользователя по ID
-  async getUserById(req, res, next) {
-    try {
-      const { id } = req.params;
-      const user = await User.findByPk(id);
-      if (!user) {
-        return next(ApiError.badRequest('Пользователь не найден'));
-      }
-      res.status(200).json(user);
-    } catch (error) {
-      next(ApiError.internal('Ошибка получения данных пользователя'));
-    }
-  },
-
-  // Создать нового пользователя
-  async createUser(req, res, next) {
-    try {
-      const { username, email, password, role, permissions } = req.body;
-
-      // Проверяем обязательные поля
-      if (!username || !email || !password) {
-        return next(ApiError.badRequest('Необходимо указать имя пользователя, email и пароль'));
+      if (!allowedCourses.includes(permissions)) {
+        return next(ApiError.badRequest(`Курс '${permissions}' недопустим`));
       }
 
-      // Создаем нового пользователя
-      const newUser = await User.create({
-        username,
-        email,
-        password,
-        role,
-        permissions,
-      });
+      const candidate = await User.findOne({ where: { email } });
+      if (candidate) {
+        return next(ApiError.badRequest('Пользователь с таким email уже существует'));
+      }
 
-      res.status(201).json(newUser);
+      const hashPassword = await bcrypt.hash(password, 3);
+      const user = await User.create({ username, email, password: hashPassword, permissions });
+
+      const userDto = new UserDto(user);
+      const tokens = tokenService.generateToken({ ...userDto });
+      await tokenService.saveToken(userDto.id_user, tokens.refreshToken);
+
+      res.status(201).json({ ...tokens, user: userDto });
     } catch (error) {
-      next(ApiError.internal('Ошибка создания пользователя'));
+      console.error('Ошибка регистрации:', error);
+      next(ApiError.internal('Ошибка регистрации'));
     }
-  },
+  }
 
-  // Обновить пользователя по ID
-  async updateUser(req, res, next) {
+  async login(req, res, next) {
     try {
-      const { id } = req.params;
-      const { username, email, password, role, permissions } = req.body;
+      console.log('Авторизация пользователя:', req.body);
+      const { email, password } = req.body;
+      const user = await User.findOne({ where: { email } });
 
-      const user = await User.findByPk(id);
       if (!user) {
         return next(ApiError.badRequest('Пользователь не найден'));
       }
 
-      // Обновляем данные пользователя
-      user.username = username || user.username;
-      user.email = email || user.email;
-      user.password = password || user.password;
-      user.role = role || user.role;
-      user.permissions = permissions || user.permissions;
-
-      await user.save();
-      res.status(200).json(user);
-    } catch (error) {
-      next(ApiError.internal('Ошибка обновления данных пользователя'));
-    }
-  },
-
-  // Удалить пользователя по ID
-  async deleteUser(req, res, next) {
-    try {
-      const { id } = req.params;
-
-      const user = await User.findByPk(id);
-      if (!user) {
-        return next(ApiError.badRequest('Пользователь не найден'));
+      const isPassEqual = await bcrypt.compare(password, user.password);
+      if (!isPassEqual) {
+        return next(ApiError.badRequest('Неверный пароль'));
       }
 
-      await user.destroy();
-      res.status(200).json({ message: 'Пользователь успешно удален' });
-    } catch (error) {
-      next(ApiError.internal('Ошибка удаления пользователя'));
-    }
-  },
-};
+      const userDto = new UserDto(user);
+      const tokens = tokenService.generateToken({ ...userDto });
+      await tokenService.saveToken(userDto.id_user, tokens.refreshToken);
 
-module.exports = userController;
+      return res.status(200).json({ ...tokens, user: userDto });
+    } catch (error) {
+      console.error('Ошибка авторизации:', error);
+      next(ApiError.internal('Ошибка авторизации'));
+    }
+  }
+
+  async refresh(req, res, next) {
+    try {
+      console.log('Обновление токена:', req.body);
+      const { refreshToken } = req.body;
+
+      if (!refreshToken) {
+        return next(ApiError.unauthorized('Токен отсутствует'));
+      }
+
+      const userData = tokenService.validateRefreshToken(refreshToken);
+      const tokenFromDb = await tokenService.findToken(refreshToken);
+
+      if (!userData || !tokenFromDb) {
+        return next(ApiError.unauthorized('Токен недействителен'));
+      }
+
+      const user = await User.findByPk(userData.id);
+      const userDto = new UserDto(user);
+      const tokens = tokenService.generateToken({ ...userDto });
+      await tokenService.saveToken(userDto.id_user, tokens.refreshToken);
+
+      return res.status(200).json({ ...tokens, user: userDto });
+    } catch (error) {
+      console.error('Ошибка обновления токена:', error);
+      next(ApiError.internal('Ошибка обновления токена'));
+    }
+  }
+
+  async logout(req, res, next) {
+    try {
+      console.log('Выход пользователя:', req.body);
+      const { refreshToken } = req.body;
+      await tokenService.removeToken(refreshToken);
+      res.status(200).json({ message: 'Вы успешно вышли из системы' });
+    } catch (error) {
+      console.error('Ошибка выхода:', error);
+      next(ApiError.internal('Ошибка выхода из системы'));
+    }
+  }
+}
+
+module.exports = new UserController();

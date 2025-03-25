@@ -2,7 +2,7 @@ const { User } = require("../models/models");
 const tokenService = require("./tokenService");
 const ApiError = require("../error/ApiError");
 const bcrypt = require("bcryptjs");
-const UserDto = require("../dtos/userDto");
+const UserDto = require('../dtos/UserDto'); 
 
 class UserService {
     async register(email, password, username, role) {

@@ -1,25 +1,38 @@
 const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
+const allowedCourses = ['electronics', 'informatics', 'IoT'];
+
 const User = sequelize.define('User', {
   id_user: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   username: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false, unique: true },
   password: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.STRING, defaultValue: 'USER' }, // Роль пользователя (например, admin, user)
-  permissions: { type: DataTypes.STRING, allowNull: false }, // Права доступа
-  avatar: { type: DataTypes.STRING, allowNull: true }, // Ссылка на аватар
-  phone: { type: DataTypes.STRING, allowNull: true }, // Номер телефона
-  birthdate: { type: DataTypes.DATEONLY, allowNull: true }, // Дата рождения
-  location: { type: DataTypes.STRING, allowNull: true }, // Местоположение (например, город и страна)
-  bio: { type: DataTypes.TEXT, allowNull: true }, // Биография или описание профиля
-  status: { type: DataTypes.STRING, defaultValue: 'active' }, // Статус учетной записи
-  website: { type: DataTypes.STRING, allowNull: true }, // Личная ссылка на вебсайт или портфолио
-  linkedin: { type: DataTypes.STRING, allowNull: true }, // Ссылка на LinkedIn
-  telegram: { type: DataTypes.STRING, allowNull: true }, // Telegram handle
-  last_login: { type: DataTypes.DATE, allowNull: true }, // Последнее время входа
-  joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }, // Дата регистрации
+  role: { type: DataTypes.STRING, defaultValue: 'USER' },
+  permissions: {
+    type: DataTypes.ENUM, 
+    values: allowedCourses,
+    allowNull: false,
+    validate: {
+      isIn: {
+        args: [allowedCourses],
+        msg: `Permissions должны быть одним из: ${allowedCourses.join(', ')}`
+      }
+    }
+  },
+  avatar: { type: DataTypes.STRING, allowNull: true },
+  phone: { type: DataTypes.STRING, allowNull: true },
+  birthdate: { type: DataTypes.DATEONLY, allowNull: true },
+  location: { type: DataTypes.STRING, allowNull: true },
+  bio: { type: DataTypes.TEXT, allowNull: true },
+  status: { type: DataTypes.STRING, defaultValue: 'active' },
+  website: { type: DataTypes.STRING, allowNull: true },
+  linkedin: { type: DataTypes.STRING, allowNull: true },
+  telegram: { type: DataTypes.STRING, allowNull: true },
+  last_login: { type: DataTypes.DATE, allowNull: true },
+  joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
+
 
 const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
   id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -241,6 +254,12 @@ const ElectiveScholl = sequelize.define('ElectiveScholl', {
 
 ////////////////////////
 
+const RefreshToken = sequelize.define('RefreshToken', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_user: { type: DataTypes.INTEGER, allowNull: false }, // Ссылка на пользователя
+  refresh_token: { type: DataTypes.TEXT, allowNull: false }, // Refresh токен
+});
+
 //////////////////////// Electric
 
 User.hasMany(GroupElectric, { foreignKey: 'id_user' });
@@ -358,4 +377,5 @@ module.exports = {
   OlympiadScholl,
   OlympiadResultsScholl,
   ElectiveScholl,
+  RefreshToken
 };

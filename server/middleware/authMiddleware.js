@@ -1,32 +1,18 @@
+const jwt = require('jsonwebtoken');
 const ApiError = require('../error/ApiError');
-const tokenService = require('../service/tokenService');
 
-module.exports = function (req, res, next) {
-    try {
-        const authorization = req.headers.authorization;
+module.exports = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return next(ApiError.unauthorized('Токен не предоставлен'));
+  }
 
-        // Проверка наличия заголовка Authorization
-        if (!authorization) {
-            return next(ApiError.unauthorized("Пользователь не авторизован"));
-        }
-
-        // Извлечение токена из заголовка
-        const accessToken = authorization.split(' ')[1];
-        if (!accessToken) {
-            return next(ApiError.unauthorized("Пользователь не авторизован"));
-        }
-
-        // Валидация токена
-        const userData = tokenService.validateAccessToken(accessToken);
-        if (!userData) {
-            return next(ApiError.unauthorized("Пользователь не авторизован"));
-        }
-
-        // Добавление данных пользователя в объект запроса
-        req.user = userData;
-        next();
-    } catch (err) {
-        console.error("Ошибка аутентификации:", err);
-        return next(ApiError.unauthorized("Пользователь не авторизован"));
-    }
+  const token = authHeader.split(' ')[1];
+  try {
+    const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    req.user = userData; // Данные о пользователе из токена
+    next();
+  } catch (error) {
+    return next(ApiError.unauthorized('Неверный токен'));
+  }
 };

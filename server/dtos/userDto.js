@@ -1,15 +1,10 @@
 module.exports = class UserDto {
-    email;
-    id;
-    username;
-    role;
-    permissions
-
     constructor(model) {
-        this.email = model.email;
-        this.id = model.id;
-        this.username = model.username;
-        this.role = model.role;
-        this.permissions = model.permissions
-        }
-}
+      this.id_user = model.id_user;
+      this.username = model.username;
+      this.email = model.email;
+      this.role = model.role;
+      this.permissions = model.permissions; // Информация о курсе
+    }
+  };
+  
