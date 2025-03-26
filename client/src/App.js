@@ -10,6 +10,7 @@ import About from './pages/About/About.jsx';
 import AuthPage from './pages/Auth/Auth.jsx';
 import { clearState } from './store/slice/authSlice'; // Если нужна очистка при ошибках токена
 import Profile from './pages/Profile/Profile.jsx';
+import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx'
 
 const App = () => {
     const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const App = () => {
                     <Route path="/about" element={<About />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/edit-profile" element={<EditProfileComp />} />
                 </Routes>
             </main>
         </div>

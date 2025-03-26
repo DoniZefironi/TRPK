@@ -1,26 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const authMiddleware = require('../middleware/authMiddleware');
 const courseMiddleware = require('../middleware/courseMiddleware');
+const multer = require('multer');
 
-router.post('/register', userController.register); // Регистрация
-router.post('/login', userController.login); // Авторизация
-router.post('/refresh', userController.refresh); // Обновление токена
-router.post('/logout', userController.logout); // Выход из системы
-
-// Пример защищенных маршрутов на основе курса
-router.get('/electronics-content', courseMiddleware('electronics'), (req, res) => {
-  res.json({ message: 'Доступ разрешен к контенту для Электроники' });
+// Настройка загрузки файлов
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
+  }
 });
 
-router.get('/informatics-content', courseMiddleware('informatics'), (req, res) => {
-  res.json({ message: 'Доступ разрешен к контенту для Информатики' });
+const upload = multer({ storage: storage });
+
+// Публичные маршруты
+router.post('/register', userController.register);
+router.post('/login', userController.login);
+router.post('/refresh', userController.refresh);
+
+// Защищенные маршруты
+router.post('/logout', authMiddleware, userController.logout);
+router.get('/:id', authMiddleware, userController.getUserInfo);
+router.put('/:id', authMiddleware, upload.single('avatar'), userController.updateUser);
+
+// Маршруты для курсов
+router.get('/electronics-content', authMiddleware, courseMiddleware('electronics'), (req, res) => {
+  res.json({ message: 'Доступ к материалам по электронике' });
 });
 
-router.get('/iot-content', courseMiddleware('IoT'), (req, res) => {
-  res.json({ message: 'Доступ разрешен к контенту для IoT' });
+router.get('/informatics-content', authMiddleware, courseMiddleware('informatics'), (req, res) => {
+  res.json({ message: 'Доступ к материалам по информатике' });
 });
-router.get('/:id', userController.getUserInfo); // Маршрут для получения данных пользователя
 
+router.get('/iot-content', authMiddleware, courseMiddleware('IoT'), (req, res) => {
+  res.json({ message: 'Доступ к материалам по IoT' });
+});
 
-module.exports = router; // Экспорт маршрутов
+module.exports = router;

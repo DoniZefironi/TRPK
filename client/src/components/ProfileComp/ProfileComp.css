@@ -1,78 +1,86 @@
 .profile-container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-    color: #333;
-  }
-  
-  .profile-personal-info {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .profile-name {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .profile-username,
-  .profile-location {
-    font-size: 16px;
-    color: #777;
-  }
-  
-  .profile-section-title {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-  
-  .profile-contacts-list,
-  .profile-languages-list,
-  .profile-course-details {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .profile-contact-item,
-  .profile-language-item,
-  .profile-course-detail {
-    margin-bottom: 5px;
-  }
-  
-  .profile-about,
-  .profile-languages,
-  .profile-discord,
-  .profile-student-stats,
-  .profile-education {
-    margin-bottom: 20px;
-  }
-  
-  .profile-discord-button,
-  .profile-course-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .profile-discord-button:hover,
-  .profile-course-button:hover {
-    background-color: #0056b3;
-  }
-  
-  a {
-    text-decoration: none;
-    color: #007bff;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.profile-personal-info {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.profile-location,
+.profile-bio {
+  font-size: 16px;
+  color: #555;
+}
+
+.profile-avatar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.avatar-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+}
+
+.profile-section-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.profile-contacts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.profile-contact-item {
+  margin-bottom: 5px;
+}
+
+.profile-birthdate,
+.profile-status,
+.profile-permissions,
+.profile-joined-at {
+  margin-bottom: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+.profile-edit-button {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.edit-profile-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.edit-profile-btn:hover {
+  background-color: #0056b3;
+}
