@@ -1,10 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import './Header.css';
 import logo from '../../img/logo.png';
 import prof from '../../img/Profile.png';
-import { Link } from 'react-router-dom';
+import { logoutUser } from '../../store/slice/authSlice'; 
 
 const Header = () => {
+  const { user } = useSelector((state) => state.auth); 
+  const dispatch = useDispatch();
+  const [menuOpen, setMenuOpen] = useState(false); 
+
+  const handleLogout = async () => {
+    try {
+      const refreshToken = localStorage.getItem('token'); 
+      if (!refreshToken) {
+        throw new Error('Refresh token отсутствует');
+      }
+  
+      await dispatch(logoutUser(refreshToken)); 
+      localStorage.removeItem('user');
+      localStorage.removeItem('token'); 
+      setMenuOpen(false);
+    } catch (error) {
+      console.error('Ошибка выхода:', error);
+    }
+  };
+  
+
+  const toggleMenu = () => setMenuOpen((prev) => !prev); 
 
   return (
     <header className="header">
@@ -22,10 +46,27 @@ const Header = () => {
       </nav>
       <div className="header-actions">
         <button className="consultation-btn">Получить консультацию</button>
-        <div className="regi">
-          <img src={prof} alt="Профиль" />
-          <Link to="/auth">Войти / Зарегистрироваться</Link>
-        </div>
+        {user ? (
+          <div className="profile-menu">
+            <img
+              src={prof}
+              alt="Профиль"
+              className="profile-icon"
+              onClick={toggleMenu} 
+            />
+            {menuOpen && (
+              <div className={`dropdown-menu ${menuOpen ? 'active' : ''}`}>
+              <Link to="/profile">Профиль</Link>
+              <button onClick={handleLogout}>Выйти</button>
+            </div>
+            )}
+          </div>
+        ) : (
+          <div className="regi">
+            <img src={prof} alt="Профиль" />
+            <Link to="/auth">Войти / Зарегистрироваться</Link>
+          </div>
+        )}
       </div>
     </header>
   );

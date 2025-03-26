@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, loginUser } from '../../store/slice/authSlice';
+import { useNavigate } from 'react-router-dom';
 import './AuthComp.css';
 
 const AuthComp = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate(); // Хук для навигации
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -12,18 +14,28 @@ const AuthComp = () => {
     permissions: 'electronics',
   });
   const dispatch = useDispatch();
-  const { isLoading, error } = useSelector((state) => state.auth);
+  const { isLoading, error, token } = useSelector((state) => state.auth);
 
+  // Переключение форм входа и регистрации
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isLogin) {
-      dispatch(loginUser({ email: formData.email, password: formData.password }));
-    } else {
-      dispatch(registerUser(formData));
+
+    try {
+      if (isLogin) {
+        // Вход
+        await dispatch(loginUser({ email: formData.email, password: formData.password })).unwrap();
+      } else {
+        // Регистрация
+        await dispatch(registerUser(formData)).unwrap();
+      }
+      // Редирект на главную страницу после успешной авторизации/регистрации
+      navigate('/');
+    } catch (err) {
+      console.error('Ошибка авторизации/регистрации:', err);
     }
   };
 

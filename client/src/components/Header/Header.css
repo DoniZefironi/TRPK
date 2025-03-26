@@ -61,3 +61,50 @@
     font-size: 16px;
   }
   
+  .profile-menu {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .profile-icon {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 1000;
+    display: none; /* Скроем по умолчанию */
+  }
+  
+  .dropdown-menu.active {
+    display: block; /* Покажем меню, когда оно активно */
+  }
+  
+  .dropdown-menu a,
+  .dropdown-menu button {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .dropdown-menu a:hover,
+  .dropdown-menu button:hover {
+    background-color: #f0f0f0;
+    border-radius: 5px;
+  }
+  

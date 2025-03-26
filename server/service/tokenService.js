@@ -44,9 +44,23 @@ class TokenService {
 }
 
 
-  async removeToken(refreshToken) {
-    return await RefreshToken.destroy({ where: { refresh_token: refreshToken } });
+async removeToken(refreshToken) {
+  try {
+    if (!refreshToken) {
+      throw new Error('Токен не предоставлен'); // Убедимся, что передается токен
+    }
+
+    const result = await RefreshToken.destroy({
+      where: { refresh_token: refreshToken },
+    });
+
+    return result;
+  } catch (error) {
+    console.error('Ошибка при удалении токена:', error);
+    throw error;
   }
+}
+
 
   async findToken(refreshToken) {
     return await RefreshToken.findOne({ where: { refresh_token: refreshToken } });

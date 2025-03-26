@@ -36,8 +36,8 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async (token, { re
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
-    token: localStorage.getItem('token') || null,
+    user: JSON.parse(localStorage.getItem('user')) || null, // Восстановление пользователя
+    token: localStorage.getItem('token') || null, // Восстановление токена
     isLoading: false,
     error: null,
   },
@@ -46,6 +46,8 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
+      localStorage.removeItem('user'); // Удаляем данные пользователя из localStorage
+      localStorage.removeItem('token'); // Удаляем токен
     },
   },
   extraReducers: (builder) => {
@@ -53,17 +55,20 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('user', JSON.stringify(action.payload.user)); // Сохраняем пользователя
+        localStorage.setItem('token', action.payload.token); // Сохраняем токен
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('user', JSON.stringify(action.payload.user)); // Сохраняем пользователя
+        localStorage.setItem('token', action.payload.token); // Сохраняем токен
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
-        localStorage.removeItem('token');
+        localStorage.removeItem('user'); // Удаляем данные пользователя
+        localStorage.removeItem('token'); // Удаляем токен
       });
   },
 });

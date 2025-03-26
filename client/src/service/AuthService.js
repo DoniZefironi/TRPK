@@ -19,4 +19,5 @@ export const refreshToken = async (token) => {
 
 export const logout = async (token) => {
   await axios.post(`${API_URL}/logout`, { refreshToken: token });
+  localStorage.removeItem('token');
 };

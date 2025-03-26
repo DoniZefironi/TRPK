@@ -20,5 +20,7 @@ router.get('/informatics-content', courseMiddleware('informatics'), (req, res) =
 router.get('/iot-content', courseMiddleware('IoT'), (req, res) => {
   res.json({ message: 'Доступ разрешен к контенту для IoT' });
 });
+router.get('/:id', userController.getUserInfo); // Маршрут для получения данных пользователя
+
 
 module.exports = router; // Экспорт маршрутов
