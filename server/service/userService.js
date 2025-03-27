@@ -2,9 +2,7 @@ const { User } = require("../models/models");
 const tokenService = require("./tokenService");
 const ApiError = require("../error/ApiError");
 const bcrypt = require("bcryptjs");
-const UserDto = require('../dtos/UserDto'); 
-const path = require('path');
-const fs = require('fs');
+const UserDto = require('../dtos/userDto'); 
 
 class UserService {
     async register(email, password, username, role) {
@@ -63,69 +61,6 @@ class UserService {
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return { ...tokens, user: userDto };
     }
-
-    async updateUser(userId, userData, avatarFile) {
-        const user = await User.findByPk(userId);
-      
-        if (!user) {
-          throw ApiError.notFound('Пользователь не найден');
-        }
-      
-        console.log('Обновляем пользователя:', { userId, userData, avatarFile });
-      
-        // Если передан аватар, обрабатываем загрузку файла
-        if (avatarFile) {
-          const avatarName = `${userId}-${Date.now()}-${avatarFile.originalname}`;
-          const avatarPath = path.resolve(__dirname, '..', 'uploads', avatarName);
-          fs.writeFileSync(avatarPath, avatarFile.buffer);
-          userData.avatar = `/uploads/${avatarName}`;
-        }
-      
-        // Только переданные поля обновляются
-        const updatableFields = ['username', 'email', 'phone', 'birthdate', 'location', 'bio', 'status', 'website', 'linkedin', 'telegram', 'permissions', 'avatar'];
-        const updateData = {};
-      
-        // Перебираем только разрешённые для изменения поля
-        for (const field of updatableFields) {
-          if (userData[field] !== undefined) {
-            updateData[field] = userData[field];
-          }
-        }
-      
-        await user.update(updateData);
-      
-        console.log('Данные после обновления:', user);
-      
-        return user; // Возвращаем обновленные данные пользователя
-      }
-            
-      async findUserById(id) {
-        return await User.findByPk(id);
-    }
-    
-    // Поиск пользователя по email
-    async findUserByEmail(email) {
-        return await User.findOne({ where: { email } });
-    }
-    
-    // Хеширование пароля
-    async hashPassword(password) {
-        return await bcrypt.hash(password, 3);
-    }
-    
-    // Сравнение паролей
-    async comparePasswords(password, hash) {
-        return await bcrypt.compare(password, hash);
-    }
-    
-    async updateUserProfile(id, updateData) {
-        const user = await User.findByPk(id);
-        if (!user) throw new Error('User not found');
-        
-        await user.update(updateData);
-        return user;
-    }
-    
 }
 
 module.exports = new UserService();

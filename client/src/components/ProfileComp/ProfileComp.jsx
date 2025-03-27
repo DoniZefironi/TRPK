@@ -18,9 +18,16 @@ const ProfileComp = () => {
     navigate('/edit-profile'); // Переход на страницу редактирования профиля
   };
 
+  const navigateToMaterialsPanel = () => {
+    navigate('/materials-panel'); // Переход на страницу управления библиотекой материалов
+  };
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-
+  if (!user) {
+    return <p>Нет данных пользователя</p>;
+  }
+  
   return (
     <div className="profile-container">
       {user ? (
@@ -83,6 +90,13 @@ const ProfileComp = () => {
               Edit Profile
             </button>
           </div>
+
+          {/* Кнопка для перехода на панель управления материалами */}
+          <div className="materials-panel-button">
+            <button onClick={navigateToMaterialsPanel} className="materials-panel-btn">
+              Manage Materials
+            </button>
+          </div>
         </>
       ) : (
         <p>No user data available</p>
@@ -92,3 +106,4 @@ const ProfileComp = () => {
 };
 
 export default ProfileComp;
+

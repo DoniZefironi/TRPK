@@ -8,33 +8,25 @@ export const fetchUserInfo = async (userId) => {
   return response.data;
 };
 
+// Обновление данных пользователя
 export const updateUserInfo = async (userId, userData, avatar) => {
-  try {
-    const formData = new FormData();
-    
-    // Добавляем только измененные поля
-    Object.entries(userData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        formData.append(key, value);
-      }
-    });
+  const formData = new FormData();
 
-    if (avatar) {
-      formData.append('avatar', avatar);
+  // Добавляем поля из userData
+  Object.entries(userData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      formData.append(key, value); // Только заполненные поля
     }
+  });
 
-    const token = localStorage.getItem('token');
-    const response = await axios.put(`/api/user/${userId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`
-      },
-      baseURL: process.env.REACT_APP_API_URL || 'http://localhost:2280'
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error updating user:', error);
-    throw error;
+  // Добавляем аватар, если он передан
+  if (avatar) {
+    formData.append('avatar', avatar);
   }
+
+  const response = await axios.put(`${API_URL}/${userId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  return response.data;
 };

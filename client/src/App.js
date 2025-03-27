@@ -11,6 +11,8 @@ import AuthPage from './pages/Auth/Auth.jsx';
 import { clearState } from './store/slice/authSlice'; // Если нужна очистка при ошибках токена
 import Profile from './pages/Profile/Profile.jsx';
 import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx'
+import MaterialsPanel from './components/MaterialsPanel/MaterialsPanel.jsx';
+import Section from './pages/Section/Section.jsx';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -36,6 +38,8 @@ const App = () => {
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/edit-profile" element={<EditProfileComp />} />
+                    <Route path="/materials-panel" element={<MaterialsPanel />} />
+                    <Route path="/section" element={<Section />} />
                 </Routes>
             </main>
         </div>

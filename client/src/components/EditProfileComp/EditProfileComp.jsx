@@ -34,25 +34,28 @@ const EditProfileComp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
     try {
       const userId = user?.id_user;
       if (!userId) {
         throw new Error('User ID отсутствует');
       }
   
-      // Создаем копию formData без пустых полей
+      // Убираем пустые поля из formData
       const cleanedData = Object.fromEntries(
         Object.entries(formData).filter(([_, v]) => v !== '')
       );
   
-      await dispatch(updateUser({
-        userId,
-        userData: cleanedData,
-        avatar
-      })).unwrap();
-      
-      navigate('/profile');
+      // Отправляем данные через Redux
+      await dispatch(
+        updateUser({
+          userId,
+          userData: cleanedData,
+          avatar,
+        })
+      ).unwrap();
+  
+      navigate('/profile'); // Перенаправляем на профиль после успешного обновления
     } catch (error) {
       console.error('Ошибка редактирования:', error);
       alert(error.message || 'Ошибка обновления профиля');

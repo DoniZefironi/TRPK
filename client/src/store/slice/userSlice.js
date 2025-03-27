@@ -13,14 +13,12 @@ export const updateUser = createAsyncThunk(
   'user/updateUser',
   async ({ userId, userData, avatar }, { rejectWithValue }) => {
     try {
-      const updatedUser = await updateUserInfo(userId, userData, avatar);
-      return updatedUser; // Убедитесь, что этот процесс завершён
+      return await updateUserInfo(userId, userData, avatar);
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Unexpected error');
     }
   }
 );
-
 
 const userSlice = createSlice({
   name: 'user',

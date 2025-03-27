@@ -61,6 +61,25 @@ class MaterialController {
             next(ApiError.internal('Ошибка удаления материала'));
         }
     }
+
+    async updateMaterial(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { topic_materials, title, description } = req.body;
+    
+            const material = await MaterialsLibrary.findByPk(id);
+            if (!material) {
+                return next(ApiError.notFound('Материал с указанным ID не найден'));
+            }
+    
+            await material.update({ topic_materials, title, description });
+            res.status(200).json({ message: 'Материал обновлен успешно', material });
+        } catch (error) {
+            console.error(error);
+            next(ApiError.internal('Ошибка обновления материала'));
+        }
+    }
+    
 }
 
 module.exports = new MaterialController();

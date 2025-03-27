@@ -36,6 +36,17 @@ const programIoTRouter = require('./RoutesForIoT/programIoTRouter')
 const projectIoTRouter = require('./RoutesForIoT/projectIoTRouter')
 const scheduleIoTRouter = require('./RoutesForIoT/scheduleIoTRouter')
 
+
+// Импорт роутеров
+const topicRouter = require('./topicRouter'); // Роутер для тем
+const postRouter = require('./postRouter');   // Роутер для сообщений
+const allforumRouter = require('./allForumRouter');   // Роутер для сообщений
+const sectionRouter = require('./sectionRouter');
+// Основные маршруты
+router.use('/forum/topics', topicRouter); // Темы форума
+router.use('/forum/posts', postRouter);   // Сообщения форума
+router.use('/allforum', allforumRouter);
+router.use('/sections', sectionRouter);
 // Основные маршруты
 router.use('/user', userRouter)
 router.use('/material', materialRouter)
