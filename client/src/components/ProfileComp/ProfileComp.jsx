@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUserInfo } from '../../store/slice/userSlice';
 import { useNavigate } from 'react-router-dom';
+import noavatar from '../../img/noavatar.png'
 import './ProfileComp.css';
 
 const ProfileComp = () => {
@@ -32,21 +33,23 @@ const ProfileComp = () => {
     <div className="profile-container">
       {user ? (
         <>
-          {/* Личная информация */}
-          <div className="profile-personal-info">
-            <h2 className="profile-name">{user.username}</h2>
-            <p className="profile-location">Location: {user.location || 'Not specified'}</p>
-            <p className="profile-bio">{user.bio || 'No bio provided'}</p>
-          </div>
-
-          {/* Аватар */}
-          <div className="profile-avatar">
+        <div className='boxshadow'>
+        <div>
+                            {/* Аватар */}
+                            <div className="profile-avatar">
             {user.avatar ? (
               <img src={user.avatar} alt="User Avatar" className="avatar-image" />
             ) : (
-              <p>No avatar available</p>
+              <img src={noavatar} alt="Нет аватара" />
             )}
           </div>
+          {/* Личная информация */}
+          <div className="profile-personal-info">
+            <h2 className="profile-name">{user.username}</h2>
+            <p>Status: {user.status || 'Not specified'}</p>
+            <p>Birthdate : {user.birthdate || 'No birthdate provided'}</p>
+          </div>
+        </div>
 
           {/* Контакты */}
           <div className="profile-contacts">
@@ -58,22 +61,22 @@ const ProfileComp = () => {
               <li className="profile-contact-item">Website: <a href={user.website}>{user.website || 'No website provided'}</a></li>
               <li className="profile-contact-item">LinkedIn: {user.linkedin || 'Not specified'}</li>
             </ul>
-          </div>
-
-          {/* Дата рождения */}
-          <div className="profile-birthdate">
-            <h3 className="profile-section-title">Birthdate</h3>
-            <p>{user.birthdate || 'No birthdate provided'}</p>
-          </div>
-
-          {/* Статус */}
+                      {/* Локация */}
           <div className="profile-status">
-            <h3 className="profile-section-title">Status</h3>
-            <p>{user.status || 'Not specified'}</p>
+            <h3 className="profile-section-title">Location</h3>
+            <p>{user.location || 'Not specified'}</p>
           </div>
+          </div>
+        </div>
+        <div className='about boxshadow'>
+          <h3>About</h3>
+        <p className="profile-bio">{user.bio || 'No bio provided'}</p>
+        </div>
 
-          {/* Права доступа */}
-          <div className="profile-permissions">
+
+<div className='boxshadow'>
+            {/* Права доступа */}
+            <div className="profile-permissions">
             <h3 className="profile-section-title">Permissions</h3>
             <p>{user.permissions || 'Not specified'}</p>
           </div>
@@ -83,8 +86,9 @@ const ProfileComp = () => {
             <h3 className="profile-section-title">Joined At</h3>
             <p>{new Date(user.joined_at).toLocaleDateString() || 'Not specified'}</p>
           </div>
-
-          {/* Кнопка для редактирования */}
+</div>
+          <div>
+                      {/* Кнопка для редактирования */}
           <div className="profile-edit-button">
             <button onClick={handleEditClick} className="edit-profile-btn">
               Edit Profile
@@ -96,6 +100,7 @@ const ProfileComp = () => {
             <button onClick={navigateToMaterialsPanel} className="materials-panel-btn">
               Manage Materials
             </button>
+          </div>
           </div>
         </>
       ) : (

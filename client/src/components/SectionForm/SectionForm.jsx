@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createSection } from '../../store/slice/sectionSlice';
+import './SectionForm.css'
 
 const SectionForm = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const SectionForm = () => {
   };
 
   return (
-    <div>
+    <div className='sectionforn'>
       <h2>Добавить новую секцию</h2>
       <form onSubmit={handleSubmit}>
         <select name="type" value={formData.type} onChange={handleChange} required>

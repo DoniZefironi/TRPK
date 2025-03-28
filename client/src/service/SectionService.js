@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2280/api/sections';
+const API_URL = 'http://localhost:2280/api/allforum/sections';
 
 // Функция для добавления секции
 export const addSection = async (sectionData) => {
