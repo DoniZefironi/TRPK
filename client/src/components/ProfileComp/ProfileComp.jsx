@@ -33,10 +33,10 @@ const ProfileComp = () => {
     <div className="profile-container">
       {user ? (
         <>
+        <div className='gapcheking'>
         <div className='boxshadow'>
-        <div>
-                            {/* Аватар */}
-                            <div className="profile-avatar">
+            {/* Аватар */}
+            <div className="profile-avatar">
             {user.avatar ? (
               <img src={user.avatar} alt="User Avatar" className="avatar-image" />
             ) : (
@@ -52,7 +52,7 @@ const ProfileComp = () => {
         </div>
 
           {/* Контакты */}
-          <div className="profile-contacts">
+          <div className="profile-contacts boxshadow">
             <h3 className="profile-section-title">Contacts</h3>
             <ul className="profile-contacts-list">
               <li className="profile-contact-item">E-mail: <a href={`mailto:${user.email}`}>{user.email}</a></li>

@@ -108,3 +108,8 @@
     border-radius: 5px;
   }
   
+  .gapcheking{
+    display: flex;
+    gap: 50px;
+    flex-direction: column;
+  }

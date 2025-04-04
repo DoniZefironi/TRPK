@@ -5,6 +5,7 @@ import './Header.css';
 import logo from '../../img/logo.png';
 import prof from '../../img/Profile.png';
 import { logoutUser } from '../../store/slice/authSlice'; 
+import noavatar from '../../img/noavatar.png'
 
 const Header = () => {
   const { user } = useSelector((state) => state.auth); 
@@ -49,7 +50,7 @@ const Header = () => {
         {user ? (
           <div className="profile-menu">
             <img
-              src={prof}
+              src={noavatar}
               alt="Профиль"
               className="profile-icon"
               onClick={toggleMenu} 
@@ -63,7 +64,6 @@ const Header = () => {
           </div>
         ) : (
           <div className="regi">
-            <img src={prof} alt="Профиль" />
             <Link to="/auth">Войти / Зарегистрироваться</Link>
           </div>
         )}
