@@ -1,33 +1,59 @@
-const { ForumPost } = require('../models/models');
+const { ForumPost, ForumTopic, User } = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 class PostController {
-  async createPost(req, res, next) {
+  async getByTopic(req, res, next) {
     try {
-      const { content, id_topic, id_user } = req.body;
+      const { topicId } = req.params;
 
-      if (!content || !id_topic) {
-        return next(ApiError.badRequest('Поле content и id_topic обязательны'));
+      const topic = await ForumTopic.findByPk(topicId);
+      if (!topic) {
+        return next(ApiError.notFound('Тема не найдена'));
       }
 
-      const newPost = await ForumPost.create({ content, id_topic, id_user });
-      res.status(201).json(newPost);
-    } catch (error) {
-      console.error(error);
-      next(ApiError.internal('Ошибка создания сообщения'));
+      const posts = await ForumPost.findAll({
+        where: { id_topic: topicId },
+        include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }],
+        order: [['created_at', 'ASC']]
+      });
+
+      res.json(posts);
+    } catch (e) {
+      next(ApiError.internal('Ошибка при получении сообщений'));
     }
   }
 
-  async getPosts(req, res, next) {
+  async create(req, res, next) {
     try {
       const { id_topic } = req.params;
+      const { content, id_user } = req.body;
 
-      const posts = await ForumPost.findAll({ where: { id_topic } });
-      res.status(200).json(posts);
-    } catch (error) {
-      console.error(error);
-      next(ApiError.internal('Ошибка получения сообщений'));
+      if (!content || !id_user) {
+        return next(ApiError.badRequest('Не указаны обязательные поля'));
+      }
+
+      const topic = await ForumTopic.findByPk(id_topic);
+      if (!topic) {
+        return next(ApiError.notFound('Тема не найдена'));
+      }
+
+      const newPost = await ForumPost.create({
+        content,
+        id_topic,
+        id_user
+      });
+
+      // Обновляем время последнего сообщения в теме
+      await ForumTopic.update(
+        { updated_at: new Date() },
+        { where: { id_topic } }
+      );
+
+      res.status(201).json(newPost);
+    } catch (e) {
+      next(ApiError.internal('Ошибка при создании сообщения'));
     }
   }
 }
+
 module.exports = new PostController();

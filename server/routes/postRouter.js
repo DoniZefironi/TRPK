@@ -1,8 +1,9 @@
 const Router = require('express');
 const postController = require('../controllers/postController');
+const authMiddleware = require('../middleware/authMiddleware');
 const router = new Router();
 
-router.post('/posts', postController.createPost); // Создание сообщения
-router.get('/posts/:id_topic', postController.getPosts); // Получение сообщений в теме
+router.get('/topics/:topicId/posts', postController.getByTopic);
+router.post('/topics/:topicId/posts', authMiddleware, postController.create);
 
 module.exports = router;

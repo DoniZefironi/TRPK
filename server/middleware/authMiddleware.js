@@ -1,18 +1,23 @@
+// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const ApiError = require('../error/ApiError');
 
-module.exports = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return next(ApiError.unauthorized('Токен не предоставлен'));
-  }
-
-  const token = authHeader.split(' ')[1];
+module.exports = function (req, res, next) {
   try {
-    const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    req.user = userData; // Данные о пользователе из токена
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return next(ApiError.unauthorized('Токен не предоставлен'));
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return next(ApiError.unauthorized('Токен не предоставлен'));
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    req.user = decoded;
     next();
-  } catch (error) {
-    return next(ApiError.unauthorized('Неверный токен'));
+  } catch (e) {
+    return next(ApiError.unauthorized('Пользователь не авторизован'));
   }
 };

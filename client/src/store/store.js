@@ -2,7 +2,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slice/authSlice';
 import userReducer from './slice/userSlice';
 import materialReducer from './slice/materialSlice';
-import sectionReducer from './slice/sectionSlice'
+import sectionReducer from './slice/sectionSlice';
+import forumReducer from './slice/forumSlice';
 
 const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
         user: userReducer,
         materials: materialReducer,
         sections: sectionReducer,
+        forum: forumReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({ serializableCheck: false }),

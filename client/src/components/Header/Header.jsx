@@ -42,7 +42,7 @@ const Header = () => {
         <Link to="/about">О нас</Link>
         <Link to="/course">Курсы</Link>
         <a href="#events">События</a>
-        <Link to="/section">Блог</Link>
+        <Link to="/forum">Блог</Link>
         <Link to="/contacts">Контакты</Link>
       </nav>
       <div className="header-actions">

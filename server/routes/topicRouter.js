@@ -1,9 +1,15 @@
 const Router = require('express');
-const topicController = require('../controllers/topicController');
 const router = Router();
+const topicController = require('../controllers/topicController');
+const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/', topicController.createTopic); // Создание темы
+// Получение тем по разделу
+router.get('/sections/:sectionType/:sectionId/topics', topicController.getBySection);
 
-router.get('/topics/:id_section', topicController.getTopics); // Получение тем в секции
+// Создание темы (требуется авторизация)
+router.post('/topics', authMiddleware, topicController.create);
+
+// Получение конкретной темы
+router.get('/topics/:id', topicController.getOne);
 
 module.exports = router;

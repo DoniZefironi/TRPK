@@ -36,3 +36,40 @@
     transform: rotate(360deg);
   }
 }
+
+.forum-list, .topic-list, .topic-detail, .create-topic {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.forum-card, .topic-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+}
+
+.post {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.forum-list, .topic-list, .topic-detail, .create-topic textarea {
+  width: 100%;
+  min-height: 100px;
+  margin: 10px 0;
+}
+
+.forum-list, .topic-list, .topic-detail, .create-topic button {
+  padding: 8px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.forum-list, .topic-list, .topic-detail, .create-topic button:hover {
+  background: #0056b3;
+}
