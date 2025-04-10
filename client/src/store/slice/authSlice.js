@@ -61,8 +61,9 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem('user', JSON.stringify(action.payload.user)); // Сохраняем пользователя
-        localStorage.setItem('token', action.payload.token); // Сохраняем токен
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token); // Сохраняем accessToken
+        localStorage.setItem('refreshToken', action.payload.refreshToken); // Добавьте эту строку
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;

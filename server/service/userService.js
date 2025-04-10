@@ -23,21 +23,24 @@ class UserService {
         return { ...tokens, user: userDto };
     }
 
-    async login(email, password) {
-        const user = await User.findOne({ where: { email } });
-        if (!user) {
-            throw ApiError.badRequest("Пользователь не найден");
-        }
-        const isPassEqual = await bcrypt.compare(password, user.password);
-        if (!isPassEqual) {
-            throw ApiError.badRequest("Неверный пароль");
-        }
-        const userDto = new UserDto(user);
-        const tokens = tokenService.generateToken({ ...userDto });
-
-        await tokenService.saveToken(userDto.id, tokens.refreshToken);
-        return { ...tokens, user: userDto };
-    }
+async login(email, password) {
+  const user = await User.findOne({ where: { email } });
+  if (!user) throw ApiError.badRequest("Пользователь не найден");
+  
+  const isPassEqual = await bcrypt.compare(password, user.password);
+  if (!isPassEqual) throw ApiError.badRequest("Неверный пароль");
+  
+  const userDto = new UserDto(user);
+  const tokens = tokenService.generateToken({ ...userDto });
+  
+  await tokenService.saveToken(userDto.id, tokens.refreshToken);
+  
+  return {
+    user: userDto,
+    accessToken: tokens.accessToken, // Явно указываем accessToken
+    refreshToken: tokens.refreshToken
+  };
+}
 
     async logout(refreshToken) {
         const token = await tokenService.removeToken(refreshToken);

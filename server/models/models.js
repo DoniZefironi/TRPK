@@ -34,6 +34,28 @@ const User = sequelize.define('User', {
   joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
+const ForumSection = sequelize.define('ForumSection', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  name: { type: DataTypes.STRING, allowNull: false },
+  type: { 
+    type: DataTypes.ENUM('iot', 'electric', 'informatics'), 
+    allowNull: false 
+  },
+  description: { type: DataTypes.TEXT }
+}, { timestamps: false });
+
+const ForumTopic = sequelize.define('ForumTopic', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  title: { type: DataTypes.STRING, allowNull: false },
+  content: { type: DataTypes.TEXT, allowNull: false },
+  views: { type: DataTypes.INTEGER, defaultValue: 0 }
+}, { timestamps: true });
+
+const ForumPost = sequelize.define('ForumPost', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  content: { type: DataTypes.TEXT, allowNull: false }
+}, { timestamps: true });
+
 const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
   id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   topic_materials: { type: DataTypes.STRING },
@@ -43,40 +65,7 @@ const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
   upload_date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
-const Forum = sequelize.define('Forum', {
-  id_forum: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  rules: { type: DataTypes.STRING },
-  section: { type: DataTypes.STRING },
-  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-});
-
-const ForumTopic = sequelize.define('ForumTopic', {
-  id_topic: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  title: { type: DataTypes.STRING, allowNull: false },
-  description: { type: DataTypes.TEXT },
-  id_section: { type: DataTypes.INTEGER, allowNull: false },
-  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-  id_user: { type: DataTypes.INTEGER },
-});
-
-const ForumPost = sequelize.define('ForumPost', {
-  id_post: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  content: { type: DataTypes.TEXT, allowNull: false },
-  id_topic: { type: DataTypes.INTEGER, allowNull: false },
-  id_user: { type: DataTypes.INTEGER },
-  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-});
-
 // Модели для Electric
-const ForumSectionElectric = sequelize.define('ForumSectionElectric', {
-  id_section: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING },
-  subsections: { type: DataTypes.STRING },
-  topic_subsections: { type: DataTypes.STRING },
-  moderators: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER },
-  creation_date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-});
 
 const GroupElectric = sequelize.define('GroupElectric', {
   id_group: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -162,15 +151,6 @@ const InternshipProgramIoT = sequelize.define('InternshipProgramIoT', {
   specialization: { type: DataTypes.STRING }
 });
 
-const ForumSectionIoT = sequelize.define('ForumSectionIoT', {
-  id_section: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  subsections: { type: DataTypes.STRING },
-  posts: { type: DataTypes.STRING },
-  moderators: { type: DataTypes.STRING },
-  id_forum: { type: DataTypes.INTEGER },
-  id_user: { type: DataTypes.INTEGER }
-});
-
 const UserRatingIoT = sequelize.define('UserRatingIoT', {
   id_rating: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   score: { type: DataTypes.FLOAT },
@@ -234,16 +214,6 @@ const CareerGuidanceScholl = sequelize.define('CareerGuidanceScholl', {
   id_class: { type: DataTypes.INTEGER, allowNull: false },
 });
 
-const ForumSectionScholl = sequelize.define('ForumSectionScholl', {
-  id_section: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  subsections: { type: DataTypes.STRING },
-  topic_subsections: { type: DataTypes.STRING },
-  moderators: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER },
-  name: { type: DataTypes.STRING },
-  id_forum: { type: DataTypes.INTEGER }
-});
-
 const JournalScholl = sequelize.define('JournalScholl', {
   id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_class: { type: DataTypes.INTEGER },
@@ -297,18 +267,6 @@ const RefreshToken = sequelize.define('RefreshToken', {
 User.hasMany(RefreshToken, { foreignKey: 'id_user' });
 RefreshToken.belongsTo(User, { foreignKey: 'id_user' });
 
-User.hasMany(ForumTopic, { foreignKey: 'id_user' });
-ForumTopic.belongsTo(User, { foreignKey: 'id_user' });
-
-User.hasMany(ForumPost, { foreignKey: 'id_user' });
-ForumPost.belongsTo(User, { foreignKey: 'id_user' });
-
-Forum.hasMany(ForumTopic, { foreignKey: 'id_forum' });
-ForumTopic.belongsTo(Forum, { foreignKey: 'id_forum' });
-
-ForumTopic.hasMany(ForumPost, { foreignKey: 'id_topic' });
-ForumPost.belongsTo(ForumTopic, { foreignKey: 'id_topic' });
-
 MaterialsLibrary.hasMany(LessonScholl, { foreignKey: 'id_materials' });
 LessonScholl.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
 
@@ -334,18 +292,6 @@ ScheduleElectric.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
 MaterialsLibrary.hasMany(ClassesElectric, { foreignKey: 'id_material' });
 ClassesElectric.belongsTo(MaterialsLibrary, { foreignKey: 'id_material' });
 
-Forum.hasMany(ForumSectionElectric, { foreignKey: 'id_forum' });
-ForumSectionElectric.belongsTo(Forum, { foreignKey: 'id_forum' });
-
-ForumSectionElectric.hasMany(ForumTopic, { 
-  foreignKey: 'id_section',
-  as: 'electricTopics'
-});
-ForumTopic.belongsTo(ForumSectionElectric, { 
-  foreignKey: 'id_section',
-  as: 'electricSection'
-});
-
 GroupElectric.hasMany(JournalElectric, { foreignKey: 'id_group' });
 JournalElectric.belongsTo(GroupElectric, { foreignKey: 'id_group' });
 
@@ -355,12 +301,6 @@ JournalElectric.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
 // Связи для IoT
 User.hasMany(InternshipApplicationIoT, { foreignKey: 'id_user' });
 InternshipApplicationIoT.belongsTo(User, { foreignKey: 'id_user' });
-
-Forum.hasMany(ForumSectionIoT, { foreignKey: 'id_forum' });
-ForumSectionIoT.belongsTo(Forum, { foreignKey: 'id_forum' });
-
-User.hasMany(ForumSectionIoT, { foreignKey: 'id_user' });
-ForumSectionIoT.belongsTo(User, { foreignKey: 'id_user' });
 
 User.hasMany(UserRatingIoT, { foreignKey: 'id_user' });
 UserRatingIoT.belongsTo(User, { foreignKey: 'id_user' });
@@ -396,18 +336,6 @@ LessonScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
 ClassScholl.hasMany(CareerGuidanceScholl, { foreignKey: 'id_class' });
 CareerGuidanceScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
 
-Forum.hasMany(ForumSectionScholl, { foreignKey: 'id_forum' });
-ForumSectionScholl.belongsTo(Forum, { foreignKey: 'id_forum' });
-
-ForumSectionScholl.hasMany(ForumTopic, { 
-  foreignKey: 'id_section',
-  as: 'schoolTopics'
-});
-ForumTopic.belongsTo(ForumSectionScholl, { 
-  foreignKey: 'id_section',
-  as: 'schoolSection'
-});
-
 ClassScholl.hasMany(ScheduleScholl, { foreignKey: 'id_class' });
 ScheduleScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
 
@@ -435,15 +363,26 @@ ScheduleScholl.belongsTo(LessonScholl, { foreignKey: 'id_lesson' });
 ElectiveScholl.hasMany(ScheduleScholl, { foreignKey: 'id_elective' });
 ScheduleScholl.belongsTo(ElectiveScholl, { foreignKey: 'id_elective' });
 
+User.hasMany(ForumTopic, { foreignKey: 'userId' });
+ForumTopic.belongsTo(User, { foreignKey: 'userId' });
+
+ForumSection.hasMany(ForumTopic, { foreignKey: 'sectionId' });
+ForumTopic.belongsTo(ForumSection, { foreignKey: 'sectionId' });
+
+ForumTopic.hasMany(ForumPost, { foreignKey: 'topicId' });
+ForumPost.belongsTo(ForumTopic, { foreignKey: 'topicId' });
+
+User.hasMany(ForumPost, { foreignKey: 'userId' });
+ForumPost.belongsTo(User, { foreignKey: 'userId' });
+
 // Экспорт всех моделей
 module.exports = {
   User,
   MaterialsLibrary,
-  Forum,
+  ForumSection,
   ForumTopic,
   ForumPost,
   // Electric
-  ForumSectionElectric,
   GroupElectric,
   ClassesElectric,
   JournalElectric,
@@ -454,7 +393,6 @@ module.exports = {
   // IoT
   InternshipApplicationIoT,
   InternshipProgramIoT,
-  ForumSectionIoT,
   UserRatingIoT,
   IoTJournal,
   ProjectIoT,
@@ -464,7 +402,6 @@ module.exports = {
   ClassScholl,
   LessonScholl,
   CareerGuidanceScholl,
-  ForumSectionScholl,
   JournalScholl,
   ScheduleScholl,
   OlympiadScholl,

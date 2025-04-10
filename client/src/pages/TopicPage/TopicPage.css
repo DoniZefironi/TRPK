@@ -1,0 +1,46 @@
+.topic-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .topic-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .topic-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .posts-section {
+    margin-top: 30px;
+  }
+  
+  .post-form {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 5px;
+  }
+  
+  .post-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .form-error, .auth-notice {
+    color: #d32f2f;
+    margin-bottom: 10px;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 40px;
+  }

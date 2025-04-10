@@ -2,53 +2,47 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:2280/api/forum';
 
-// Форум
-export const fetchForums = async () => {
-  const response = await axios.get(API_URL);
-  return response.data;
-};
+const api = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
+});
 
-export const fetchForumById = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`);
-  return response.data;
-};
+// Request interceptor
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, error => Promise.reject(error));
 
-// Темы
-export const createTopic = async (topicData) => {
-  const response = await axios.post(`${API_URL}/topics`, topicData);
-  return response.data;
-};
+// Response interceptor
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      console.error('Unauthorized - please login again');
+    }
+    return Promise.reject(error.response?.data || error.message);
+  }
+);
 
-export const fetchTopicsBySection = async (sectionType, sectionId) => {
-  const response = await axios.get(`${API_URL}/sections/${sectionType}/${sectionId}/topics`);
-  return response.data;
-};
+export const forumService = {
+  // Sections
+  getSections: () => api.get('/sections'),
+  getSectionById: (id) => api.get(`/sections/${id}`),
+  createSection: (data) => api.post('/sections', data),
+  deleteSection: (id) => api.delete(`/sections/${id}`),
 
-export const fetchTopicById = async (id) => {
-  const response = await axios.get(`${API_URL}/topics/${id}`);
-  return response.data;
-};
+  // Topics
+  getTopicsBySection: (sectionId) => api.get(`/topics/section/${sectionId}`),
+  createTopic: (data) => api.post('/topics', data),
+  getTopic: (id) => api.get(`/topics/${id}`),
+  updateTopic: (id, data) => api.put(`/topics/${id}`, data),
+  deleteTopic: (id) => api.delete(`/topics/${id}`),
 
-// Сообщения
-export const createPost = async (postData) => {
-  const response = await axios.post(`${API_URL}/posts`, postData);
-  return response.data;
+  // Posts
+  getPostsByTopic: (topicId) => api.get(`/posts/topic/${topicId}`),
+  createPost: (data) => api.post('/posts', data),
+  deletePost: (id) => api.delete(`/posts/${id}`),
 };
-
-export const fetchPostsByTopic = async (topicId) => {
-  const response = await axios.get(`${API_URL}/topics/${topicId}/posts`);
-  return response.data;
-};
-
-// Добавьте default export, если хотите сохранить обратную совместимость
-const ForumService = {
-  fetchForums,
-  fetchForumById,
-  createTopic,
-  fetchTopicsBySection,
-  fetchTopicById,
-  createPost,
-  fetchPostsByTopic
-};
-
-export default ForumService;

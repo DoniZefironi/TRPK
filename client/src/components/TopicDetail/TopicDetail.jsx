@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchTopicById, fetchPostsByTopic, addPost } from '../../store/slice/forumSlice';
+import { getTopicById, getPostsByTopic, addPost } from '../../store/slice/forumSlice';
+
 
 const TopicDetail = () => {
   const dispatch = useDispatch();
@@ -10,9 +11,10 @@ const TopicDetail = () => {
   const [newPost, setNewPost] = useState('');
 
   useEffect(() => {
-    dispatch(fetchTopicById(id));
-    dispatch(fetchPostsByTopic(id));
+    dispatch(getTopicById(id));
+    dispatch(getPostsByTopic(id));
   }, [dispatch, id]);
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();

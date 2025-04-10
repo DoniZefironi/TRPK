@@ -1,160 +1,156 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  fetchForums,
-  fetchForumById,
-  createTopic,
+import { createSlice } from '@reduxjs/toolkit';
+import { 
+  fetchSections,
+  fetchSectionById,
   fetchTopicsBySection,
-  fetchTopicById,
-  createPost,
-  fetchPostsByTopic
-} from '../../service/ForumService';
+  createTopic,
+  fetchTopic,
+  fetchPostsByTopic,
+  createPost
+} from './forumThunks'; // Импортируем все thunks
 
-// Асинхронные экшены
-export const getForums = createAsyncThunk(
-  'forum/getForums',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await fetchForums();
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения форумов');
-    }
-  }
-);
+const initialState = {
+  sections: [],
+  currentSection: null,
+  topics: [],
+  currentTopic: null,
+  posts: [],
+  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null,
+  lastFetch: null,
+};
 
-export const getForumById = createAsyncThunk(
-  'forum/getForumById',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await fetchForumById(id);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения форума');
-    }
-  }
-);
-
-export const addTopic = createAsyncThunk(
-  'forum/addTopic',
-  async (topicData, { rejectWithValue }) => {
-    try {
-      return await createTopic(topicData);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка создания темы');
-    }
-  }
-);
-
-export const getTopicsBySection = createAsyncThunk(
-  'forum/getTopicsBySection',
-  async ({ sectionType, sectionId }, { rejectWithValue }) => {
-    try {
-      return await fetchTopicsBySection(sectionType, sectionId);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения тем');
-    }
-  }
-);
-
-export const getTopicById = createAsyncThunk(
-  'forum/getTopicById',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await fetchTopicById(id);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения темы');
-    }
-  }
-);
-
-export const addPost = createAsyncThunk(
-  'forum/addPost',
-  async (postData, { rejectWithValue }) => {
-    try {
-      return await createPost(postData);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка создания сообщения');
-    }
-  }
-);
-
-export const getPostsByTopic = createAsyncThunk(
-  'forum/getPostsByTopic',
-  async (topicId, { rejectWithValue }) => {
-    try {
-      return await fetchPostsByTopic(topicId);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения сообщений');
-    }
-  }
-);
-
-// Слайс
 const forumSlice = createSlice({
   name: 'forum',
-  initialState: {
-    forums: [],
-    currentForum: null,
-    topics: [],
-    currentTopic: null,
-    posts: [],
-    isLoading: false,
-    error: null
-  },
+  initialState,
   reducers: {
+    setCurrentSection: (state, action) => {
+      state.currentSection = action.payload;
+    },
     clearForumState: (state) => {
-      state.currentForum = null;
+      state.currentSection = null;
+      state.topics = [];
       state.currentTopic = null;
       state.posts = [];
-      state.isLoading = false;
+      state.status = 'idle';
+      state.error = null;
+    },
+    resetForumStatus: (state) => {
+      state.status = 'idle';
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Получение форумов
-      .addCase(getForums.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+      // Fetch sections
+      .addCase(fetchSections.pending, (state) => {
+        state.status = 'loading';
       })
-      .addCase(getForums.fulfilled, (state, action) => {
-        state.forums = action.payload;
-        state.isLoading = false;
+      .addCase(fetchSections.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.sections = action.payload;
+        state.lastFetch = Date.now();
       })
-      .addCase(getForums.rejected, (state, action) => {
+      .addCase(fetchSections.rejected, (state, action) => {
+        state.status = 'failed';
         state.error = action.payload;
-        state.isLoading = false;
       })
-      
-      // Получение форума по ID
-      .addCase(getForumById.fulfilled, (state, action) => {
-        state.currentForum = action.payload;
+
+      // Fetch single section
+      .addCase(fetchSectionById.pending, (state) => {
+        state.status = 'loading';
       })
-      
-      // Получение тем по разделу
-      .addCase(getTopicsBySection.fulfilled, (state, action) => {
+      .addCase(fetchSectionById.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentSection = action.payload;
+      })
+      .addCase(fetchSectionById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // Fetch topics by section
+      .addCase(fetchTopicsBySection.pending, (state) => {
+        state.status = 'loading';
+        state.topics = [];
+      })
+      .addCase(fetchTopicsBySection.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.topics = action.payload;
       })
-      
-      // Получение темы по ID
-      .addCase(getTopicById.fulfilled, (state, action) => {
+      .addCase(fetchTopicsBySection.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // Create topic
+      .addCase(createTopic.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createTopic.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.topics.unshift(action.payload);
+      })
+      .addCase(createTopic.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // Fetch single topic
+      .addCase(fetchTopic.pending, (state) => {
+        state.status = 'loading';
+        state.currentTopic = null;
+      })
+      .addCase(fetchTopic.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.currentTopic = action.payload;
       })
-      
-      // Добавление темы
-      .addCase(addTopic.fulfilled, (state, action) => {
-        state.topics.push(action.payload);
+      .addCase(fetchTopic.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+        state.currentTopic = null;
       })
-      
-      // Получение сообщений по теме
-      .addCase(getPostsByTopic.fulfilled, (state, action) => {
+
+      // Fetch posts by topic
+      .addCase(fetchPostsByTopic.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchPostsByTopic.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.posts = action.payload;
       })
-      
-      // Добавление сообщения
-      .addCase(addPost.fulfilled, (state, action) => {
+      .addCase(fetchPostsByTopic.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // Create post
+      .addCase(createPost.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.posts.push(action.payload);
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
-  }
+  },
 });
 
-export const { clearForumState } = forumSlice.actions;
+export const { 
+  setCurrentSection, 
+  clearForumState,
+  resetForumStatus 
+} = forumSlice.actions;
+
 export default forumSlice.reducer;
+
+export const selectForumStatus = (state) => state.forum.status;
+export const selectForumError = (state) => state.forum.error;
+export const selectAllSections = (state) => state.forum.sections;
+export const selectCurrentSection = (state) => state.forum.currentSection;
+export const selectTopicsBySection = (state) => state.forum.topics;
+export const selectCurrentTopic = (state) => state.forum.currentTopic;
+export const selectPostsByTopic = (state) => state.forum.posts;

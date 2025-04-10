@@ -13,10 +13,9 @@ import Profile from './pages/Profile/Profile.jsx';
 import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx'
 import MaterialsPanel from './components/MaterialsPanel/MaterialsPanel.jsx';
 import Section from './pages/Section/Section.jsx';
-import ForumPage from './pages/Forum/Forum.jsx';
-import SectionPage from './pages/SectionPage/SectionPage.jsx';
-import TopicPage from './pages/TopicPage/TopicPage.jsx';
-import CreateTopicPage from './pages/CreateTopicPage/CreateTopicPage.jsx';
+import { ForumPage } from './pages/Forum/Forum';
+import { SectionPage } from './pages/SectionPage/SectionPage';
+import { TopicPage } from './pages/TopicPage/TopicPage';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -45,9 +44,8 @@ const App = () => {
                     <Route path="/materials-panel" element={<MaterialsPanel />} />
                     <Route path="/section" element={<Section />} />
                     <Route path="/forum" element={<ForumPage />} />
-                    <Route path="/forum/:sectionType/:sectionId" element={<SectionPage />} />
-                    <Route path="/forum/:sectionType/:sectionId/create-topic" element={<CreateTopicPage />} />
-                    <Route path="/forum/topics/:id" element={<TopicPage />} />
+                    <Route path="/forum/sections/:sectionId" element={<SectionPage />} />
+                    <Route path="/forum/topics/:topicId" element={<TopicPage />} />
                 </Routes>
             </main>
         </div>

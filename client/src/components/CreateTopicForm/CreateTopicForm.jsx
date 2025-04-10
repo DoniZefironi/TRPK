@@ -1,50 +1,98 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { addTopic } from '../../store/slice/forumSlice';
+import { useDispatch, useSelector } from 'react-redux'; // Добавляем useSelector
+import { createTopic } from '../../store/slice/forumThunks';
+import './CreateTopicForm.css';
 
-const CreateTopicForm = () => {
+const CreateTopicModal = ({ sectionId, onClose }) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const { sectionType, sectionId } = useParams();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: ''
-  });
+  
+  // Получаем ID текущего пользователя из хранилища
+  const currentUserId = useSelector(state => state.auth.user?.id_user); // Добавленная строка
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(addTopic({
-      title: formData.title,
-      description: formData.description,
-      section_type: sectionType,
-      id_section: sectionId
-    })).then(() => {
-      navigate(`/forum/${sectionType}/${sectionId}`);
-    });
+    if (!title.trim() || !content.trim()) {
+      setError('Заполните все поля');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await dispatch(createTopic({
+        title,
+        content,
+        sectionId,
+        userId: currentUserId // Используем полученный ID
+      })).unwrap();
+      onClose();
+    } catch (err) {
+      setError(err.message || 'Ошибка при создании темы');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="create-topic">
-      <h1>Создать новую тему</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Заголовок темы"
-          value={formData.title}
-          onChange={(e) => setFormData({...formData, title: e.target.value})}
-          required
-        />
-        <textarea
-          placeholder="Описание темы"
-          value={formData.description}
-          onChange={(e) => setFormData({...formData, description: e.target.value})}
-          required
-        />
-        <button type="submit">Создать тему</button>
-      </form>
+    <div className="modal-overlay">
+      <div className="modal-container">
+        <div className="modal-header">
+          <h2>Новая тема</h2>
+          <button onClick={onClose} className="close-btn">&times;</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="topic-form">
+          <div className="form-group">
+            <label htmlFor="topic-title">Заголовок</label>
+            <input
+              id="topic-title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Введите заголовок темы"
+              maxLength={100}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="topic-content">Содержание</label>
+            <textarea
+              id="topic-content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Подробно опишите вашу тему"
+              rows={8}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="form-actions">
+            <button 
+              type="button" 
+              onClick={onClose}
+              className="cancel-btn"
+              disabled={isSubmitting}
+            >
+              Отмена
+            </button>
+            <button 
+              type="submit" 
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Создание...' : 'Создать тему'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default CreateTopicForm;
+export default CreateTopicModal;

@@ -1,129 +1,98 @@
-const { ForumTopic, ForumSectionElectric, ForumSectionIoT, ForumSectionScholl, User, ForumPost } = require('../models/models');
+const { ForumTopic, ForumPost, User, ForumSection } = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 class TopicController {
   async getBySection(req, res, next) {
     try {
-      const { sectionId, sectionType } = req.params;
-
-      // Проверка существования раздела
-      let sectionExists;
-      switch (sectionType) {
-        case 'electric':
-          sectionExists = await ForumSectionElectric.findByPk(sectionId);
-          break;
-        case 'iot':
-          sectionExists = await ForumSectionIoT.findByPk(sectionId);
-          break;
-        case 'school':
-          sectionExists = await ForumSectionScholl.findByPk(sectionId);
-          break;
-        default:
-          return next(ApiError.badRequest('Неверный тип раздела'));
-      }
-
-      if (!sectionExists) {
-        return next(ApiError.notFound('Раздел не найден'));
+      const { sectionId } = req.params;
+      
+      if (!sectionId) {
+        return next(ApiError.badRequest('Section ID is required'));
       }
 
       const topics = await ForumTopic.findAll({
-        where: { id_section: sectionId },
+        where: { sectionId },
         include: [
-          { model: User, attributes: ['id_user', 'username', 'avatar'] },
           { 
-            model: ForumPost, 
-            limit: 1,
-            order: [['created_at', 'DESC']],
-            include: [{ model: User, attributes: ['id_user', 'username'] }]
+            model: User,
+            attributes: ['id_user', 'username', 'avatar']
+          },
+          {
+            model: ForumPost,
+            attributes: ['id'],
+            required: false
           }
         ],
-        order: [['created_at', 'DESC']]
+        order: [['createdAt', 'DESC']]
       });
 
-      res.json(topics);
+      const topicsWithCount = topics.map(topic => ({
+        ...topic.get({ plain: true }),
+        postCount: topic.ForumPosts?.length || 0
+      }));
+
+      return res.json(topicsWithCount);
     } catch (e) {
-      next(ApiError.internal('Ошибка при получении тем'));
+      console.error('Error fetching topics:', e);
+      return next(ApiError.internal('Error while fetching topics'));
     }
   }
 
   async create(req, res, next) {
     try {
-      // Получаем id_user из авторизованного пользователя
-      const { id_user } = req.user;
-      const { title, description, id_section, section_type } = req.body;
-
-      if (!title || !id_section || !section_type) {
-        return next(ApiError.badRequest('Не указаны обязательные поля'));
+      const { title, content, sectionId } = req.body;
+      const userId = req.user.id_user; // From auth middleware
+      
+      if (!userId) {
+        return next(ApiError.unauthorized('User not authenticated'));
       }
 
-      // Проверка существования раздела
-      let section;
-      switch (section_type) {
-        case 'electric':
-          section = await ForumSectionElectric.findByPk(id_section);
-          break;
-        case 'iot':
-          section = await ForumSectionIoT.findByPk(id_section);
-          break;
-        case 'school':
-          section = await ForumSectionScholl.findByPk(id_section);
-          break;
-        default:
-          return next(ApiError.badRequest('Неверный тип раздела'));
-      }
-
-      if (!section) {
-        return next(ApiError.notFound('Раздел не найден'));
-      }
-
-      const newTopic = await ForumTopic.create({ 
-        title, 
-        description, 
-        id_section, 
-        id_user,
-        id_forum: 1
+      const topic = await ForumTopic.create({
+        title,
+        content,
+        sectionId,
+        userId
       });
-
-      // Создаем первое сообщение в теме
-      await ForumPost.create({
-        content: description,
-        id_topic: newTopic.id_topic,
-        id_user
+      
+      // Fetch the newly created topic with user data
+      const newTopic = await ForumTopic.findOne({
+        where: { id: topic.id },
+        include: [
+          { model: User, attributes: ['id_user', 'username', 'avatar'] },
+          { model: ForumSection, attributes: ['id', 'name'] }
+        ]
       });
-
-      res.status(201).json(newTopic);
+      
+      return res.status(201).json(newTopic);
     } catch (e) {
-      next(ApiError.internal('Ошибка при создании темы'));
+      console.error('Error creating topic:', e);
+      return next(ApiError.internal('Server error while creating topic'));
     }
   }
 
-  async getOne(req, res, next) {
+  async getOne(req, res) {
     try {
       const { id } = req.params;
-
+      
       const topic = await ForumTopic.findOne({
-        where: { id_topic: id },
+        where: { id },
         include: [
           { model: User, attributes: ['id_user', 'username', 'avatar'] },
-          { model: ForumSectionElectric, as: 'electricSection', required: false },
-          { model: ForumSectionIoT, as: 'iotSection', required: false },
-          { model: ForumSectionScholl, as: 'schoolSection', required: false }
+          { model: ForumSection, attributes: ['id', 'name'] }
         ]
       });
-
+      
       if (!topic) {
-        return next(ApiError.notFound('Тема не найдена'));
+        return res.status(404).json({ message: 'Topic not found' });
       }
-
-      // Определяем тип раздела
-      let sectionType;
-      if (topic.electricSection) sectionType = 'electric';
-      else if (topic.iotSection) sectionType = 'iot';
-      else if (topic.schoolSection) sectionType = 'school';
-
-      res.json({ topic, sectionType });
+      
+      // Увеличиваем счетчик просмотров
+      await topic.update({ views: topic.views + 1 });
+      
+      return res.json(topic);
     } catch (e) {
-      next(ApiError.internal('Ошибка при получении темы'));
+      console.error(e);
+      return res.status(500).json({ message: 'Server error' });
     }
   }
 }

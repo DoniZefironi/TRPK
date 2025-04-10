@@ -3,13 +3,12 @@ const router = Router();
 const topicController = require('../controllers/topicController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Получение тем по разделу
-router.get('/sections/:sectionType/:sectionId/topics', topicController.getBySection);
+// Получение тем
+router.get('/section/:sectionId', topicController.getBySection);
+router.get('/:id', topicController.getOne);
 
 // Создание темы (требуется авторизация)
-router.post('/topics', authMiddleware, topicController.create);
-
-// Получение конкретной темы
-router.get('/topics/:id', topicController.getOne);
+// В topicRouter.js
+router.post('/', authMiddleware, topicController.create);
 
 module.exports = router;

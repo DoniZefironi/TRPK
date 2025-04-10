@@ -1,88 +1,71 @@
-const { ForumSectionElectric, ForumSectionIoT, ForumSectionScholl, User } = require('../models/models');
+const { ForumSection } = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 class SectionController {
-  async getAll(req, res, next) {
+  async getAll(req, res) {
     try {
-      const electricSections = await ForumSectionElectric.findAll({
-        include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }]
-      });
-      const iotSections = await ForumSectionIoT.findAll({
-        include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }]
-      });
-      const schoolSections = await ForumSectionScholl.findAll({
-        include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }]
-      });
-
-      res.json({ electric: electricSections, iot: iotSections, school: schoolSections });
+      const sections = await ForumSection.findAll();
+      return res.json(sections);
     } catch (e) {
-      next(ApiError.internal('Ошибка при получении разделов'));
+      console.error(e);
+      return res.status(500).json({ message: 'Server error' });
     }
   }
 
   async create(req, res, next) {
     try {
-      const { type, name, subsections, moderators, id_user } = req.body;
-      
-      if (!type || !name || !id_user) {
-        return next(ApiError.badRequest('Не указаны обязательные поля'));
+      console.log('bububuuubb')
+      const { name, type, description } = req.body;
+
+      // Валидация типа раздела
+      const allowedTypes = ['iot', 'electric', 'informatics'];
+      if (!allowedTypes.includes(type)) {
+        return next(ApiError.badRequest(`Недопустимый тип раздела. Допустимые значения: ${allowedTypes.join(', ')}`));
       }
 
-      let newSection;
-      const sectionData = { name, subsections: subsections || '', moderators: moderators || '', id_user };
+      const section = await ForumSection.create({
+        name,
+        type,
+        description: description || null
+      });
 
-      switch (type) {
-        case 'electric':
-          newSection = await ForumSectionElectric.create(sectionData);
-          break;
-        case 'iot':
-          newSection = await ForumSectionIoT.create({ ...sectionData, posts: '', id_forum: 1 });
-          break;
-        case 'school':
-          newSection = await ForumSectionScholl.create({ ...sectionData, topic_subsections: '', id_forum: 1 });
-          break;
-        default:
-          return next(ApiError.badRequest('Неверный тип раздела'));
-      }
-
-      res.status(201).json(newSection);
+      return res.status(201).json(section);
     } catch (e) {
-      next(ApiError.internal('Ошибка при создании раздела'));
+      console.error('Ошибка при создании раздела:', e);
+      return next(ApiError.internal('Ошибка сервера при создании раздела'));
     }
   }
 
   async getOne(req, res, next) {
     try {
-      const { id, type } = req.params;
-      let section;
-
-      switch (type) {
-        case 'electric':
-          section = await ForumSectionElectric.findByPk(id, {
-            include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }]
-          });
-          break;
-        case 'iot':
-          section = await ForumSectionIoT.findByPk(id, {
-            include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }]
-          });
-          break;
-        case 'school':
-          section = await ForumSectionScholl.findByPk(id, {
-            include: [{ model: User, attributes: ['id_user', 'username', 'avatar'] }]
-          });
-          break;
-        default:
-          return next(ApiError.badRequest('Неверный тип раздела'));
-      }
+      const { id } = req.params;
+      const section = await ForumSection.findByPk(id);
 
       if (!section) {
         return next(ApiError.notFound('Раздел не найден'));
       }
 
-      res.json(section);
+      return res.json(section);
     } catch (e) {
-      next(ApiError.internal('Ошибка при получении раздела'));
+      console.error('Ошибка при получении раздела:', e);
+      return next(ApiError.internal('Ошибка сервера при получении раздела'));
+    }
+  }
+
+  async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      const section = await ForumSection.findByPk(id);
+
+      if (!section) {
+        return next(ApiError.notFound('Раздел не найден'));
+      }
+
+      await section.destroy();
+      return res.json({ message: 'Раздел успешно удален' });
+    } catch (e) {
+      console.error('Ошибка при удалении раздела:', e);
+      return next(ApiError.internal('Ошибка сервера при удалении раздела'));
     }
   }
 }

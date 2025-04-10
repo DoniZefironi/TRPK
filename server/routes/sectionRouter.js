@@ -1,10 +1,11 @@
 const Router = require('express');
+const router = Router();
 const sectionController = require('../controllers/sectionController');
 const authMiddleware = require('../middleware/authMiddleware');
-const router = Router();
 
-router.get('/sections', sectionController.getAll);
-router.post('/sections', authMiddleware, sectionController.create);
-router.get('/sections/:type/:id', sectionController.getOne);
+router.get('/', sectionController.getAll);
+router.get('/:id', sectionController.getOne);
+router.post('/', sectionController.create);
+router.delete('/:id', sectionController.delete);
 
 module.exports = router;
