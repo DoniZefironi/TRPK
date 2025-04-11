@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'; // Добавляем us
 import { createTopic } from '../../store/slice/forumThunks';
 import './CreateTopicForm.css';
 
-const CreateTopicModal = ({ sectionId, onClose }) => {
+const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
+  
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,13 +38,13 @@ const CreateTopicModal = ({ sectionId, onClose }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-container">
+    <div className={`modal-overlay ${isModalOpen ? 'show' : ''}`}>
+    <div className={`modal-container ${isModalOpen ? 'show' : ''}`}>
         <div className="modal-header">
           <h2>Новая тема</h2>
           <button onClick={onClose} className="close-btn">&times;</button>
         </div>
-
+  
         <form onSubmit={handleSubmit} className="topic-form">
           <div className="form-group">
             <label htmlFor="topic-title">Заголовок</label>
@@ -57,7 +58,7 @@ const CreateTopicModal = ({ sectionId, onClose }) => {
               disabled={isSubmitting}
             />
           </div>
-
+  
           <div className="form-group">
             <label htmlFor="topic-content">Содержание</label>
             <textarea
@@ -69,9 +70,9 @@ const CreateTopicModal = ({ sectionId, onClose }) => {
               disabled={isSubmitting}
             />
           </div>
-
+  
           {error && <div className="error-message">{error}</div>}
-
+  
           <div className="form-actions">
             <button 
               type="button" 
@@ -93,6 +94,7 @@ const CreateTopicModal = ({ sectionId, onClose }) => {
       </div>
     </div>
   );
+  
 };
 
 export default CreateTopicModal;

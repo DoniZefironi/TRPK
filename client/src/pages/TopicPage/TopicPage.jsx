@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PostItem from '../../components/PostItem/PostItem';
+import Footer from '../../components/Footer/Footer'
 import { 
   fetchTopic, 
   fetchPostsByTopic, 
   createPost
 } from '../../store/slice/forumThunks';
 import { resetForumStatus } from '../../store/slice/forumSlice';
+import Header from '../../components/Header/Header';
+import './TopicPage.css'
 
 export const TopicPage = () => {
   const { topicId } = useParams();
@@ -99,6 +102,8 @@ export const TopicPage = () => {
 
   // Основной рендеринг (currentTopic гарантированно существует здесь)
   return (
+    <>
+    <Header />
     <div className="topic-page">
       <div className="topic-header">
         <h1>{currentTopic.title}</h1>
@@ -161,5 +166,7 @@ export const TopicPage = () => {
         </div>
       )}
     </div>
+    <Footer />
+    </>
   );
 };

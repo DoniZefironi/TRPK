@@ -1,4 +1,4 @@
-/* SectionPage.css */
+
 .section-page {
     max-width: 1200px;
     margin: 0 auto;
@@ -8,11 +8,16 @@
   .section-header {
     margin-bottom: 30px;
     padding-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     border-bottom: 1px solid #eee;
   }
   
   .create-topic-btn {
-    background-color: #4a76a8;
+    background-color: #ff4d4f;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -23,11 +28,12 @@
   }
   
   .create-topic-btn:hover {
-    background-color: #3a5f8a;
+    background-color: #e03d3e;
   }
   
   .topics-container {
     margin-top: 30px;
+    min-height: 800px;
   }
   
   .no-topics {
@@ -40,7 +46,7 @@
   .create-first-topic-btn {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #4a76a8;
+    background-color: #ff4d4f;
     color: white;
     border: none;
     border-radius: 4px;

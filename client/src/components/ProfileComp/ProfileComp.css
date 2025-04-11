@@ -69,19 +69,16 @@
 
 a {
   text-decoration: none;
-  color: #007bff;
+  color: #ff4d4f;
 }
 
-a:hover {
-  text-decoration: underline;
-}
 .profile-edit-button {
   text-align: center;
   margin-top: 20px;
 }
 
 .edit-profile-btn {
-  background-color: #007bff;
+  background-color: #ff4d4f;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -91,7 +88,7 @@ a:hover {
 }
 
 .edit-profile-btn:hover {
-  background-color: #0056b3;
+  background-color: #e03d3e;
 }
 
 .materials-panel-btn {

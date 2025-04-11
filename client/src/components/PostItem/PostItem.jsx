@@ -2,6 +2,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import './PostItem.css';
+import noavatar from '../../img/noavatar.png'
 
 const PostItem = ({ post, currentUserId, onReply, isReplying }) => {
   return (
@@ -9,7 +10,8 @@ const PostItem = ({ post, currentUserId, onReply, isReplying }) => {
       <div className="post-header">
         <div className="user-info">
           <img 
-            src={post.User?.avatar || '/default-avatar.png'} 
+            // src={post.User?.avatar || {noavatar}} 
+            src= {noavatar} 
             alt="Аватар" 
             className="avatar"
           />
@@ -28,7 +30,7 @@ const PostItem = ({ post, currentUserId, onReply, isReplying }) => {
       {post.User?.id_user === currentUserId && (
           <>
         <button 
-          className={`action-btn ${isReplying ? 'active' : ''}`}
+          className={`action-btn-post ${isReplying ? 'active' : ''}`}
           onClick={() => onReply(post.User?.username)}
         >
           {isReplying ? 'Отмена' : 'Ответить'}
@@ -37,8 +39,8 @@ const PostItem = ({ post, currentUserId, onReply, isReplying }) => {
         )}
         {post.User?.id_user !== currentUserId && (
           <>
-            <button className="action-btn">Редактировать</button>
-            <button className="action-btn danger">Удалить</button>
+            <button className="action-btn-post">Редактировать</button>
+            <button className="action-btn-post danger">Удалить</button>
           </>
         )}
       </div>

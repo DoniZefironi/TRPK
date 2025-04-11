@@ -33,7 +33,7 @@ app.options('*', (req, res) => {
 });
 
 // Auth middleware только для API роутов
-app.use('/api', authMiddleware);
+// app.use('/api', authMiddleware);
 app.use('/api', router);
 
 app.use(errorHandler);

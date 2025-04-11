@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import TopicItem from '../../components/TopicItem/TopicItem';
 import CreateTopicModal from '../../components/CreateTopicForm/CreateTopicForm';
+import Headers from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer'
 import { 
   fetchTopicsBySection, 
   fetchSections
@@ -56,6 +58,8 @@ export const SectionPage = () => {
   }
 
   return (
+    <>
+    <Headers />
     <div className="section-page">
       <div className="section-header">
         <h1>{currentSectionData?.name || 'Форум'}</h1>
@@ -96,15 +100,18 @@ export const SectionPage = () => {
       </div>
 
       {isModalOpen && (
-        <CreateTopicModal 
-          sectionId={sectionId}
-          onClose={() => setIsModalOpen(false)}
-          onSuccess={() => {
-            setIsModalOpen(false);
-            dispatch(fetchTopicsBySection(sectionId));
-          }}
-        />
-      )}
+  <CreateTopicModal 
+    sectionId={sectionId}
+    isModalOpen={isModalOpen} // Добавляем передачу состояния
+    onClose={() => setIsModalOpen(false)}
+    onSuccess={() => {
+      setIsModalOpen(false);
+      dispatch(fetchTopicsBySection(sectionId));
+    }}
+  />
+)}
     </div>
+    <Footer />
+    </>
   );
 };

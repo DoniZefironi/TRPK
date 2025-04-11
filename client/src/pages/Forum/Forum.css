@@ -1,0 +1,16 @@
+.sections-grid{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 80%;
+}
+
+.forum-container{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding-top: 100px;
+    flex-direction: column;
+    gap: 50px;
+    min-height: 780px;
+}

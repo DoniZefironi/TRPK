@@ -68,7 +68,7 @@ select.course-dropdown {
   border: none;
   color: #007bff;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .switch-link:hover {

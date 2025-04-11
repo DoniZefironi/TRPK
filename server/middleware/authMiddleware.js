@@ -1,10 +1,11 @@
-// middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const ApiError = require('../error/ApiError');
 
 module.exports = function(req, res, next) {
-  // Skip middleware for login and refresh endpoints
-  if (req.path === '/user/login' || req.path === '/user/refresh') {
+  // Skip middleware for auth-related endpoints
+  if (req.path === '/user/login' || 
+      req.path === '/user/refresh' ||
+      req.path === '/user/register' ) {
     return next();
   }
 

@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSections } from '../../store/slice/forumThunks';
 import ForumSectionCard from '../../components/ForumList/ForumList';
+import Headers from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer'
+import './Forum.css'
 
 export const ForumPage = () => {
   const dispatch = useDispatch();
@@ -12,6 +15,8 @@ export const ForumPage = () => {
   }, [dispatch]);
 
   return (
+    <>
+    <Headers />
     <div className="forum-container">
       <h1>Форум</h1>
       <div className="sections-grid">
@@ -20,5 +25,7 @@ export const ForumPage = () => {
         ))}
       </div>
     </div>
+    <Footer />
+    </>
   );
 };

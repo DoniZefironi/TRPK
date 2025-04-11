@@ -29,7 +29,51 @@
     padding-left: 10px;
   }
   
-  .action-btn.active {
+  .post-item{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .action-btn-post{
+    font-size: 10px;
+  }
+
+  .action-btn-post{
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 15px;
+  }
+  
+  .action-btn-post.active {
     color: #0066cc;
     font-weight: bold;
   }
+
+  .user-info img{
+    width: 30px;
+  }
+  .post-header{
+    width: 100%;
+    text-align: start;
+  }
+
+  .post-actions{
+    width: 100%;
+    text-align: end;
+  }
+
+  .post-content {
+    max-width: 75%;
+    height: auto;
+    word-wrap: break-word; /* Перенос длинных слов */
+    overflow-wrap: break-word; /* Гарантирует перенос текста */
+    white-space: normal; /* Позволяет перенос строк */
+}
+

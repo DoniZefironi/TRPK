@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './Header.css';
 import logo from '../../img/logo.png';
-import prof from '../../img/Profile.png';
 import { logoutUser } from '../../store/slice/authSlice'; 
 import noavatar from '../../img/noavatar.png'
 

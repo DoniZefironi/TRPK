@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import './TopicItem.css';
+import noavatar from '../../img/noavatar.png'
 
 const TopicItem = ({ topic, user }) => {
   const isAuthor = user?.id_user === topic.User?.id_user;
@@ -24,7 +25,8 @@ const TopicItem = ({ topic, user }) => {
       <div className="topic-meta">
         <div className="author-info">
           <img 
-            src={topic.User?.avatar || '/default-avatar.png'} 
+            // src={topic.User?.avatar || {noavatar}} 
+            src= {noavatar} 
             alt="Автор" 
             className="author-avatar"
           />

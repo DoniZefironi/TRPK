@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './ForumList.css'
 
 const ForumSectionCard = ({ section }) => {
   return (
@@ -8,7 +9,7 @@ const ForumSectionCard = ({ section }) => {
       <p>{section.description}</p>
       <Link 
         to={`/forum/sections/${section.id}`} 
-        className="btn btn-primary"
+        className="btn-forum"
       >
         Перейти
       </Link>
