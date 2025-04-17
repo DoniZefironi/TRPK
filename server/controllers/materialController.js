@@ -1,17 +1,18 @@
 const { MaterialsLibrary } = require('../models/models');
 const ApiError = require('../error/ApiError');
 
-class MaterialController {
+class MaterialsController {
+
+    // Добавление нового материала
     async createMaterial(req, res, next) {
         try {
-            const { topic_materials } = req.body;
+            const { topic_materials, title, description, file_url } = req.body;
 
-            if (!topic_materials) {
-                return next(ApiError.badRequest('Поле topic_materials обязательно'));
+            if (!topic_materials || !title) {
+                return next(ApiError.badRequest('Поля topic_materials и title обязательны'));
             }
 
-            const newMaterial = await MaterialsLibrary.create({ topic_materials });
-
+            const newMaterial = await MaterialsLibrary.create({ topic_materials, title, description, file_url });
             res.status(201).json(newMaterial);
         } catch (error) {
             console.error(error);
@@ -19,6 +20,7 @@ class MaterialController {
         }
     }
 
+    // Получение всех материалов
     async getAllMaterials(req, res, next) {
         try {
             const materials = await MaterialsLibrary.findAll();
@@ -29,22 +31,26 @@ class MaterialController {
         }
     }
 
-    async getMaterialById(req, res, next) {
+    // Обновление материала
+    async updateMaterial(req, res, next) {
         try {
             const { id } = req.params;
+            const { topic_materials, title, description, file_url } = req.body;
+    
             const material = await MaterialsLibrary.findByPk(id);
-
             if (!material) {
                 return next(ApiError.notFound('Материал с указанным ID не найден'));
             }
 
-            res.status(200).json(material);
+            await material.update({ topic_materials, title, description, file_url });
+            res.status(200).json({ message: 'Материал обновлен успешно', material });
         } catch (error) {
             console.error(error);
-            next(ApiError.internal('Ошибка получения материала'));
+            next(ApiError.internal('Ошибка обновления материала'));
         }
     }
 
+    // Удаление материала
     async deleteMaterial(req, res, next) {
         try {
             const { id } = req.params;
@@ -62,24 +68,6 @@ class MaterialController {
         }
     }
 
-    async updateMaterial(req, res, next) {
-        try {
-            const { id } = req.params;
-            const { topic_materials, title, description } = req.body;
-    
-            const material = await MaterialsLibrary.findByPk(id);
-            if (!material) {
-                return next(ApiError.notFound('Материал с указанным ID не найден'));
-            }
-    
-            await material.update({ topic_materials, title, description });
-            res.status(200).json({ message: 'Материал обновлен успешно', material });
-        } catch (error) {
-            console.error(error);
-            next(ApiError.internal('Ошибка обновления материала'));
-        }
-    }
-    
 }
 
-module.exports = new MaterialController();
+module.exports = new MaterialsController();

@@ -37,6 +37,12 @@ const scheduleIoTRouter = require('./RoutesForIoT/scheduleIoTRouter')
 const sectionRouter = require('../routes/sectionRouter');
 const topicRouter = require('../routes/topicRouter');
 const postRouter = require('../routes/postRouter');
+
+const groupRouter = require('../routes/groupRouter')
+const competitionRouter = require('../routes/competitionRouter')
+const journalRouter = require('../routes/journalRouter')
+const lessonRouter = require('../routes/lessonRouter')
+const projectRouter = require('../routes/projectRouter')
 // Основные маршруты
 router.use('/forum/sections', sectionRouter);
 router.use('/forum/topics', topicRouter);
@@ -44,6 +50,12 @@ router.use('/forum/posts', postRouter);
 // Основные маршруты
 router.use('/user', userRouter)
 router.use('/material', materialRouter)
+
+router.use('/group', groupRouter)
+router.use('/competition', competitionRouter)
+router.use('/journal', journalRouter)
+router.use('/lesson', lessonRouter)
+router.use('/project', projectRouter)
 
 // Electric маршруты
 router.use('/hackathonElectric', hackathonElectricRouter)

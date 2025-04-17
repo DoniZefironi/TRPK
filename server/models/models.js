@@ -65,21 +65,34 @@ const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
   upload_date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
-// Модели для Electric
+// Базовые модели для групп и участников
+const createGroupModel = (name) => {
+  return sequelize.define(`${name}Group`, {
+    id_group: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.TEXT, allowNull: true },
+    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    status: { type: DataTypes.STRING, defaultValue: 'active' },
+    max_members: { type: DataTypes.INTEGER, allowNull: true },
+  });
+};
 
-const GroupElectric = sequelize.define('GroupElectric', {
-  id_group: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_user: { type: DataTypes.INTEGER },
-  name_group: { type: DataTypes.STRING },
-  list_user: { type: DataTypes.STRING },
-  created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-  description: { type: DataTypes.TEXT, allowNull: true },
-});
+const createGroupMemberModel = (name) => {
+  return sequelize.define(`${name}GroupMember`, {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    role: { type: DataTypes.STRING, defaultValue: 'member' },
+    joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    status: { type: DataTypes.STRING, defaultValue: 'active' },
+  });
+};
+
+// Модели для Electric
+const ElectricGroup = createGroupModel('Electric');
+const ElectricGroupMember = createGroupMemberModel('Electric');
 
 const ClassesElectric = sequelize.define('ClassesElectric', {
   id_classes: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_group: { type: DataTypes.INTEGER },
-  title: { type: DataTypes.STRING },
+  title: { type: DataTypes.STRING, allowNull: false },
   id_materials: { type: DataTypes.INTEGER },
   description: { type: DataTypes.STRING },
   time: { type: DataTypes.STRING },
@@ -88,7 +101,6 @@ const ClassesElectric = sequelize.define('ClassesElectric', {
 
 const JournalElectric = sequelize.define('JournalElectric', {
   id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_group: { type: DataTypes.INTEGER },
   grades: { type: DataTypes.STRING },
   id_classes: { type: DataTypes.INTEGER },
   change_date: { type: DataTypes.DATE },
@@ -115,14 +127,12 @@ const HackathonResultsElectric = sequelize.define('HackathonResultsElectric', {
 const ScheduleElectric = sequelize.define('ScheduleElectric', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_classes: { type: DataTypes.INTEGER },
-  id_group: { type: DataTypes.INTEGER },
   date: { type: DataTypes.DATE },
   time: { type: DataTypes.TIME, allowNull: true },
 });
 
 const ProjectElectric = sequelize.define('ProjectElectric', {
   id_project: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_user: { type: DataTypes.INTEGER },
   deadlines: { type: DataTypes.DATE },
   name: { type: DataTypes.STRING },
   description: { type: DataTypes.TEXT, allowNull: true },
@@ -130,6 +140,9 @@ const ProjectElectric = sequelize.define('ProjectElectric', {
 });
 
 // Модели для IoT
+const IoTGroup = createGroupModel('IoT');
+const IoTGroupMember = createGroupMemberModel('IoT');
+
 const InternshipApplicationIoT = sequelize.define('InternshipApplicationIoT', {
   application_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   contacts: { type: DataTypes.STRING },
@@ -160,7 +173,6 @@ const UserRatingIoT = sequelize.define('UserRatingIoT', {
 
 const IoTJournal = sequelize.define('IoTJournal', {
   id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_group: { type: DataTypes.INTEGER },
   grades: { type: DataTypes.STRING },
   id_classes: { type: DataTypes.INTEGER },
   change_date: { type: DataTypes.DATE },
@@ -190,48 +202,44 @@ const ScheduleIoT = sequelize.define('ScheduleIoT', {
   id_classes: { type: DataTypes.INTEGER }
 });
 
-// Модели для School
-const ClassScholl = sequelize.define('ClassScholl', {
+// Модели для Informatics
+const InformaticsGroup = createGroupModel('Informatics');
+const InformaticsGroupMember = createGroupMemberModel('Informatics');
+
+const ClassInformatics = sequelize.define('ClassInformatics', {
   id_class: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_user: { type: DataTypes.INTEGER, allowNull: false },
   name_class: { type: DataTypes.STRING },
-  list_user: { type: DataTypes.STRING },
 });
 
-const LessonScholl = sequelize.define('LessonScholl', {
+const LessonInformatics = sequelize.define('LessonInformatics', {
   id_lesson: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
-  id_class: { type: DataTypes.INTEGER, allowNull: false },
   topic_lesson: { type: DataTypes.STRING },
   id_materials: { type: DataTypes.INTEGER },
 });
 
-const CareerGuidanceScholl = sequelize.define('CareerGuidanceScholl', {
+const CareerGuidanceInformatics = sequelize.define('CareerGuidanceInformatics', {
   id_guidance: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   date_career_guidance: { type: DataTypes.DATE },
   topic_career_guidance: { type: DataTypes.STRING },
   consultants: { type: DataTypes.STRING },
-  id_class: { type: DataTypes.INTEGER, allowNull: false },
 });
 
-const JournalScholl = sequelize.define('JournalScholl', {
+const JournalInformatics = sequelize.define('JournalInformatics', {
   id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_class: { type: DataTypes.INTEGER },
   grades: { type: DataTypes.JSONB },
   id_lesson: { type: DataTypes.INTEGER },
   change_date: { type: DataTypes.DATE },
   id_user: { type: DataTypes.INTEGER }
 });
 
-const ScheduleScholl = sequelize.define('ScheduleScholl', {
+const ScheduleInformatics = sequelize.define('ScheduleInformatics', {
   id_schedule: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_lesson: { type: DataTypes.INTEGER },
-  id_class: { type: DataTypes.INTEGER },
-  id_elective: { type: DataTypes.INTEGER },
   date: { type: DataTypes.DATE },
 });
 
-const OlympiadScholl = sequelize.define('OlympiadScholl', {
+const OlympiadInformatics = sequelize.define('OlympiadInformatics', {
   id_olympiads: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
   topic_olympiads: { type: DataTypes.STRING },
@@ -239,7 +247,7 @@ const OlympiadScholl = sequelize.define('OlympiadScholl', {
   id_user: { type: DataTypes.INTEGER }
 });
 
-const OlympiadResultsScholl = sequelize.define('OlympiadResultsScholl', {
+const OlympiadResultsInformatics = sequelize.define('OlympiadResultsInformatics', {
   id_result: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_olympiads: { type: DataTypes.INTEGER },
   team_name: { type: DataTypes.STRING },
@@ -247,7 +255,7 @@ const OlympiadResultsScholl = sequelize.define('OlympiadResultsScholl', {
   position: { type: DataTypes.INTEGER }
 });
 
-const ElectiveScholl = sequelize.define('ElectiveScholl', {
+const ElectiveInformatics = sequelize.define('ElectiveInformatics', {
   id_elective: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
   topic_elective: { type: DataTypes.STRING },
@@ -267,102 +275,67 @@ const RefreshToken = sequelize.define('RefreshToken', {
 User.hasMany(RefreshToken, { foreignKey: 'id_user' });
 RefreshToken.belongsTo(User, { foreignKey: 'id_user' });
 
-MaterialsLibrary.hasMany(LessonScholl, { foreignKey: 'id_materials' });
-LessonScholl.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
-
 // Связи для Electric
-User.hasMany(GroupElectric, { foreignKey: 'id_user' });
-GroupElectric.belongsTo(User, { foreignKey: 'id_user' });
+User.belongsToMany(ElectricGroup, { through: ElectricGroupMember, foreignKey: 'id_user' });
+ElectricGroup.belongsToMany(User, { through: ElectricGroupMember, foreignKey: 'id_group' });
 
-User.hasMany(ProjectElectric, { foreignKey: 'id_user' });
-ProjectElectric.belongsTo(User, { foreignKey: 'id_user' });
+ElectricGroupMember.belongsTo(User, { foreignKey: 'id_user' });
+User.hasMany(ElectricGroupMember, { foreignKey: 'id_user' });
 
-User.hasMany(HackathonElectric, { foreignKey: 'id_user' });
-HackathonElectric.belongsTo(User, { foreignKey: 'id_user' });
+ElectricGroup.hasMany(ClassesElectric, { foreignKey: 'id_group' });
+ClassesElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
 
-HackathonElectric.hasMany(HackathonResultsElectric, { foreignKey: 'id_hackathon' });
-HackathonResultsElectric.belongsTo(HackathonElectric, { foreignKey: 'id_hackathon' });
+ElectricGroup.hasMany(JournalElectric, { foreignKey: 'id_group' });
+JournalElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
 
-GroupElectric.hasMany(ClassesElectric, { foreignKey: 'id_group' });
-ClassesElectric.belongsTo(GroupElectric, { foreignKey: 'id_group' });
+ElectricGroup.hasMany(ProjectElectric, { foreignKey: 'id_group' });
+ProjectElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
 
-ClassesElectric.hasMany(ScheduleElectric, { foreignKey: 'id_classes' });
-ScheduleElectric.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
-
-MaterialsLibrary.hasMany(ClassesElectric, { foreignKey: 'id_material' });
-ClassesElectric.belongsTo(MaterialsLibrary, { foreignKey: 'id_material' });
-
-GroupElectric.hasMany(JournalElectric, { foreignKey: 'id_group' });
-JournalElectric.belongsTo(GroupElectric, { foreignKey: 'id_group' });
+ElectricGroup.hasMany(ScheduleElectric, { foreignKey: 'id_group' });
+ScheduleElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
 
 ClassesElectric.hasMany(JournalElectric, { foreignKey: 'id_classes' });
 JournalElectric.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
 
+User.hasMany(ProjectElectric, { foreignKey: 'creator_id' });
+ProjectElectric.belongsTo(User, { foreignKey: 'creator_id' });
+
 // Связи для IoT
-User.hasMany(InternshipApplicationIoT, { foreignKey: 'id_user' });
-InternshipApplicationIoT.belongsTo(User, { foreignKey: 'id_user' });
+User.belongsToMany(IoTGroup, { through: IoTGroupMember, foreignKey: 'id_user' });
+IoTGroup.belongsToMany(User, { through: IoTGroupMember, foreignKey: 'id_group' });
 
-User.hasMany(UserRatingIoT, { foreignKey: 'id_user' });
-UserRatingIoT.belongsTo(User, { foreignKey: 'id_user' });
+IoTGroupMember.belongsTo(User, { foreignKey: 'id_user' });
+User.hasMany(IoTGroupMember, { foreignKey: 'id_user' });
 
-GroupElectric.hasMany(IoTJournal, { foreignKey: 'id_group' });
-IoTJournal.belongsTo(GroupElectric, { foreignKey: 'id_group' });
+IoTGroup.hasMany(LectureIoT, { foreignKey: 'id_group' });
+LectureIoT.belongsTo(IoTGroup, { foreignKey: 'id_group' });
 
-ClassesElectric.hasMany(IoTJournal, { foreignKey: 'id_classes' });
-IoTJournal.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
+IoTGroup.hasMany(IoTJournal, { foreignKey: 'id_group' });
+IoTJournal.belongsTo(IoTGroup, { foreignKey: 'id_group' });
 
-User.hasMany(IoTJournal, { foreignKey: 'id_user' });
-IoTJournal.belongsTo(User, { foreignKey: 'id_user' });
+IoTGroup.hasMany(ProjectIoT, { foreignKey: 'id_group' });
+ProjectIoT.belongsTo(IoTGroup, { foreignKey: 'id_group' });
 
-User.hasMany(ProjectIoT, { foreignKey: 'id_user' });
-ProjectIoT.belongsTo(User, { foreignKey: 'id_user' });
+IoTGroup.hasMany(ScheduleIoT, { foreignKey: 'id_group' });
+ScheduleIoT.belongsTo(IoTGroup, { foreignKey: 'id_group' });
 
-User.hasMany(LectureIoT, { foreignKey: 'id_user' });
-LectureIoT.belongsTo(User, { foreignKey: 'id_user' });
+// Связи для Informatics
+User.belongsToMany(InformaticsGroup, { through: InformaticsGroupMember, foreignKey: 'id_user' });
+InformaticsGroup.belongsToMany(User, { through: InformaticsGroupMember, foreignKey: 'id_group' });
 
-LectureIoT.hasMany(ScheduleIoT, { foreignKey: 'id_classes' });
-ScheduleIoT.belongsTo(LectureIoT, { foreignKey: 'id_classes' });
+InformaticsGroupMember.belongsTo(User, { foreignKey: 'id_user' });
+User.hasMany(InformaticsGroupMember, { foreignKey: 'id_user' });
 
-ClassesElectric.hasMany(ScheduleIoT, { foreignKey: 'id_classes' });
-ScheduleIoT.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
+InformaticsGroup.hasMany(LessonInformatics, { foreignKey: 'id_group' });
+LessonInformatics.belongsTo(InformaticsGroup, { foreignKey: 'id_group' });
 
-// Связи для School
-User.hasMany(ClassScholl, { foreignKey: 'id_user' });
-ClassScholl.belongsTo(User, { foreignKey: 'id_user' });
+InformaticsGroup.hasMany(JournalInformatics, { foreignKey: 'id_group' });
+JournalInformatics.belongsTo(InformaticsGroup, { foreignKey: 'id_group' });
 
-ClassScholl.hasMany(LessonScholl, { foreignKey: 'id_class' });
-LessonScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
+InformaticsGroup.hasMany(ScheduleInformatics, { foreignKey: 'id_group' });
+ScheduleInformatics.belongsTo(InformaticsGroup, { foreignKey: 'id_group' });
 
-ClassScholl.hasMany(CareerGuidanceScholl, { foreignKey: 'id_class' });
-CareerGuidanceScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
-
-ClassScholl.hasMany(ScheduleScholl, { foreignKey: 'id_class' });
-ScheduleScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
-
-User.hasMany(OlympiadScholl, { foreignKey: 'id_user' });
-OlympiadScholl.belongsTo(User, { foreignKey: 'id_user' });
-
-OlympiadScholl.hasMany(OlympiadResultsScholl, { foreignKey: 'id_olympiads' });
-OlympiadResultsScholl.belongsTo(OlympiadScholl, { foreignKey: 'id_olympiads' });
-
-User.hasMany(ElectiveScholl, { foreignKey: 'id_user' });
-ElectiveScholl.belongsTo(User, { foreignKey: 'id_user' });
-
-ClassScholl.hasMany(JournalScholl, { foreignKey: 'id_class' });
-JournalScholl.belongsTo(ClassScholl, { foreignKey: 'id_class' });
-
-LessonScholl.hasMany(JournalScholl, { foreignKey: 'id_lesson' });
-JournalScholl.belongsTo(LessonScholl, { foreignKey: 'id_lesson' });
-
-User.hasMany(JournalScholl, { foreignKey: 'id_user' });
-JournalScholl.belongsTo(User, { foreignKey: 'id_user' });
-
-LessonScholl.hasMany(ScheduleScholl, { foreignKey: 'id_lesson' });
-ScheduleScholl.belongsTo(LessonScholl, { foreignKey: 'id_lesson' });
-
-ElectiveScholl.hasMany(ScheduleScholl, { foreignKey: 'id_elective' });
-ScheduleScholl.belongsTo(ElectiveScholl, { foreignKey: 'id_elective' });
-
+// Связи для форума
 User.hasMany(ForumTopic, { foreignKey: 'userId' });
 ForumTopic.belongsTo(User, { foreignKey: 'userId' });
 
@@ -375,6 +348,13 @@ ForumPost.belongsTo(ForumTopic, { foreignKey: 'topicId' });
 User.hasMany(ForumPost, { foreignKey: 'userId' });
 ForumPost.belongsTo(User, { foreignKey: 'userId' });
 
+// Связи для материалов
+MaterialsLibrary.hasMany(ClassesElectric, { foreignKey: 'id_materials' });
+ClassesElectric.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
+
+MaterialsLibrary.hasMany(LessonInformatics, { foreignKey: 'id_materials' });
+LessonInformatics.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
+
 // Экспорт всех моделей
 module.exports = {
   User,
@@ -383,7 +363,8 @@ module.exports = {
   ForumTopic,
   ForumPost,
   // Electric
-  GroupElectric,
+  ElectricGroup,
+  ElectricGroupMember,
   ClassesElectric,
   JournalElectric,
   HackathonElectric,
@@ -391,6 +372,8 @@ module.exports = {
   ScheduleElectric,
   ProjectElectric,
   // IoT
+  IoTGroup,
+  IoTGroupMember,
   InternshipApplicationIoT,
   InternshipProgramIoT,
   UserRatingIoT,
@@ -398,15 +381,17 @@ module.exports = {
   ProjectIoT,
   LectureIoT,
   ScheduleIoT,
-  // School
-  ClassScholl,
-  LessonScholl,
-  CareerGuidanceScholl,
-  JournalScholl,
-  ScheduleScholl,
-  OlympiadScholl,
-  OlympiadResultsScholl,
-  ElectiveScholl,
+  // Informatics
+  InformaticsGroup,
+  InformaticsGroupMember,
+  ClassInformatics,
+  LessonInformatics,
+  CareerGuidanceInformatics,
+  JournalInformatics,
+  ScheduleInformatics,
+  OlympiadInformatics,
+  OlympiadResultsInformatics,
+  ElectiveInformatics,
   // Auth
   RefreshToken
 };

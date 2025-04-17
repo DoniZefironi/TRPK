@@ -1,11 +1,10 @@
 const Router = require('express');
-const materialController = require('../controllers/materialController');
-const router = new Router();
+const materialsController = require('../controllers/materialController');
+const router = Router();
 
-router.post('/', materialController.createMaterial); 
-router.get('/', materialController.getAllMaterials);
-router.get('/:id', materialController.getMaterialById); 
-router.delete('/:id', materialController.deleteMaterial); 
-router.put('/:id', materialController.updateMaterial); 
+router.post('/', materialsController.createMaterial);  // Добавление материала
+router.get('/', materialsController.getAllMaterials); // Чтение всех материалов
+router.put('/:id', materialsController.updateMaterial); // Обновление материала
+router.delete('/:id', materialsController.deleteMaterial); // Удаление материала
 
 module.exports = router;

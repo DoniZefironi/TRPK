@@ -4,6 +4,11 @@ import userReducer from './slice/userSlice';
 import materialReducer from './slice/materialSlice';
 import sectionReducer from './slice/sectionSlice';
 import forumReducer from './slice/forumSlice';
+import groupReducer from './slice/groupSlice';
+import lectureReducer from './slice/lectureSlice';
+import projectReducer from './slice/projectSlice';
+import journalReducer from './slice/journalSlice';
+import competitionReducer from './slice/competitionSlice';
 
 const store = configureStore({
     reducer: {
@@ -12,6 +17,11 @@ const store = configureStore({
         materials: materialReducer,
         sections: sectionReducer,
         forum: forumReducer,
+        groups: groupReducer,
+        lectures: lectureReducer,
+        projects: projectReducer,
+        journal: journalReducer,
+        competitions: competitionReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({ serializableCheck: false }),
