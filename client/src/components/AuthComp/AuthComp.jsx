@@ -1,41 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser, loginUser } from '../../store/slice/authSlice';
+import { registerUser, loginUser, clearAuthState } from '../../store/slice/authSlice';
 import { useNavigate } from 'react-router-dom';
 import './AuthComp.css';
 
 const AuthComp = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const navigate = useNavigate(); // Хук для навигации
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-    permissions: 'electronics',
+    permissions: 'Electric',
   });
+  const [formErrors, setFormErrors] = useState({});
   const dispatch = useDispatch();
   const { isLoading, error, token } = useSelector((state) => state.auth);
 
-  // Переключение форм входа и регистрации
+  // Очистка ошибок при переключении между формами
+  useEffect(() => {
+    dispatch(clearAuthState());
+    setFormErrors({});
+  }, [isLogin, dispatch]);
+
+  // Редирект при успешной аутентификации
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Очистка ошибки при изменении поля
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email обязателен';
+    } else if (!emailRegex.test(formData.email)) {
+      errors.email = 'Некорректный email';
+    }
+    
+    if (!formData.password) {
+      errors.password = 'Пароль обязателен';
+    } else if (formData.password.length < 6) {
+      errors.password = 'Пароль должен содержать минимум 6 символов';
+    }
+    
+    if (!isLogin && !formData.username.trim()) {
+      errors.username = 'Имя обязательно';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
+    if (!validateForm()) return;
+    
     try {
       if (isLogin) {
-        // Вход
-        await dispatch(loginUser({ email: formData.email, password: formData.password })).unwrap();
+        await dispatch(loginUser({ 
+          email: formData.email, 
+          password: formData.password 
+        })).unwrap();
       } else {
-        // Регистрация
-        await dispatch(registerUser(formData)).unwrap();
+        await dispatch(registerUser({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          permissions: formData.permissions
+        })).unwrap();
+        console.log('Отправляемые данные:', {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          permissions: formData.permissions
+        });
       }
-      // Редирект на главную страницу после успешной авторизации/регистрации
-      navigate('/');
     } catch (err) {
-      console.error('Ошибка авторизации/регистрации:', err);
+      console.error('Ошибка:', err.message || err);
     }
   };
 
@@ -43,87 +104,103 @@ const AuthComp = () => {
     <div className="auth-page">
       <div className="auth-container">
         {isLogin ? (
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit} className="login-form" noValidate>
             <h2>Войти</h2>
-            <label>
-              Электронная почта
+            <div className="form-group">
+              <label htmlFor="email">Электронная почта</label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Ваш email"
+                className={formErrors.email ? 'error' : ''}
               />
-            </label>
-            <label>
-              Пароль
+              {formErrors.email && <span className="error-message">{formErrors.email}</span>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Пароль</label>
               <input
                 type="password"
+                id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Введите пароль"
+                className={formErrors.password ? 'error' : ''}
               />
-            </label>
-            {error && <p className="error">{error}</p>}
+              {formErrors.password && <span className="error-message">{formErrors.password}</span>}
+            </div>
+            {error && <div className="server-error">{error}</div>}
             <button type="submit" disabled={isLoading}>
-              Войти
+              {isLoading ? 'Загрузка...' : 'Войти'}
             </button>
-            <p>
-              Нет аккаунта? <button onClick={() => setIsLogin(false)}>Регистрация</button>
+            <p className="toggle-form">
+              Нет аккаунта? <button type="button" onClick={() => setIsLogin(false)}>Регистрация</button>
             </p>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="register-form">
+          <form onSubmit={handleSubmit} className="register-form" noValidate>
             <h2>Регистрация</h2>
-            <label>
-              Полное имя
+            <div className="form-group">
+              <label htmlFor="username">Полное имя</label>
               <input
                 type="text"
+                id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Ваше имя"
+                className={formErrors.username ? 'error' : ''}
               />
-            </label>
-            <label>
-              Электронная почта
+              {formErrors.username && <span className="error-message">{formErrors.username}</span>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Электронная почта</label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Ваш email"
+                className={formErrors.email ? 'error' : ''}
               />
-            </label>
-            <label>
-              Пароль
+              {formErrors.email && <span className="error-message">{formErrors.email}</span>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Пароль</label>
               <input
                 type="password"
+                id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Введите пароль"
+                className={formErrors.password ? 'error' : ''}
               />
-            </label>
-            <label>
-              Курс
+              {formErrors.password && <span className="error-message">{formErrors.password}</span>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="permissions">Курс</label>
               <select
+                id="permissions"
                 name="permissions"
                 value={formData.permissions}
                 onChange={handleChange}
               >
-                <option value="electronics">Электроника</option>
-                <option value="informatics">Информатика</option>
-                <option value="iot">IoT</option>
+                <option value="Electric">Электроника</option>
+                <option value="Informatics">Информатика</option>
+                <option value="IoT">IoT</option>
               </select>
-            </label>
-            {error && <p className="error">{error}</p>}
+            </div>
+            {error && <div className="server-error">{error}</div>}
             <button type="submit" disabled={isLoading}>
-              Зарегистрироваться
+              {isLoading ? 'Загрузка...' : 'Зарегистрироваться'}
             </button>
-            <p>
-              Уже есть аккаунт? <button onClick={() => setIsLogin(true)}>Войти</button>
+            <p className="toggle-form">
+              Уже есть аккаунт? <button type="button" onClick={() => setIsLogin(true)}>Войти</button>
             </p>
           </form>
         )}

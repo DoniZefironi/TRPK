@@ -3,14 +3,13 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware'); // Авторизация для защищенных маршрутов
 
-// Общедоступные маршруты
-router.post('/register', userController.register); // Регистрация
-router.post('/login', userController.login); // Авторизация
-router.post('/refresh', userController.refresh); // Обновление токена
-router.post('/logout', userController.logout); // Выход из системы
+router.post('/register', userController.register);
+router.post('/login', userController.login);
+router.post('/logout', userController.logout);
+router.post('/refresh', userController.refresh);
 
 // Защищенные маршруты (требуется авторизация)
-router.get('/profile', authMiddleware, userController.getProfile); // Получение профиля текущего пользователя
-router.put('/profile', authMiddleware, userController.updateProfile); // Обновление профиля текущего пользователя
+router.get('/profile/:userId', userController.getUserProfile);
+router.put('/profile', userController.updateProfile); // Обновление профиля текущего пользователя
 
 module.exports = router;

@@ -8,19 +8,20 @@ const router = require('./routes/index');
 const authMiddleware = require('./middleware/authMiddleware.js');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware.js');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const PORT = process.env.PORT || 2280;
 
 const app = express();
 
 // Настройка CORS с явными заголовками
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
-
+const corsOptions = {
+  origin: 'http://localhost:3000', // Ваш фронтенд URL
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(fileUpload());
 app.use(express.static(path.resolve(__dirname, 'static')));

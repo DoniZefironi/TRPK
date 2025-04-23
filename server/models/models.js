@@ -17,7 +17,8 @@ const User = createModel('User', {
   role: { type: DataTypes.STRING, defaultValue: 'USER' },
   permissions: {
     type: DataTypes.ENUM('Electric', 'Informatics', 'IoT'),
-    allowNull: false
+    allowNull: false,
+    defaultValue: 'Electric'
   },
   avatar: { type: DataTypes.STRING, allowNull: true },
   phone: { type: DataTypes.STRING, allowNull: true },

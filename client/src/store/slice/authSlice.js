@@ -1,78 +1,143 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { register, login, refreshToken, logout } from '../../service/AuthService';
 
-export const registerUser = createAsyncThunk('auth/registerUser', async (userData, { rejectWithValue }) => {
-  try {
-    return await register(userData);
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+export const registerUser = createAsyncThunk(
+  'auth/registerUser',
+  async (userData, { rejectWithValue }) => {
+    try {
+      return await register(userData);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-});
+);
 
-export const loginUser = createAsyncThunk('auth/loginUser', async (userData, { rejectWithValue }) => {
-  try {
-    return await login(userData);
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (userData, { rejectWithValue }) => {
+    try {
+      return await login(userData);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-});
+);
 
-export const refreshUserToken = createAsyncThunk('auth/refreshUserToken', async (token, { rejectWithValue }) => {
-  try {
-    return await refreshToken(token);
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+export const refreshUserToken = createAsyncThunk(
+  'auth/refreshUserToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await refreshToken();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-});
+);
 
-export const logoutUser = createAsyncThunk('auth/logoutUser', async (token, { rejectWithValue }) => {
-  try {
-    await logout(token);
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+export const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      await logout();
+      return true;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-});
+);
 
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: JSON.parse(localStorage.getItem('user')) || null, // Восстановление пользователя
-    token: localStorage.getItem('token') || null, // Восстановление токена
+    user: JSON.parse(localStorage.getItem('user')) || null,
+    token: localStorage.getItem('token') || null,
     isLoading: false,
     error: null,
+    lastAction: null
   },
   reducers: {
-    clearState: (state) => {
+    clearAuthState: (state) => {
       state.user = null;
       state.token = null;
       state.error = null;
-      localStorage.removeItem('user'); // Удаляем данные пользователя из localStorage
-      localStorage.removeItem('token'); // Удаляем токен
-    },
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
   },
   extraReducers: (builder) => {
+    // Сначала все addCase
     builder
+      // Регистрация
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem('user', JSON.stringify(action.payload.user)); // Сохраняем пользователя
-        localStorage.setItem('token', action.payload.token); // Сохраняем токен
+        state.isLoading = false;
+        state.lastAction = 'register';
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+      
+      // Логин
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.isLoading = false;
+        state.lastAction = 'login';
         localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('token', action.payload.token); // Сохраняем accessToken
-        localStorage.setItem('refreshToken', action.payload.refreshToken); // Добавьте эту строку
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+      
+      // Обновление токена
+      .addCase(refreshUserToken.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(refreshUserToken.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+        state.isLoading = false;
+        state.lastAction = 'refresh';
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(refreshUserToken.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
+      })
+      
+      // Логаут
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
-        localStorage.removeItem('user'); // Удаляем данные пользователя
-        localStorage.removeItem('token'); // Удаляем токен
+        state.isLoading = false;
+        state.lastAction = 'logout';
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.error = action.payload;
+        state.isLoading = false;
       });
-  },
+  }
 });
 
-export const { clearState } = authSlice.actions;
+export const { clearAuthState } = authSlice.actions;
 export default authSlice.reducer;

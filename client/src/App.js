@@ -8,9 +8,9 @@ import Contacts from './pages/Contacts/Contacts.jsx';
 import Events from './pages/Events/Events.jsx';
 import About from './pages/About/About.jsx';
 import AuthPage from './pages/Auth/Auth.jsx';
-import { clearState } from './store/slice/authSlice'; 
+import { clearAuthState } from './store/slice/authSlice'; // Изменено с clearState на clearAuthState
 import Profile from './pages/Profile/Profile.jsx';
-import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx'
+import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx';
 import MaterialsPage from './pages/MaterialsPage/MaterialsPage.jsx';
 import Section from './pages/Section/Section.jsx';
 import { ForumPage } from './pages/Forum/Forum';
@@ -23,8 +23,7 @@ const App = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-
-            dispatch(clearState());
+            dispatch(clearAuthState()); // Изменено с clearState на clearAuthState
         }
     }, [dispatch]);
 
