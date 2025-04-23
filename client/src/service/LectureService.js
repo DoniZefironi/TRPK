@@ -1,11 +1,16 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2280/api'; // Укажи свой серверный URL
+const API_URL = 'http://localhost:2280/api'; 
 
-// Запросы для работы с лекциями
+const getCourse = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  return user?.permissions; 
+};
+
 export const fetchLectures = async (course) => {
   try {
-    const response = await axios.get(`${API_URL}/${course}/lectures`);
+    const course = getCourse(); 
+    const response = await axios.get(`${API_URL}/lesson/${course}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка получения лекций');
@@ -14,7 +19,8 @@ export const fetchLectures = async (course) => {
 
 export const createLecture = async (course, data) => {
   try {
-    const response = await axios.post(`${API_URL}/${course}/lectures`, data);
+    const course = getCourse(); 
+    const response = await axios.post(`${API_URL}/lesson/${course}`, data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка создания лекции');
@@ -23,7 +29,8 @@ export const createLecture = async (course, data) => {
 
 export const updateLecture = async (course, id, data) => {
   try {
-    const response = await axios.put(`${API_URL}/${course}/lectures/${id}`, data);
+    const course = getCourse(); 
+    const response = await axios.put(`${API_URL}/lesson/${course}/${id}`, data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка обновления лекции');
@@ -32,7 +39,8 @@ export const updateLecture = async (course, id, data) => {
 
 export const deleteLecture = async (course, id) => {
   try {
-    await axios.delete(`${API_URL}/${course}/lectures/${id}`);
+    const course = getCourse(); 
+    await axios.delete(`${API_URL}/lesson/${course}/${id}`);
     return id;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка удаления лекции');

@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:2280/api';
 // Запросы для соревнований
 export const fetchCompetitions = async (type) => {
   try {
-    const response = await axios.get(`${API_URL}/${type}`);
+    const response = await axios.get(`${API_URL}/competition/${type}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка получения соревнований');
@@ -14,7 +14,7 @@ export const fetchCompetitions = async (type) => {
 
 export const createCompetition = async (type, data) => {
   try {
-    const response = await axios.post(`${API_URL}/${type}`, data);
+    const response = await axios.post(`${API_URL}/competition/${type}`, data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка создания соревнования');
@@ -23,7 +23,7 @@ export const createCompetition = async (type, data) => {
 
 export const updateCompetition = async (type, id, data) => {
   try {
-    const response = await axios.put(`${API_URL}/${type}/${id}`, data);
+    const response = await axios.put(`${API_URL}/competition/${type}/${id}`, data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка обновления соревнования');
@@ -32,7 +32,7 @@ export const updateCompetition = async (type, id, data) => {
 
 export const deleteCompetition = async (type, id) => {
   try {
-    await axios.delete(`${API_URL}/${type}/${id}`);
+    await axios.delete(`${API_URL}/competition/${type}/${id}`);
     return id;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка удаления соревнования');
@@ -42,7 +42,7 @@ export const deleteCompetition = async (type, id) => {
 // Запросы для результатов
 export const fetchResults = async (type, id_competition) => {
   try {
-    const response = await axios.get(`${API_URL}/${type}/results/${id_competition}`);
+    const response = await axios.get(`${API_URL}/competition/${type}/results/${id_competition}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка получения результатов');
@@ -51,7 +51,7 @@ export const fetchResults = async (type, id_competition) => {
 
 export const addResult = async (type, data) => {
   try {
-    const response = await axios.post(`${API_URL}/${type}/results`, data);
+    const response = await axios.post(`${API_URL}/competition/${type}/results`, data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Ошибка добавления результата');

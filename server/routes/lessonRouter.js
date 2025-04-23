@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const lessonController = require('../controllers/lessonController');
 
-router.post('/:course', lessonController.createLesson); // Создание урока/лекции
-router.get('/:course', lessonController.getLessons); // Получение всех уроков/лекций
-router.put('/:course/:id', lessonController.updateLesson); // Обновление урока/лекции
-router.delete('/:course/:id', lessonController.deleteLesson); // Удаление урока/лекции
+router.post('/:course', lessonController.createLesson); 
+router.get('/:course', lessonController.getLessons); 
+router.put('/:course/:id', lessonController.updateLesson);
+router.delete('/:course/:id', lessonController.deleteLesson); 
 
 module.exports = router;

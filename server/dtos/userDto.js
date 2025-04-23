@@ -4,6 +4,6 @@ module.exports = class UserDto {
     this.username = model.username;
     this.email = model.email;
     this.role = model.role;
-    this.permissions = model.permissions; // Информация о курсе
+    this.permissions = model.permissions; 
   }
 };

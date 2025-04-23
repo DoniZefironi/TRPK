@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const competitionController = require('../controllers/competitionController');
 
-router.post('/:type', competitionController.createCompetition); // Создание соревнования
-router.get('/:type', competitionController.getCompetitions); // Получение всех соревнований
-router.put('/:type/:id', competitionController.updateCompetition); // Обновление соревнования
-router.delete('/:type/:id', competitionController.deleteCompetition); // Удаление соревнования
+router.post('/:type', competitionController.createCompetition); 
+router.get('/:type', competitionController.getCompetitions); 
+router.put('/:type/:id', competitionController.updateCompetition); 
+router.delete('/:type/:id', competitionController.deleteCompetition); 
 
-// Работа с результатами
-router.post('/:type/results', competitionController.addResult); // Добавление результата
-router.get('/:type/results/:id_competition', competitionController.getResults); // Получение таблицы результатов
+router.post('/:type/results', competitionController.addResult); 
+router.get('/:type/results/:id_competition', competitionController.getResults); 
 
 module.exports = router;
