@@ -1,93 +1,145 @@
-const { JournalElectric, IoTJournal, JournalInformatics, User } = require('../models/models');
+const models = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 const getJournalModel = (course) => {
-    switch (course) {
-        case 'electronics': return JournalElectric;
-        case 'iot': return IoTJournal;
-        case 'informatics': return JournalInformatics;
+    switch (course.toLowerCase()) {
+        case 'electric': return models.JournalElectric;
+        case 'iot': return models.JournalIoT;
+        case 'informatics': return models.JournalInformatics;
         default: return null;
     }
 };
 
 class JournalController {
-
     // Добавление оценки и успеваемости студенту
-    async addGrade(req, res) {
+    async addGrade(req, res, next) {
         try {
-            const { course, id_user, grades, academic_performance } = req.body;
+            const { course, id_user, id_classes, grades, academic_performance } = req.body;
             const journalModel = getJournalModel(course);
 
             if (!journalModel) {
-                return res.status(400).json({ error: 'Недопустимый курс' });
+                return next(ApiError.badRequest('Недопустимый курс'));
             }
 
-            const newEntry = await journalModel.create({ id_user, grades, academic_performance, change_date: new Date() });
-            res.status(201).json(newEntry);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
+            const newEntry = await journalModel.create({ 
+                id_user, 
+                id_classes,
+                grades, 
+                academic_performance, 
+                change_date: new Date() 
+            });
+            
+            return res.json(newEntry);
+        } catch (e) {
+            next(ApiError.internal(e.message));
         }
     }
 
-    // Получение всех записей журнала
-    async getJournal(req, res) {
+    // Получение всех записей журнала с пагинацией
+    async getJournal(req, res, next) {
         try {
             const { course } = req.params;
+            let { page, limit } = req.query;
+            
+            page = page || 1;
+            limit = limit || 10;
+            let offset = page * limit - limit;
+
             const journalModel = getJournalModel(course);
 
             if (!journalModel) {
-                return res.status(400).json({ error: 'Недопустимый курс' });
+                return next(ApiError.badRequest('Недопустимый курс'));
             }
 
-            const journalEntries = await journalModel.findAll({ include: [User] });
-            res.status(200).json(journalEntries);
-        } catch (error) {
-            res.status(500).json({ error: error.message });
+            const journalEntries = await journalModel.findAndCountAll({
+                include: [{
+                    model: models.User,
+                    attributes: ['id_user', 'username', 'email']
+                }, {
+                    model: models[`Lecture${course.charAt(0).toUpperCase() + course.slice(1)}`],
+                    attributes: ['id_classes', 'lecture_title']
+                }],
+                limit,
+                offset
+            });
+            
+            return res.json(journalEntries);
+        } catch (e) {
+            next(ApiError.internal(e.message));
+        }
+    }
+
+    // Получение оценок конкретного студента
+    async getStudentGrades(req, res, next) {
+        try {
+            const { course, id_user } = req.params;
+            const journalModel = getJournalModel(course);
+
+            if (!journalModel) {
+                return next(ApiError.badRequest('Недопустимый курс'));
+            }
+
+            const grades = await journalModel.findAll({
+                where: { id_user },
+                include: [{
+                    model: models[`Lecture${course.charAt(0).toUpperCase() + course.slice(1)}`],
+                    attributes: ['lecture_title', 'date']
+                }]
+            });
+            
+            return res.json(grades);
+        } catch (e) {
+            next(ApiError.internal(e.message));
         }
     }
 
     // Обновление оценки и успеваемости
-    async updateGrade(req, res) {
+    async updateGrade(req, res, next) {
         try {
             const { course, id_journal } = req.params;
             const { grades, academic_performance } = req.body;
             const journalModel = getJournalModel(course);
 
             if (!journalModel) {
-                return res.status(400).json({ error: 'Недопустимый курс' });
+                return next(ApiError.badRequest('Недопустимый курс'));
             }
 
             const journalEntry = await journalModel.findByPk(id_journal);
             if (!journalEntry) {
-                return res.status(404).json({ error: 'Запись журнала не найдена' });
+                return next(ApiError.notFound('Запись журнала не найдена'));
             }
 
-            await journalEntry.update({ grades, academic_performance, change_date: new Date() });
-            res.status(200).json({ message: 'Оценка и успеваемость обновлены', journalEntry });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
+            await journalEntry.update({ 
+                grades, 
+                academic_performance, 
+                change_date: new Date() 
+            });
+            
+            return res.json(journalEntry);
+        } catch (e) {
+            next(ApiError.internal(e.message));
         }
     }
 
     // Удаление записи журнала
-    async deleteGrade(req, res) {
+    async deleteGrade(req, res, next) {
         try {
             const { course, id_journal } = req.params;
             const journalModel = getJournalModel(course);
 
             if (!journalModel) {
-                return res.status(400).json({ error: 'Недопустимый курс' });
+                return next(ApiError.badRequest('Недопустимый курс'));
             }
 
             const journalEntry = await journalModel.findByPk(id_journal);
             if (!journalEntry) {
-                return res.status(404).json({ error: 'Запись журнала не найдена' });
+                return next(ApiError.notFound('Запись журнала не найдена'));
             }
 
             await journalEntry.destroy();
-            res.status(200).json({ message: 'Запись удалена' });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
+            return res.json({ message: 'Запись успешно удалена' });
+        } catch (e) {
+            next(ApiError.internal(e.message));
         }
     }
 }

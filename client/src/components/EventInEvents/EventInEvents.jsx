@@ -5,26 +5,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getLectures, removeLecture } from '../../store/slice/lectureSlice';
 import LectureModal from '../LectureModal/LectureModal';
 
-const EventsSection = ({ course }) => {
+// Функция для получения курса из localStorage
+const getCourse = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  return user?.permissions || 'electronics';
+};
+
+const EventsSection = () => {
   const dispatch = useDispatch();
   const lectures = useSelector((state) => state.lectures.items);
   const loading = useSelector((state) => state.lectures.loading);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedLecture, setSelectedLecture] = useState(null);
+  const course = getCourse();
 
   useEffect(() => {
     dispatch(getLectures(course));
-  }, [dispatch, course]);
+  }, [dispatch, course]); // Добавляем `course` в зависимости
 
   const openModal = (lecture = null) => {
+    console.log("Открытие модального окна:", lecture);
     setSelectedLecture(lecture);
     setModalOpen(true);
-};
+  };
 
-const closeModal = () => {
+  const closeModal = () => {
+    console.log("Закрытие модального окна");
     setModalOpen(false);
     setSelectedLecture(null);
-};
+  };
 
   if (loading) return <p>Загрузка лекций...</p>;
 
@@ -58,7 +67,15 @@ const closeModal = () => {
         </Link>
       </div>
 
-      {isModalOpen && <LectureModal course={course} lecture={selectedLecture} closeModal={closeModal} />}
+      {isModalOpen && (
+  <LectureModal 
+    isOpen={isModalOpen} 
+    course={course} 
+    lecture={selectedLecture} 
+    onClose={closeModal}  
+  />
+)}
+
     </section>
   );
 };

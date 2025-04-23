@@ -1,26 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const courseMiddleware = require('../middleware/courseMiddleware');
+const authMiddleware = require('../middleware/authMiddleware'); // Авторизация для защищенных маршрутов
 
+// Общедоступные маршруты
 router.post('/register', userController.register); // Регистрация
 router.post('/login', userController.login); // Авторизация
 router.post('/refresh', userController.refresh); // Обновление токена
 router.post('/logout', userController.logout); // Выход из системы
-router.put('/:id', userController.updateUser);
-// Пример защищенных маршрутов на основе курса
-router.get('/electronics-content', courseMiddleware('electronics'), (req, res) => {
-  res.json({ message: 'Доступ разрешен к контенту для Электроники' });
-});
 
-router.get('/informatics-content', courseMiddleware('informatics'), (req, res) => {
-  res.json({ message: 'Доступ разрешен к контенту для Информатики' });
-});
+// Защищенные маршруты (требуется авторизация)
+router.get('/profile', authMiddleware, userController.getProfile); // Получение профиля текущего пользователя
+router.put('/profile', authMiddleware, userController.updateProfile); // Обновление профиля текущего пользователя
 
-router.get('/iot-content', courseMiddleware('IoT'), (req, res) => {
-  res.json({ message: 'Доступ разрешен к контенту для IoT' });
-});
-router.get('/:id', userController.getUserInfo); // Маршрут для получения данных пользователя
-
-
-module.exports = router; // Экспорт маршрутов
+module.exports = router;

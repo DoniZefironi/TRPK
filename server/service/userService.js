@@ -18,7 +18,7 @@ class UserService {
         });
 
         const userDto = new UserDto(user);
-        const tokens = tokenService.generateToken({ ...userDto });
+        const tokens = tokenService.generateTokens({ ...userDto });
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return { ...tokens, user: userDto };
     }
@@ -43,7 +43,7 @@ async login(email, password) {
 }
 
     async logout(refreshToken) {
-        const token = await tokenService.removeToken(refreshToken);
+        const tokens = tokenService.generateTokens({ ...userDto });
         return token;
     }
 
@@ -60,7 +60,7 @@ async login(email, password) {
 
         const user = await User.findOne({ where: { id: userData.id } });
         const userDto = new UserDto(user);
-        const tokens = tokenService.generateToken({ ...userDto });
+        const tokens = tokenService.generateTokens({ ...userDto });
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return { ...tokens, user: userDto };
     }

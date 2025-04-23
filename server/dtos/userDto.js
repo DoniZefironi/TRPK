@@ -1,9 +1,11 @@
-module.exports = class UserDto {
-  constructor(model) {
-    this.id_user = model.id_user;
-    this.username = model.username;
-    this.email = model.email;
-    this.role = model.role;
-    this.permissions = model.permissions; 
+class UserDto {
+  constructor(user) {
+    this.id = user.id_user; 
+    this.username = user.username;
+    this.email = user.email;
+    this.role = user.role;
+    this.permissions = user.permissions;
   }
-};
+}
+
+module.exports = UserDto;

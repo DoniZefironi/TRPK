@@ -1,25 +1,23 @@
 const sequelize = require('../db');
 const { DataTypes } = require('sequelize');
 
-const allowedCourses = ['electronics', 'informatics', 'IoT'];
+const allowedCourses = ['Electric', 'IoT', 'Informatics'];
+
+// Фабрика моделей
+const createModel = (name, attributes, options = {}) => {
+  return sequelize.define(name, attributes, options);
+};
 
 // Основные модели
-const User = sequelize.define('User', {
+const User = createModel('User', {
   id_user: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   username: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false, unique: true },
   password: { type: DataTypes.STRING, allowNull: false },
   role: { type: DataTypes.STRING, defaultValue: 'USER' },
   permissions: {
-    type: DataTypes.ENUM, 
-    values: allowedCourses,
-    allowNull: false,
-    validate: {
-      isIn: {
-        args: [allowedCourses],
-        msg: `Permissions должны быть одним из: ${allowedCourses.join(', ')}`
-      }
-    }
+    type: DataTypes.ENUM('Electric', 'Informatics', 'IoT'),
+    allowNull: false
   },
   avatar: { type: DataTypes.STRING, allowNull: true },
   phone: { type: DataTypes.STRING, allowNull: true },
@@ -34,29 +32,29 @@ const User = sequelize.define('User', {
   joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
-const ForumSection = sequelize.define('ForumSection', {
+const ForumSection = createModel('ForumSection', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, allowNull: false },
   type: { 
-    type: DataTypes.ENUM('iot', 'electric', 'informatics'), 
+    type: DataTypes.ENUM('Electric', 'Informatics', 'IoT'),
     allowNull: false 
   },
   description: { type: DataTypes.TEXT }
 }, { timestamps: false });
 
-const ForumTopic = sequelize.define('ForumTopic', {
+const ForumTopic = createModel('ForumTopic', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: { type: DataTypes.STRING, allowNull: false },
   content: { type: DataTypes.TEXT, allowNull: false },
   views: { type: DataTypes.INTEGER, defaultValue: 0 }
 }, { timestamps: true });
 
-const ForumPost = sequelize.define('ForumPost', {
+const ForumPost = createModel('ForumPost', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   content: { type: DataTypes.TEXT, allowNull: false }
 }, { timestamps: true });
 
-const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
+const MaterialsLibrary = createModel('MaterialsLibrary', {
   id_material: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   topic_materials: { type: DataTypes.STRING },
   title: { type: DataTypes.STRING },
@@ -65,9 +63,9 @@ const MaterialsLibrary = sequelize.define('MaterialsLibrary', {
   upload_date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 });
 
-// Базовые модели для групп и участников
-const createGroupModel = (name) => {
-  return sequelize.define(`${name}Group`, {
+// Фабрики для повторяющихся моделей
+const createGroupModel = (course) => {
+  return createModel(`${course}Group`, {
     id_group: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: true },
@@ -77,8 +75,8 @@ const createGroupModel = (name) => {
   });
 };
 
-const createGroupMemberModel = (name) => {
-  return sequelize.define(`${name}GroupMember`, {
+const createGroupMemberModel = (course) => {
+  return createModel(`${course}GroupMember`, {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     role: { type: DataTypes.STRING, defaultValue: 'member' },
     joined_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
@@ -86,28 +84,55 @@ const createGroupMemberModel = (name) => {
   });
 };
 
-// Модели для Electric
-const ElectricGroup = createGroupModel('Electric');
-const ElectricGroupMember = createGroupMemberModel('Electric');
+const createLectureModel = (course) => {
+  return createModel(`Lecture${course}`, {
+    id_classes: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    lecture_title: { type: DataTypes.STRING, allowNull: false },
+    id_materials: { type: DataTypes.INTEGER },
+    description: { type: DataTypes.TEXT },
+    duration: { type: DataTypes.STRING },
+    date: { type: DataTypes.STRING },
+    slides: { type: DataTypes.STRING }
+  });
+};
 
-const ClassesElectric = sequelize.define('ClassesElectric', {
-  id_classes: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  title: { type: DataTypes.STRING, allowNull: false },
-  id_materials: { type: DataTypes.INTEGER },
-  description: { type: DataTypes.STRING },
-  time: { type: DataTypes.STRING },
-  date: { type: DataTypes.STRING }
+const createJournalModel = (course) => {
+  return createModel(`Journal${course}`, {
+    id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    grades: { type: DataTypes.STRING },
+    id_classes: { type: DataTypes.INTEGER },
+    change_date: { type: DataTypes.DATE },
+    academic_performance: { type: DataTypes.STRING },
+    id_user: { type: DataTypes.INTEGER }
+  });
+};
+
+const createScheduleModel = (course) => {
+  return createModel(`Schedule${course}`, {
+    id_schedule: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    id_classes: { type: DataTypes.INTEGER },
+    date: { type: DataTypes.DATE },
+    time: { type: DataTypes.TIME, allowNull: true }
+  });
+};
+
+// Создание моделей для каждого курса
+const models = {};
+
+allowedCourses.forEach(course => {
+  // Группы
+  models[`${course}Group`] = createGroupModel(course);
+  models[`${course}GroupMember`] = createGroupMemberModel(course);
+  
+  // Лекции, журналы, расписания
+  models[`Lecture${course}`] = createLectureModel(course);
+  models[`Journal${course}`] = createJournalModel(course);
+  models[`Schedule${course}`] = createScheduleModel(course);
 });
 
-const JournalElectric = sequelize.define('JournalElectric', {
-  id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  grades: { type: DataTypes.STRING },
-  id_classes: { type: DataTypes.INTEGER },
-  change_date: { type: DataTypes.DATE },
-  academic_performance: { type: DataTypes.STRING }
-});
-
-const HackathonElectric = sequelize.define('HackathonElectric', {
+// Уникальные модели для каждого курса
+// Electric
+models.HackathonElectric = createModel('HackathonElectric', {
   id_hackathon: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   topic: { type: DataTypes.STRING },
   date: { type: DataTypes.DATE },
@@ -115,7 +140,7 @@ const HackathonElectric = sequelize.define('HackathonElectric', {
   id_user: { type: DataTypes.INTEGER }
 });
 
-const HackathonResultsElectric = sequelize.define('HackathonResultsElectric', {
+models.HackathonResultsElectric = createModel('HackathonResultsElectric', {
   id_result: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_hackathon: { type: DataTypes.INTEGER },
   team_name: { type: DataTypes.STRING },
@@ -124,14 +149,7 @@ const HackathonResultsElectric = sequelize.define('HackathonResultsElectric', {
   position: { type: DataTypes.INTEGER }
 });
 
-const ScheduleElectric = sequelize.define('ScheduleElectric', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_classes: { type: DataTypes.INTEGER },
-  date: { type: DataTypes.DATE },
-  time: { type: DataTypes.TIME, allowNull: true },
-});
-
-const ProjectElectric = sequelize.define('ProjectElectric', {
+models.ProjectElectric = createModel('ProjectElectric', {
   id_project: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   deadlines: { type: DataTypes.DATE },
   name: { type: DataTypes.STRING },
@@ -139,11 +157,8 @@ const ProjectElectric = sequelize.define('ProjectElectric', {
   status: { type: DataTypes.STRING, defaultValue: 'in_progress' },
 });
 
-// Модели для IoT
-const IoTGroup = createGroupModel('IoT');
-const IoTGroupMember = createGroupMemberModel('IoT');
-
-const InternshipApplicationIoT = sequelize.define('InternshipApplicationIoT', {
+// IoT
+models.InternshipApplicationIoT = createModel('InternshipApplicationIoT', {
   application_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   contacts: { type: DataTypes.STRING },
   application_date: { type: DataTypes.DATE },
@@ -152,7 +167,7 @@ const InternshipApplicationIoT = sequelize.define('InternshipApplicationIoT', {
   id_user: { type: DataTypes.INTEGER }
 });
 
-const InternshipProgramIoT = sequelize.define('InternshipProgramIoT', {
+models.InternshipProgramIoT = createModel('InternshipProgramIoT', {
   program_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   program_name: { type: DataTypes.STRING },
   program_description: { type: DataTypes.STRING },
@@ -164,23 +179,7 @@ const InternshipProgramIoT = sequelize.define('InternshipProgramIoT', {
   specialization: { type: DataTypes.STRING }
 });
 
-const UserRatingIoT = sequelize.define('UserRatingIoT', {
-  id_rating: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  score: { type: DataTypes.FLOAT },
-  period: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER }
-});
-
-const IoTJournal = sequelize.define('IoTJournal', {
-  id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  grades: { type: DataTypes.STRING },
-  id_classes: { type: DataTypes.INTEGER },
-  change_date: { type: DataTypes.DATE },
-  academic_performance: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER }
-});
-
-const ProjectIoT = sequelize.define('ProjectIoT', {
+models.ProjectIoT = createModel('ProjectIoT', {
   id_project: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   project_name: { type: DataTypes.STRING },
   team_members: { type: DataTypes.STRING },
@@ -188,58 +187,15 @@ const ProjectIoT = sequelize.define('ProjectIoT', {
   id_user: { type: DataTypes.INTEGER }
 });
 
-const LectureIoT = sequelize.define('LectureIoT', {
-  id_lecture: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  lecture_title: { type: DataTypes.STRING },
-  slides: { type: DataTypes.STRING },
-  duration: { type: DataTypes.STRING },
-  id_user: { type: DataTypes.INTEGER }
-});
-
-const ScheduleIoT = sequelize.define('ScheduleIoT', {
-  id_schedule: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  date: { type: DataTypes.DATE },
-  id_classes: { type: DataTypes.INTEGER }
-});
-
-// Модели для Informatics
-const InformaticsGroup = createGroupModel('Informatics');
-const InformaticsGroupMember = createGroupMemberModel('Informatics');
-
-const ClassInformatics = sequelize.define('ClassInformatics', {
-  id_class: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name_class: { type: DataTypes.STRING },
-});
-
-const LessonInformatics = sequelize.define('LessonInformatics', {
-  id_lesson: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING },
-  topic_lesson: { type: DataTypes.STRING },
-  id_materials: { type: DataTypes.INTEGER },
-});
-
-const CareerGuidanceInformatics = sequelize.define('CareerGuidanceInformatics', {
+// Informatics
+models.CareerGuidanceInformatics = createModel('CareerGuidanceInformatics', {
   id_guidance: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   date_career_guidance: { type: DataTypes.DATE },
   topic_career_guidance: { type: DataTypes.STRING },
   consultants: { type: DataTypes.STRING },
 });
 
-const JournalInformatics = sequelize.define('JournalInformatics', {
-  id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  grades: { type: DataTypes.JSONB },
-  id_lesson: { type: DataTypes.INTEGER },
-  change_date: { type: DataTypes.DATE },
-  id_user: { type: DataTypes.INTEGER }
-});
-
-const ScheduleInformatics = sequelize.define('ScheduleInformatics', {
-  id_schedule: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  id_lesson: { type: DataTypes.INTEGER },
-  date: { type: DataTypes.DATE },
-});
-
-const OlympiadInformatics = sequelize.define('OlympiadInformatics', {
+models.OlympiadInformatics = createModel('OlympiadInformatics', {
   id_olympiads: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
   topic_olympiads: { type: DataTypes.STRING },
@@ -247,7 +203,7 @@ const OlympiadInformatics = sequelize.define('OlympiadInformatics', {
   id_user: { type: DataTypes.INTEGER }
 });
 
-const OlympiadResultsInformatics = sequelize.define('OlympiadResultsInformatics', {
+models.OlympiadResultsInformatics = createModel('OlympiadResultsInformatics', {
   id_result: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_olympiads: { type: DataTypes.INTEGER },
   team_name: { type: DataTypes.STRING },
@@ -255,143 +211,214 @@ const OlympiadResultsInformatics = sequelize.define('OlympiadResultsInformatics'
   position: { type: DataTypes.INTEGER }
 });
 
-const ElectiveInformatics = sequelize.define('ElectiveInformatics', {
+models.ElectiveInformatics = createModel('ElectiveInformatics', {
   id_elective: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
   topic_elective: { type: DataTypes.STRING },
   id_user: { type: DataTypes.INTEGER }
 });
 
-// Модель для токенов
-const RefreshToken = sequelize.define('RefreshToken', {
+// Auth
+models.RefreshToken = createModel('RefreshToken', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   id_user: { type: DataTypes.INTEGER, allowNull: false },
   refresh_token: { type: DataTypes.TEXT, allowNull: false },
 });
 
+
+// Промежуточные модели для связей многие-ко-многим
+models.HackathonParticipants = sequelize.define('HackathonParticipants', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  result_id: { type: DataTypes.INTEGER },
+  user_id: { type: DataTypes.INTEGER },
+  createdAt: { 
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false
+  },
+  updatedAt: { 
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false
+  }
+});
+
+models.OlympiadParticipants = sequelize.define('OlympiadParticipants', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  result_id: { type: DataTypes.INTEGER },
+  user_id: { type: DataTypes.INTEGER },
+  createdAt: { 
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false
+  },
+  updatedAt: { 
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false
+  }
+});
+
 // Установка связей между моделями
+const setupAssociations = () => {
+  // Общие связи
+  models.User.hasMany(models.RefreshToken, { foreignKey: 'id_user' });
+  models.RefreshToken.belongsTo(models.User, { foreignKey: 'id_user' });
 
-// Общие связи
-User.hasMany(RefreshToken, { foreignKey: 'id_user' });
-RefreshToken.belongsTo(User, { foreignKey: 'id_user' });
+  // Связи для форума
+  models.User.hasMany(models.ForumTopic, { foreignKey: 'userId' });
+  models.ForumTopic.belongsTo(models.User, { foreignKey: 'userId' });
 
-// Связи для Electric
-User.belongsToMany(ElectricGroup, { through: ElectricGroupMember, foreignKey: 'id_user' });
-ElectricGroup.belongsToMany(User, { through: ElectricGroupMember, foreignKey: 'id_group' });
+  models.ForumSection.hasMany(models.ForumTopic, { foreignKey: 'sectionId' });
+  models.ForumTopic.belongsTo(models.ForumSection, { foreignKey: 'sectionId' });
 
-ElectricGroupMember.belongsTo(User, { foreignKey: 'id_user' });
-User.hasMany(ElectricGroupMember, { foreignKey: 'id_user' });
+  models.ForumTopic.hasMany(models.ForumPost, { foreignKey: 'topicId' });
+  models.ForumPost.belongsTo(models.ForumTopic, { foreignKey: 'topicId' });
 
-ElectricGroup.hasMany(ClassesElectric, { foreignKey: 'id_group' });
-ClassesElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
+  models.User.hasMany(models.ForumPost, { foreignKey: 'userId' });
+  models.ForumPost.belongsTo(models.User, { foreignKey: 'userId' });
 
-ElectricGroup.hasMany(JournalElectric, { foreignKey: 'id_group' });
-JournalElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
+  // Связи для материалов
+  models.MaterialsLibrary.hasMany(models.LectureElectric, { foreignKey: 'id_materials' });
+  models.LectureElectric.belongsTo(models.MaterialsLibrary, { foreignKey: 'id_materials' });
 
-ElectricGroup.hasMany(ProjectElectric, { foreignKey: 'id_group' });
-ProjectElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
+  models.MaterialsLibrary.hasMany(models.LectureIoT, { foreignKey: 'id_materials' });
+  models.LectureIoT.belongsTo(models.MaterialsLibrary, { foreignKey: 'id_materials' });
 
-ElectricGroup.hasMany(ScheduleElectric, { foreignKey: 'id_group' });
-ScheduleElectric.belongsTo(ElectricGroup, { foreignKey: 'id_group' });
+  models.MaterialsLibrary.hasMany(models.LectureInformatics, { foreignKey: 'id_materials' });
+  models.LectureInformatics.belongsTo(models.MaterialsLibrary, { foreignKey: 'id_materials' });
 
-ClassesElectric.hasMany(JournalElectric, { foreignKey: 'id_classes' });
-JournalElectric.belongsTo(ClassesElectric, { foreignKey: 'id_classes' });
+  // Связи для каждого курса
+  allowedCourses.forEach(course => {
+    const Group = models[`${course}Group`];
+    const GroupMember = models[`${course}GroupMember`];
+    const Lecture = models[`Lecture${course}`];
+    const Journal = models[`Journal${course}`];
+    const Schedule = models[`Schedule${course}`];
 
-User.hasMany(ProjectElectric, { foreignKey: 'creator_id' });
-ProjectElectric.belongsTo(User, { foreignKey: 'creator_id' });
+    // Связи групп
+    models.User.belongsToMany(Group, { through: GroupMember, foreignKey: 'id_user' });
+    Group.belongsToMany(models.User, { through: GroupMember, foreignKey: 'id_group' });
 
-// Связи для IoT
-User.belongsToMany(IoTGroup, { through: IoTGroupMember, foreignKey: 'id_user' });
-IoTGroup.belongsToMany(User, { through: IoTGroupMember, foreignKey: 'id_group' });
+    GroupMember.belongsTo(models.User, { foreignKey: 'id_user' });
+    models.User.hasMany(GroupMember, { foreignKey: 'id_user' });
 
-IoTGroupMember.belongsTo(User, { foreignKey: 'id_user' });
-User.hasMany(IoTGroupMember, { foreignKey: 'id_user' });
+    // Связи лекций, журналов и расписаний
+    Group.hasMany(Lecture, { foreignKey: 'id_group' });
+    Lecture.belongsTo(Group, { foreignKey: 'id_group' });
 
-IoTGroup.hasMany(LectureIoT, { foreignKey: 'id_group' });
-LectureIoT.belongsTo(IoTGroup, { foreignKey: 'id_group' });
+    Group.hasMany(Journal, { foreignKey: 'id_group' });
+    Journal.belongsTo(Group, { foreignKey: 'id_group' });
 
-IoTGroup.hasMany(IoTJournal, { foreignKey: 'id_group' });
-IoTJournal.belongsTo(IoTGroup, { foreignKey: 'id_group' });
+    Group.hasMany(Schedule, { foreignKey: 'id_group' });
+    Schedule.belongsTo(Group, { foreignKey: 'id_group' });
 
-IoTGroup.hasMany(ProjectIoT, { foreignKey: 'id_group' });
-ProjectIoT.belongsTo(IoTGroup, { foreignKey: 'id_group' });
+    Lecture.hasMany(Journal, { foreignKey: 'id_classes' });
+    Journal.belongsTo(Lecture, { foreignKey: 'id_classes' });
 
-IoTGroup.hasMany(ScheduleIoT, { foreignKey: 'id_group' });
-ScheduleIoT.belongsTo(IoTGroup, { foreignKey: 'id_group' });
+    Lecture.hasMany(Schedule, { foreignKey: 'id_classes' });
+    Schedule.belongsTo(Lecture, { foreignKey: 'id_classes' });
+  });
 
-// Связи для Informatics
-User.belongsToMany(InformaticsGroup, { through: InformaticsGroupMember, foreignKey: 'id_user' });
-InformaticsGroup.belongsToMany(User, { through: InformaticsGroupMember, foreignKey: 'id_group' });
+  // Дополнительные связи для уникальных моделей
+  models.User.hasMany(models.ProjectElectric, { foreignKey: 'creator_id' });
+  models.ProjectElectric.belongsTo(models.User, { foreignKey: 'creator_id' });
 
-InformaticsGroupMember.belongsTo(User, { foreignKey: 'id_user' });
-User.hasMany(InformaticsGroupMember, { foreignKey: 'id_user' });
+  models.User.hasMany(models.InternshipApplicationIoT, { foreignKey: 'id_user' });
+  models.InternshipApplicationIoT.belongsTo(models.User, { foreignKey: 'id_user' });
 
-InformaticsGroup.hasMany(LessonInformatics, { foreignKey: 'id_group' });
-LessonInformatics.belongsTo(InformaticsGroup, { foreignKey: 'id_group' });
+  models.User.hasMany(models.ProjectIoT, { foreignKey: 'id_user' });
+  models.ProjectIoT.belongsTo(models.User, { foreignKey: 'id_user' });
 
-InformaticsGroup.hasMany(JournalInformatics, { foreignKey: 'id_group' });
-JournalInformatics.belongsTo(InformaticsGroup, { foreignKey: 'id_group' });
+  models.User.hasMany(models.OlympiadInformatics, { foreignKey: 'id_user' });
+  models.OlympiadInformatics.belongsTo(models.User, { foreignKey: 'id_user' });
 
-InformaticsGroup.hasMany(ScheduleInformatics, { foreignKey: 'id_group' });
-ScheduleInformatics.belongsTo(InformaticsGroup, { foreignKey: 'id_group' });
+  models.User.hasMany(models.ElectiveInformatics, { foreignKey: 'id_user' });
+  models.ElectiveInformatics.belongsTo(models.User, { foreignKey: 'id_user' });
 
-// Связи для форума
-User.hasMany(ForumTopic, { foreignKey: 'userId' });
-ForumTopic.belongsTo(User, { foreignKey: 'userId' });
+  models.HackathonElectric.hasMany(models.HackathonResultsElectric, { foreignKey: 'id_hackathon' });
+  models.HackathonResultsElectric.belongsTo(models.HackathonElectric, { foreignKey: 'id_hackathon' });
 
-ForumSection.hasMany(ForumTopic, { foreignKey: 'sectionId' });
-ForumTopic.belongsTo(ForumSection, { foreignKey: 'sectionId' });
+  models.OlympiadInformatics.hasMany(models.OlympiadResultsInformatics, { foreignKey: 'id_olympiads' });
+  models.OlympiadResultsInformatics.belongsTo(models.OlympiadInformatics, { foreignKey: 'id_olympiads' });
 
-ForumTopic.hasMany(ForumPost, { foreignKey: 'topicId' });
-ForumPost.belongsTo(ForumTopic, { foreignKey: 'topicId' });
+    // Связи для участников соревнований
+    models.HackathonResultsElectric.belongsToMany(models.User, {
+      through: models.HackathonParticipants,
+      foreignKey: 'result_id',
+      otherKey: 'user_id',
+      as: 'participants'
+    });
+  
+    models.User.belongsToMany(models.HackathonResultsElectric, {
+      through: models.HackathonParticipants,
+      foreignKey: 'user_id',
+      otherKey: 'result_id',
+      as: 'hackathonResults'
+    });
+  
+    models.OlympiadResultsInformatics.belongsToMany(models.User, {
+      through: models.OlympiadParticipants,
+      foreignKey: 'result_id',
+      otherKey: 'user_id',
+      as: 'participants'
+    });
+  
+    models.User.belongsToMany(models.OlympiadResultsInformatics, {
+      through: models.OlympiadParticipants,
+      foreignKey: 'user_id',
+      otherKey: 'result_id',
+      as: 'olympiadResults'
+    });
 
-User.hasMany(ForumPost, { foreignKey: 'userId' });
-ForumPost.belongsTo(User, { foreignKey: 'userId' });
+    // Для ProjectElectric
+    models.ProjectIoT.belongsToMany(models.User, {
+      through: 'ProjectIoTMembers',
+      foreignKey: 'project_id',
+      otherKey: 'user_id',
+      as: 'members'  // Changed from 'team_members' to 'members'
+    });
+    
+    models.User.belongsToMany(models.ProjectIoT, {
+      through: 'ProjectIoTMembers',
+      foreignKey: 'user_id',
+      otherKey: 'project_id',
+      as: 'iot_projects'
+    });
+    
+    // Similarly for ProjectElectric if it has the same issue:
+    models.ProjectElectric = createModel('ProjectElectric', {
+      id_project: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      deadlines: { type: DataTypes.DATE },
+      name: { type: DataTypes.STRING },
+      description: { type: DataTypes.TEXT, allowNull: true },
+      status: { type: DataTypes.STRING, defaultValue: 'in_progress' },
+    });
+    
+    // And its associations:
+    models.ProjectElectric.belongsToMany(models.User, {
+      through: 'ProjectElectricMembers',
+      foreignKey: 'project_id',
+      otherKey: 'user_id',
+      as: 'members'  // Changed from 'team_members' to 'members'
+    });
+    
+    models.User.belongsToMany(models.ProjectElectric, {
+      through: 'ProjectElectricMembers',
+      foreignKey: 'user_id',
+      otherKey: 'project_id',
+      as: 'electric_projects'
+    });
+};
 
-// Связи для материалов
-MaterialsLibrary.hasMany(ClassesElectric, { foreignKey: 'id_materials' });
-ClassesElectric.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
+models.User = User;
+models.ForumSection = ForumSection;
+models.ForumTopic = ForumTopic;
+models.ForumPost = ForumPost;
+models.MaterialsLibrary = MaterialsLibrary;
 
-MaterialsLibrary.hasMany(LessonInformatics, { foreignKey: 'id_materials' });
-LessonInformatics.belongsTo(MaterialsLibrary, { foreignKey: 'id_materials' });
+// Устанавливаем связи
+setupAssociations();
 
 // Экспорт всех моделей
-module.exports = {
-  User,
-  MaterialsLibrary,
-  ForumSection,
-  ForumTopic,
-  ForumPost,
-  // Electric
-  ElectricGroup,
-  ElectricGroupMember,
-  ClassesElectric,
-  JournalElectric,
-  HackathonElectric,
-  HackathonResultsElectric,
-  ScheduleElectric,
-  ProjectElectric,
-  // IoT
-  IoTGroup,
-  IoTGroupMember,
-  InternshipApplicationIoT,
-  InternshipProgramIoT,
-  UserRatingIoT,
-  IoTJournal,
-  ProjectIoT,
-  LectureIoT,
-  ScheduleIoT,
-  // Informatics
-  InformaticsGroup,
-  InformaticsGroupMember,
-  ClassInformatics,
-  LessonInformatics,
-  CareerGuidanceInformatics,
-  JournalInformatics,
-  ScheduleInformatics,
-  OlympiadInformatics,
-  OlympiadResultsInformatics,
-  ElectiveInformatics,
-  // Auth
-  RefreshToken
-};
+module.exports = models;
