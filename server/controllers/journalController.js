@@ -39,33 +39,34 @@ class JournalController {
     async getJournal(req, res, next) {
         try {
             const { course } = req.params;
-            let { page, limit } = req.query;
-            
-            page = page || 1;
-            limit = limit || 10;
-            let offset = page * limit - limit;
-
+            let { page = 1, limit = 10 } = req.query;
+    
+            page = parseInt(page) || 1;
+            limit = parseInt(limit) || 10;
+            const offset = (page - 1) * limit;
+    
             const journalModel = getJournalModel(course);
-
             if (!journalModel) {
                 return next(ApiError.badRequest('Недопустимый курс'));
             }
-
+    
+            // Упрощенный запрос без include для тестирования
             const journalEntries = await journalModel.findAndCountAll({
-                include: [{
-                    model: models.User,
-                    attributes: ['id_user', 'username', 'email']
-                }, {
-                    model: models[`Lecture${course.charAt(0).toUpperCase() + course.slice(1)}`],
-                    attributes: ['id_classes', 'lecture_title']
-                }],
                 limit,
-                offset
+                offset,
+                order: [['id_journal', 'DESC']]
             });
-            
-            return res.json(journalEntries);
+    
+            return res.json({
+                rows: journalEntries.rows,
+                count: journalEntries.count,
+                currentPage: page,
+                totalPages: Math.ceil(journalEntries.count / limit),
+                limit
+            });
         } catch (e) {
-            next(ApiError.internal(e.message));
+            console.error('Journal get error:', e);
+            return next(ApiError.internal(e.message));
         }
     }
 

@@ -1,40 +1,66 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2280/api'; 
+const API_URL = 'http://localhost:2280/api/groups';
 
-// Запросы для работы с группами
-export const fetchGroups = async (course) => {
-  try {
-    const response = await axios.get(`${API_URL}/group/${course}/all`);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка получения групп');
-  }
+const getGroups = async (course, page = 1, limit = 10) => {
+  const response = await axios.get(`${API_URL}/${course}`, {
+    params: { page, limit }
+  });
+  return response.data;
 };
 
-export const createGroup = async (course, data) => {
-  try {
-    const response = await axios.post(`${API_URL}/group/${course}/create`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка создания группы');
+const getGroupDetails = async (course, id) => {
+  if (!course || !id) {
+    throw new Error('Course and ID are required');
   }
+  const response = await axios.get(`${API_URL}/${course}/${id}`);
+  return response.data;
 };
 
-export const updateGroup = async (course, id, data) => {
-  try {
-    const response = await axios.put(`${API_URL}/group/${course}/updateg/${id}`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка обновления группы');
-  }
+const createGroup = async (groupData) => {
+  const response = await axios.post(API_URL, groupData);
+  return response.data;
 };
 
-export const deleteGroup = async (course, id) => {
-  try {
-    await axios.delete(`${API_URL}/group/${course}/delete/${id}`);
-    return id;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка удаления группы');
+const updateGroup = async (course, id, groupData) => {
+  const response = await axios.put(`${API_URL}/${course}/${id}`, groupData);
+  return response.data;
+};
+
+const deleteGroup = async (course, id) => {
+  await axios.delete(`${API_URL}/${course}/${id}`);
+};
+
+const addMember = async (course, id, memberData) => {
+  const response = await axios.post(`${API_URL}/${course}/${id}/members`, memberData);
+  return response.data;
+};
+
+const getGroupMembers = async (course, id) => {
+  if (!course || !id) {
+    throw new Error('Course and ID are required');
   }
+  const response = await axios.get(`${API_URL}/${course}/${id}/members`);
+  return response.data;
+};
+
+const updateMember = async (course, id, userId, memberData) => {
+  const response = await axios.put(`${API_URL}/${course}/${id}/members/${userId}`, memberData);
+  return response.data;
+};
+
+const removeMember = async (course, id, userId) => {
+  await axios.delete(`${API_URL}/${course}/${id}/members/${userId}`);
+};
+
+export default {
+  getGroups,
+  getGroupDetails,
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  addMember,
+  getGroupMembers,
+  updateMember,
+  removeMember
 };

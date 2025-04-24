@@ -9,6 +9,7 @@ import lectureReducer from './slice/lectureSlice';
 import projectReducer from './slice/projectSlice';
 import journalReducer from './slice/journalSlice';
 import competitionReducer from './slice/competitionSlice';
+import electiveInformaticsReducer from './slice/electiveInformaticsSlice'
 
 const store = configureStore({
     reducer: {
@@ -18,10 +19,11 @@ const store = configureStore({
         sections: sectionReducer,
         forum: forumReducer,
         groups: groupReducer,
-        lectures: lectureReducer,
+        lessons: lectureReducer,
         projects: projectReducer,
         journal: journalReducer,
         competitions: competitionReducer,
+        electives: electiveInformaticsReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({ serializableCheck: false }),

@@ -1,0 +1,11 @@
+.groups-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .groups-page h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+  }

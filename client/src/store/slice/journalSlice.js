@@ -1,46 +1,146 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry } from '../../service/JournalService';
+import journalService from '../../service/JournalService';
 
-// Асинхронные экшены
-export const getJournalEntries = createAsyncThunk('journal/getEntries', async (course) => {
-    return await fetchJournalEntries(course);
-});
+export const fetchJournal = createAsyncThunk(
+  'journal/fetchJournal',
+  async ({ course, page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      return await journalService.getJournal(course, page, limit);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
-export const addJournalEntry = createAsyncThunk('journal/addEntry', async ({ course, data }) => {
-    return await createJournalEntry(course, data);
-});
+export const fetchStudentGrades = createAsyncThunk(
+  'journal/fetchStudentGrades',
+  async ({ course, id_user }, { rejectWithValue }) => {
+    try {
+      return await journalService.getStudentGrades(course, id_user);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
-export const editJournalEntry = createAsyncThunk('journal/editEntry', async ({ course, id, data }) => {
-    return await updateJournalEntry(course, id, data);
-});
+export const addGrade = createAsyncThunk(
+  'journal/addGrade',
+  async (data, { rejectWithValue }) => {
+    try {
+      return await journalService.addGrade(data);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
-export const removeJournalEntry = createAsyncThunk('journal/removeEntry', async ({ course, id }) => {
-    return await deleteJournalEntry(course, id);
-});
+export const updateGrade = createAsyncThunk(
+  'journal/updateGrade',
+  async ({ course, id_journal, data }, { rejectWithValue }) => {
+    try {
+      return await journalService.updateGrade(course, id_journal, data);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
-// Слайс управления журналом
+export const deleteGrade = createAsyncThunk(
+  'journal/deleteGrade',
+  async ({ course, id_journal }, { rejectWithValue }) => {
+    try {
+      await journalService.deleteGrade(course, id_journal);
+      return { id_journal };
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const journalSlice = createSlice({
     name: 'journal',
     initialState: {
-        items: [],
-        loading: false,
-        error: null,
+      entries: [],
+      studentGrades: [],
+      loading: false,
+      error: null,
+      currentPage: 1,
+      totalPages: 1
     },
-    reducers: {},
+    reducers: {
+      clearError: (state) => {
+        state.error = null;
+      }
+    },
     extraReducers: (builder) => {
-        builder
-            .addCase(getJournalEntries.pending, (state) => { state.loading = true; })
-            .addCase(getJournalEntries.fulfilled, (state, action) => { state.loading = false; state.items = action.payload; })
-            .addCase(getJournalEntries.rejected, (state, action) => { state.loading = false; state.error = action.error.message; })
-            .addCase(addJournalEntry.fulfilled, (state, action) => { state.items.push(action.payload); })
-            .addCase(editJournalEntry.fulfilled, (state, action) => {
-                const index = state.items.findIndex((entry) => entry.id === action.payload.id);
-                if (index !== -1) state.items[index] = action.payload;
-            })
-            .addCase(removeJournalEntry.fulfilled, (state, action) => {
-                state.items = state.items.filter((entry) => entry.id !== action.payload);
-            });
-    }
+      builder
+        .addCase(fetchJournal.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(fetchJournal.fulfilled, (state, action) => {
+          state.loading = false;
+          state.entries = action.payload.rows || [];
+          state.currentPage = action.payload.currentPage || 1;
+          state.totalPages = Math.ceil(action.payload.count / action.payload.limit) || 1;
+        })
+        .addCase(fetchJournal.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload || 'Ошибка загрузки журнала';
+        })
+      .addCase(fetchStudentGrades.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchStudentGrades.fulfilled, (state, action) => {
+        state.loading = false;
+        state.studentGrades = action.payload;
+      })
+      .addCase(fetchStudentGrades.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addGrade.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addGrade.fulfilled, (state, action) => {
+        state.loading = false;
+        state.entries.unshift(action.payload);
+      })
+      .addCase(addGrade.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateGrade.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateGrade.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.entries.findIndex(e => e.id_journal === action.payload.id_journal);
+        if (index !== -1) {
+          state.entries[index] = action.payload;
+        }
+      })
+      .addCase(updateGrade.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteGrade.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteGrade.fulfilled, (state, action) => {
+        state.loading = false;
+        state.entries = state.entries.filter(e => e.id_journal !== action.payload.id_journal);
+      })
+      .addCase(deleteGrade.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  }
 });
 
+export const { clearError } = journalSlice.actions;
 export default journalSlice.reducer;

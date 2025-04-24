@@ -1,0 +1,36 @@
+.course-selection {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  .course-selection h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .course-selection .course-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .course-selection .course-buttons .course-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .course-selection .course-buttons .course-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .course-selection .course-buttons .course-btn.active {
+    background-color: #4a6fa5;
+    color: white;
+  }

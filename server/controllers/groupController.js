@@ -3,13 +3,17 @@ const ApiError = require('../error/ApiError');
 
     // Получить модель группы по курсу
     const getGroupModel = (course) => {
+        // Приводим к формату, как в БД (первая буква заглавная)
+        const formattedCourse = course.charAt(0).toUpperCase() + course.slice(1).toLowerCase();
+        
         const modelsMap = {
-            'electric': models.ElectricGroup,
-            'iot': models.IoTGroup,
-            'informatics': models.InformaticsGroup
+          'Electric': models.ElectricGroup,
+          'Iot': models.IoTGroup, // Обратите внимание на "Iot" вместо "IoT"
+          'Informatics': models.InformaticsGroup
         };
-        return modelsMap[course.toLowerCase()] || null;
-    };
+        
+        return modelsMap[formattedCourse] || null;
+      };
 
     // Получить модель участника группы по курсу
     const getMemberModel = (course) => {

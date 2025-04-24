@@ -16,6 +16,8 @@ import Section from './pages/Section/Section.jsx';
 import { ForumPage } from './pages/Forum/Forum';
 import { SectionPage } from './pages/SectionPage/SectionPage';
 import { TopicPage } from './pages/TopicPage/TopicPage';
+import Journal from './pages/Journal/Journal.jsx';
+import GroupsPage from './pages/Groups/Groups.jsx';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -31,8 +33,10 @@ const App = () => {
         <div className="App">
             <main>
                 <Routes>
+                    <Route path="/journal" element={<Journal />}/>
                     <Route path="/" element={<Main />} />
                     <Route path="/course" element={<CoursesSection />} />
+                    <Route path="/groups" element={<GroupsPage />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/events" element={<Events />} />
                     <Route path="/about" element={<About />} />

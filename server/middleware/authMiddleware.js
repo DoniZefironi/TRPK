@@ -1,34 +1,23 @@
-const jwt = require('jsonwebtoken');
+const tokenService = require('../service/tokenService');
 const ApiError = require('../error/ApiError');
 
-module.exports = function(req, res, next) {
-  // Skip middleware for auth-related endpoints
-  if (req.path === '/user/login' || 
-      req.path === '/user/refresh' ||
-      req.path === '/user/register' ) {
-    return next();
-  }
+module.exports = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return next(ApiError.unauthorized('Токен отсутствует'));
+        }
 
-  try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader) {
-      return next(ApiError.unauthorized('Authorization header is required'));
-    }
+        const token = authHeader.split(' ')[1];
+        const userData = tokenService.validateAccessToken(token);
 
-    const token = authHeader.split(' ')[1];
-    
-    if (!token) {
-      return next(ApiError.unauthorized('Invalid token format'));
-    }
+        if (!userData) {
+            return next(ApiError.unauthorized('Токен недействителен'));
+        }
 
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    req.user = decoded;
-    next();
-  } catch (e) {
-    if (e instanceof jwt.TokenExpiredError) {
-      return next(ApiError.unauthorized('Token expired'));
+        req.user = userData; // Добавляем user в `req`
+        next();
+    } catch (error) {
+        next(ApiError.internal('Ошибка проверки токена'));
     }
-    return next(ApiError.unauthorized('Invalid token'));
-  }
 };

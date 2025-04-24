@@ -1,48 +1,37 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2280/api'; 
+const API_URL = 'http://localhost:2280/api/lessons';
 
-const getCourse = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return user?.permissions; 
+const LectureService = {
+    getAllLessons: async (course) => {
+        if (!course) throw new Error('Не указан курс');
+        const response = await axios.get(`${API_URL}/${course}`);
+        return response.data;
+    },
+    
+    getLessonById: async (course, id) => {
+        if (!course || !id) throw new Error('Не указан курс или ID урока');
+        const response = await axios.get(`${API_URL}/${course}/${id}`);
+        return response.data;
+    },
+
+    createLesson: async (course, lessonData) => {
+        if (!course) throw new Error('Не указан курс');
+        const response = await axios.post(`${API_URL}/${course}`, lessonData);
+        return response.data;
+    },
+
+    updateLesson: async (course, id, lessonData) => {
+        if (!course || !id) throw new Error('Не указан курс или ID урока');
+        const response = await axios.put(`${API_URL}/${course}/${id}`, lessonData);
+        return response.data;
+    },
+
+    deleteLesson: async (course, id) => {
+        if (!course || !id) throw new Error('Не указан курс или ID урока');
+        const response = await axios.delete(`${API_URL}/${course}/${id}`);
+        return response.data;
+    }
 };
 
-export const fetchLectures = async (course) => {
-  try {
-    const course = getCourse(); 
-    const response = await axios.get(`${API_URL}/lesson/${course}`);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка получения лекций');
-  }
-};
-
-export const createLecture = async (course, data) => {
-  try {
-    const course = getCourse(); 
-    const response = await axios.post(`${API_URL}/lesson/${course}`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка создания лекции');
-  }
-};
-
-export const updateLecture = async (course, id, data) => {
-  try {
-    const course = getCourse(); 
-    const response = await axios.put(`${API_URL}/lesson/${course}/${id}`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка обновления лекции');
-  }
-};
-
-export const deleteLecture = async (course, id) => {
-  try {
-    const course = getCourse(); 
-    await axios.delete(`${API_URL}/lesson/${course}/${id}`);
-    return id;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка удаления лекции');
-  }
-};
+export default LectureService;

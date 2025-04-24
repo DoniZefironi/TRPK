@@ -1,0 +1,44 @@
+.group-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .group-card.expanded {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .group-card .group-summary {
+    padding: 1.5rem;
+    cursor: pointer;
+    background-color: white;
+    transition: background-color 0.3s;
+  }
+  
+  .group-card .group-summary:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .group-card .group-summary h3 {
+    margin: 0 0 0.5rem 0;
+    color: #4a6fa5;
+  }
+  
+  .group-card .group-summary p {
+    margin: 0;
+    color: #666;
+  }
+  
+  .group-card .group-summary .toggle-icon {
+    float: right;
+    font-size: 1.2rem;
+    color: #999;
+  }
+  
+  .group-card .group-details-container {
+    padding: 1.5rem;
+    border-top: 1px solid #eee;
+    background-color: #f9f9f9;
+  }

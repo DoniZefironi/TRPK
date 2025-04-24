@@ -1,37 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchUserProfile, updateUserProfile } from '../../service/UserService';
+import { fetchUserById, updateUserById } from '../../service/UserService';
 
-// Асинхронное действие для получения профиля пользователя
-export const getUserProfile = createAsyncThunk(
-  'user/getProfile',
-  async (userId, { rejectWithValue, getState }) => {
+// 🔹 Получение пользователя по ID
+export const getUserById = createAsyncThunk(
+  'user/getUserById',
+  async (userId, { rejectWithValue }) => {
     try {
-      console.log('[userSlice] Запрос профиля для:', userId);
-      const response = await fetchUserProfile(userId);
-      
-      if (!response.id_user) {
-        console.error('[userSlice] Неверный формат данных профиля');
-        throw new Error('Неверный формат данных профиля');
-      }
-      
-      return response;
+      const data = await fetchUserById(userId);
+      return data;
     } catch (error) {
-      console.error('[userSlice] Ошибка:', error.message);
-      return rejectWithValue({
-        message: error.message,
-        status: error.response?.status
-      });
+      return rejectWithValue(error.message);
     }
   }
 );
 
-// Асинхронное действие для обновления профиля пользователя
-export const updateProfile = createAsyncThunk(
-  'user/updateProfile',
+// 🔹 Обновление пользователя по ID
+export const updateUserByIdAction = createAsyncThunk(
+  'user/updateUserById',
   async ({ userId, userData, avatar }, { rejectWithValue }) => {
     try {
-      const response = await updateUserProfile(userId, userData, avatar);
-      return response;
+      const updatedUser = await updateUserById({ userId, userData, avatar });
+      return updatedUser;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -41,52 +30,51 @@ export const updateProfile = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    profile: null,
-    isLoading: false,
+    user: null,
+    loading: false,
     error: null,
     lastUpdated: null
   },
   reducers: {
-    clearUserState: (state) => {
-      state.profile = null;
-      state.isLoading = false;
+    resetUserState: (state) => {
+      state.user = null;
+      state.loading = false;
       state.error = null;
-      state.lastUpdated = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
-      // Обработка getUserProfile
-      .addCase(getUserProfile.pending, (state) => {
-        state.isLoading = true;
+      // 🔹 Получение пользователя
+      .addCase(getUserById.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
-      .addCase(getUserProfile.fulfilled, (state, action) => {
-        state.profile = action.payload;
-        state.isLoading = false;
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
         state.lastUpdated = new Date().toISOString();
       })
-      .addCase(getUserProfile.rejected, (state, action) => {
+      .addCase(getUserById.rejected, (state, action) => {
         state.error = action.payload;
-        state.isLoading = false;
+        state.loading = false;
       })
       
-      // Обработка updateProfile
-      .addCase(updateProfile.pending, (state) => {
-        state.isLoading = true;
+      // 🔹 Обновление пользователя
+      .addCase(updateUserByIdAction.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
-      .addCase(updateProfile.fulfilled, (state, action) => {
-        state.profile = action.payload;
-        state.isLoading = false;
+      .addCase(updateUserByIdAction.fulfilled, (state, action) => {
+        state.user = { ...state.user, ...action.payload };
+        state.loading = false;
         state.lastUpdated = new Date().toISOString();
       })
-      .addCase(updateProfile.rejected, (state, action) => {
+      .addCase(updateUserByIdAction.rejected, (state, action) => {
         state.error = action.payload;
-        state.isLoading = false;
+        state.loading = false;
       });
-  },
+  }
 });
 
-export const { clearUserState } = userSlice.actions;
+export const { resetUserState } = userSlice.actions;
 export default userSlice.reducer;

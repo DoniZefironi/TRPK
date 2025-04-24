@@ -1,143 +1,92 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { getAllMaterials, removeMaterial, addMaterial, updateMaterial } from '../../store/slice/materialSlice';
-import './MaterialsPanel.css';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    fetchMaterials,
+    deleteMaterial,
+} from '../../store/slice/materialSlice';
+import CreateMaterialComp from '../CreateMaterialComp/CreateMaterialComp';
+import UpdateMaterialModal from '../UpdateMaterialComp/UpdateMaterialComp';
 
-const MaterialsPanel = () => {
-  const { materials, isLoading, error } = useSelector((state) => state.materials);
-  const dispatch = useDispatch();
+const MaterialsList = () => {
+    const dispatch = useDispatch();
+    const { materials, pagination, loading } = useSelector((state) => state.materials);
 
-  const [formData, setFormData] = useState({
-    id_material: null,
-    topic_materials: '',
-    title: '',
-    description: '',
-    file_url: '',
-  });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false);
+    useEffect(() => {
+        dispatch(fetchMaterials({ page: currentPage }));
+    }, [dispatch, currentPage]);
 
-  useEffect(() => {
-    dispatch(getAllMaterials());
-  }, [dispatch]);
-
-  const handleDelete = (id) => {
-    if (window.confirm('Вы уверены, что хотите удалить материал?')) {
-      dispatch(removeMaterial(id));
-    }
+    const handleDelete = (id) => {
+      if (!id) {
+        console.error('ID материала не определен');
+        return;
+      }
+      
+      if (window.confirm('Вы уверены, что хотите удалить этот материал?')) {
+        dispatch(deleteMaterial(id)).then(() => {
+          dispatch(fetchMaterials({ page: currentPage }));
+        }).catch(error => {
+          console.error('Ошибка при удалении:', error);
+        });
+      }
+    };
+    const handleOpenModal = () => {
+      console.log('Открываем модальное окно');
+      setIsAddModalOpen(true);
   };
+  
+    const handleUpdate = (material) => {
+        setSelectedMaterial(material);
+        setIsUpdateModalOpen(true);
+    };
 
-  const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    return (
+        <div>
+            <h2>Список материалов</h2>
+            <button onClick={handleOpenModal}>Добавить материал</button>
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+            {loading ? <p>Загрузка...</p> : (
+                <ul>
+{materials.map((material) => (
+  <li key={material.id_material}>
+    <h3>{material.title}</h3>
+    <p>{material.description}</p>
+    <button onClick={() => handleUpdate(material)}>Обновить</button>
+    <button onClick={() => handleDelete(material.id_material)}>Удалить</button>
+  </li>
+))}
+                </ul>
+            )}
 
-    if (isEditing) {
-      // Редактирование материала
-      dispatch(updateMaterial(formData));
-    } else {
-      // Добавление нового материала
-      dispatch(addMaterial(formData));
-    }
+            <div>
+                <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                >
+                    ← Назад
+                </button>
+                <span>Страница {currentPage} из {pagination.totalPages}</span>
+                <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.totalPages))}
+                    disabled={currentPage === pagination.totalPages}
+                >
+                    Вперед →
+                </button>
+            </div>
 
-    setFormData({
-      id_material: null,
-      topic_materials: '',
-      title: '',
-      description: '',
-      file_url: '',
-    });
-
-    setIsEditing(false);
-  };
-
-  const handleEdit = (material) => {
-    setFormData(material);
-    setIsEditing(true);
-  };
-
-  if (isLoading) return <p>Загрузка материалов...</p>;
-  if (error) return <p>Ошибка: {error}</p>;
-
-  return (
-    <div className="materials-panel-container">
-      <h1>Materials Library</h1>
-
-      {/* Форма для добавления и редактирования */}
-      <form onSubmit={handleFormSubmit} className="material-form">
-        <input
-          type="text"
-          name="topic_materials"
-          placeholder="Topic"
-          value={formData.topic_materials}
-          onChange={handleFormChange}
-          required
-        />
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleFormChange}
-        />
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleFormChange}
-        ></textarea>
-        <input
-          type="text"
-          name="file_url"
-          placeholder="File URL"
-          value={formData.file_url}
-          onChange={handleFormChange}
-        />
-        <button type="submit">{isEditing ? 'Update Material' : 'Add Material'}</button>
-      </form>
-
-      {/* Таблица материалов */}
-      {materials.length > 0 ? (
-        <table className="materials-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Topic</th>
-              <th>Title</th>
-              <th>Description</th>
-              <th>File URL</th>
-              <th>Upload Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materials.map((material) => (
-              <tr key={material.id_material}>
-                <td>{material.id_material}</td>
-                <td>{material.topic_materials}</td>
-                <td>{material.title}</td>
-                <td>{material.description}</td>
-                <td>
-                  <a href={material.file_url} target="_blank" rel="noopener noreferrer">
-                    View File
-                  </a>
-                </td>
-                <td>{new Date(material.upload_date).toLocaleDateString()}</td>
-                <td>
-                  <button onClick={() => handleEdit(material)}>Редактировать</button>
-                  <button onClick={() => handleDelete(material.id_material)}>Удалить</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>Нет доступных материалов</p>
-      )}
-    </div>
-  );
+            {isAddModalOpen && <CreateMaterialComp onClose={() => setIsAddModalOpen(false)} />}
+            {isUpdateModalOpen && 
+                <UpdateMaterialModal 
+                    material={selectedMaterial} 
+                    onClose={() => setIsUpdateModalOpen(false)} 
+                />
+            }
+        </div>
+    );
 };
 
-export default MaterialsPanel;
+export default MaterialsList;

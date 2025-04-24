@@ -1,83 +1,116 @@
 import React, { useEffect, useState } from 'react';
-import './EventInEvents.css'; 
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getLectures, removeLecture } from '../../store/slice/lectureSlice';
-import LectureModal from '../LectureModal/LectureModal';
+import { fetchLessons } from '../../store/slice/lectureSlice';
+import lessonService from '../../service/LectureService';
+import CreateLessonModal from '../CreateLessonModal/CreateLessonModal';
+import UpdateLessonModal from '../UpdateLessonModal/UpdateLessonModal'; // Добавлен импорт
 
-// Функция для получения курса из localStorage
-const getCourse = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return user?.permissions || 'electronics';
-};
+const LessonsPage = () => {
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.auth.user);
+    const course = user?.permissions || '';
+    const { lessons, status, error } = useSelector(state => state.lessons);
+    const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const [selectedLesson, setSelectedLesson] = useState(null);
 
-const EventsSection = () => {
-  const dispatch = useDispatch();
-  const lectures = useSelector((state) => state.lectures.items);
-  const loading = useSelector((state) => state.lectures.loading);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedLecture, setSelectedLecture] = useState(null);
-  const course = getCourse();
+    useEffect(() => {
+        if (course) {
+            dispatch(fetchLessons(course));
+        }
+    }, [dispatch, course]);
 
-  useEffect(() => {
-    dispatch(getLectures(course));
-  }, [dispatch, course]); // Добавляем `course` в зависимости
-
-  const openModal = (lecture = null) => {
-    console.log("Открытие модального окна:", lecture);
-    setSelectedLecture(lecture);
-    setModalOpen(true);
+    const handleDeleteLesson = async (id) => {
+      try {
+          if (!course || !id) {
+              throw new Error('Недостаточно данных для удаления');
+          }
+          
+          if (window.confirm('Вы уверены, что хотите удалить этот урок?')) {
+              await lessonService.deleteLesson(course, id);
+              dispatch(fetchLessons(course));
+          }
+      } catch (error) {
+          console.error('Ошибка при удалении урока:', error);
+          alert(error.message); // Показываем пользователю
+      }
   };
 
-  const closeModal = () => {
-    console.log("Закрытие модального окна");
-    setModalOpen(false);
-    setSelectedLecture(null);
-  };
+    const handleUpdateClick = (lesson) => {
+        setSelectedLesson(lesson);
+        setUpdateModalOpen(true);
+    };
 
-  if (loading) return <p>Загрузка лекций...</p>;
+    // Добавленная функция
+    const handleUpdateLessons = () => {
+        dispatch(fetchLessons(course));
+    };
 
-  return (
-    <section className="events-section">
-      <h2 className="events-title">НАШИ ЛЕКЦИИ</h2>
-      <h3 className="events-subtitle">Лекции и семинары</h3>
-      <button className="add-button" onClick={() => openModal()}>Добавить лекцию</button>
-      <div className="events-list">
-        {lectures.map((lecture, index) => (
-          <div className="event-card" key={index}>
-            <div className='row-event'>
-              <div>
-                <p className="event-date">{lecture.date}</p>
-                <p className="event-time">{lecture.duration}</p>
-              </div>
-              <div>
-                <h4 className="event-title">{lecture.lecture_title}</h4>
-                <p className="event-description">{lecture.description}</p>
-              </div>
+    return (
+        <div className="events-control-section">
+            <div className="filters">
+                <input type="text" placeholder="Поиск урока..." />
+                <button 
+                    className="event-button" 
+                    onClick={() => setCreateModalOpen(true)}
+                >
+                    Добавить урок
+                </button>
             </div>
-            <button className="event-button" onClick={() => openModal(lecture)}>Обновить</button>
-            <button className="event-button" onClick={() => dispatch(removeLecture({ course, id: lecture.id }))}>Удалить</button>
-          </div>
-        ))}
-      </div>
-      <div className="more-events">
-        <p>Хотите еще?</p>
-        <Link to="/events">
-          <button className="view-all-button">Просмотреть все события</button>
-        </Link>
-      </div>
 
-      {isModalOpen && (
-  <LectureModal 
-    isOpen={isModalOpen} 
-    course={course} 
-    lecture={selectedLecture} 
-    onClose={closeModal}  
-  />
-)}
+            {status === 'loading' && <p>Загрузка...</p>}
+            {error && <p>Ошибка: {error}</p>}
 
-    </section>
-  );
+            <div className="events-list1">
+                {lessons?.rows?.length > 0 ? (
+                    lessons.rows.map((lesson) => (
+                        <div key={lesson.id} className="event-card1">
+                            <div>
+                                <p className="event-title">{lesson.lecture_title}</p>
+                                <p className="event-date">{lesson.date}</p>
+                                <p className="event-description">{lesson.description}</p>
+                            </div>
+                            <div>
+                                <button 
+                                    onClick={() => handleUpdateClick(lesson)} 
+                                    className="event-button"
+                                >
+                                    Обновить
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteLesson(lesson.id)} 
+                                  className="event-button"
+                              >
+                                  Удалить
+                              </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>Нет доступных уроков</p>
+                )}
+            </div>
+
+            {isCreateModalOpen && (
+                <CreateLessonModal 
+                    isOpen={isCreateModalOpen}
+                    onClose={() => setCreateModalOpen(false)}
+                    course={course}
+                    onLessonCreated={handleUpdateLessons}
+                />
+            )}
+
+            {isUpdateModalOpen && (
+                <UpdateLessonModal 
+                    isOpen={isUpdateModalOpen}
+                    onClose={() => setUpdateModalOpen(false)}
+                    course={course}
+                    lesson={selectedLesson} // Должен содержать id
+                    onLessonUpdated={handleUpdateLessons}
+                />
+            )}
+        </div>
+    );
 };
 
-export default EventsSection;
+export default LessonsPage;

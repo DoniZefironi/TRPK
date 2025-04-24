@@ -1,116 +1,162 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createMaterial, fetchAllMaterials, fetchMaterialById, deleteMaterial, updateMaterialById } from '../../service/MaterialService';
+import materialsService from '../../service/MaterialService';
 
-// Асинхронные экшены
-export const getAllMaterials = createAsyncThunk(
-  'materials/getAllMaterials',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await fetchAllMaterials();
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения материалов');
-    }
-  }
-);
-
-export const getMaterialById = createAsyncThunk(
-  'materials/getMaterialById',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await fetchMaterialById(id);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения материала');
-    }
-  }
-);
-
-export const addMaterial = createAsyncThunk(
-    'materials/addMaterial',
-    async (materialData, { rejectWithValue }) => {
-      try {
-        return await createMaterial(materialData);
-      } catch (error) {
-        return rejectWithValue(error.response?.data || 'Ошибка создания материала');
-      }
-    }
-  );
-  
-  export const updateMaterial = createAsyncThunk(
-    'materials/updateMaterial',
-    async (materialData, { rejectWithValue }) => {
-      try {
-        const { id_material, ...data } = materialData;
-        return await updateMaterialById(id_material, data); 
-      } catch (error) {
-        return rejectWithValue(error.response?.data || 'Ошибка обновления материала');
-      }
-    }
-  );
-
-export const removeMaterial = createAsyncThunk(
-  'materials/removeMaterial',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await deleteMaterial(id);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка удаления материала');
-    }
-  }
-);
-
-// Слайс
-const materialSlice = createSlice({
-  name: 'materials',
-  initialState: {
-    materials: [],
-    material: null,
-    isLoading: false,
-    error: null,
-  },
-  reducers: {
-    clearMaterialState: (state) => {
-      state.material = null;
-      state.isLoading = false;
-      state.error = null;
-    },
-  },
-  extraReducers: (builder) => {
-    builder
-      // Получение всех материалов
-      .addCase(getAllMaterials.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(getAllMaterials.fulfilled, (state, action) => {
-        state.materials = action.payload;
-        state.isLoading = false;
-      })
-      .addCase(getAllMaterials.rejected, (state, action) => {
-        state.error = action.payload;
-        state.isLoading = false;
-      })
-      // Получение материала по ID
-      .addCase(getMaterialById.fulfilled, (state, action) => {
-        state.material = action.payload;
-      })
-      // Добавление материала
-      .addCase(addMaterial.fulfilled, (state, action) => {
-        state.materials.push(action.payload);
-      })
-      .addCase(updateMaterial.fulfilled, (state, action) => {
-        const index = state.materials.findIndex(
-          (item) => item.id_material === action.payload.id_material
-        );
-        if (index !== -1) {
-          state.materials[index] = action.payload;
+export const fetchMaterials = createAsyncThunk(
+    'materials/fetchMaterials',
+    async (params, thunkAPI) => {
+        try {
+            return await materialsService.fetchMaterials(params);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
         }
-      })
-      // Удаление материала
-      .addCase(removeMaterial.fulfilled, (state, action) => {
-        state.materials = state.materials.filter((item) => item.id_material !== action.meta.arg);
-      });
-  },
+    }
+);
+
+export const fetchMaterialById = createAsyncThunk(
+    'materials/fetchMaterialById',
+    async (id, thunkAPI) => {
+        try {
+            return await materialsService.fetchMaterialById(id);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const createMaterial = createAsyncThunk(
+    'materials/createMaterial',
+    async (data, thunkAPI) => {
+        try {
+            return await materialsService.createMaterial(data);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const updateMaterial = createAsyncThunk(
+    'materials/updateMaterial',
+    async ({ id, data }, thunkAPI) => {
+        try {
+            return await materialsService.updateMaterial(id, data);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const deleteMaterial = createAsyncThunk(
+    'materials/deleteMaterial',
+    async (id, thunkAPI) => {
+        try {
+            return await materialsService.deleteMaterial(id);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const fetchMaterialTopics = createAsyncThunk(
+    'materials/fetchMaterialTopics',
+    async (_, thunkAPI) => {
+        try {
+            return await materialsService.fetchMaterialTopics();
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+const materialsSlice = createSlice({
+    name: 'materials',
+    initialState: {
+      materials: [],
+      material: null,
+      topics: [],
+      loading: false,
+      error: null,
+      pagination: { totalPages: 1, total: 0, page: 1, limit: 10 }
+  }
+  ,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchMaterials.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchMaterials.fulfilled, (state, action) => {
+                state.loading = false;
+                state.materials = action.payload.data;
+            })
+            .addCase(fetchMaterials.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(fetchMaterialById.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchMaterialById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.material = action.payload.data;
+            })
+            .addCase(fetchMaterialById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(createMaterial.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(createMaterial.fulfilled, (state, action) => {
+                state.loading = false;
+                state.materials.push(action.payload.data);
+            })
+            .addCase(createMaterial.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(updateMaterial.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateMaterial.fulfilled, (state, action) => {
+                state.loading = false;
+                state.materials = state.materials.map((material) =>
+                    material.id === action.payload.data.id ? action.payload.data : material
+                );
+            })
+            .addCase(updateMaterial.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(deleteMaterial.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteMaterial.fulfilled, (state, action) => {
+                state.loading = false;
+                state.materials = state.materials.filter(
+                    (material) => material.id !== action.meta.arg
+                );
+            })
+            .addCase(deleteMaterial.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(fetchMaterialTopics.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchMaterialTopics.fulfilled, (state, action) => {
+                state.loading = false;
+                state.topics = action.payload.data;
+            })
+            .addCase(fetchMaterialTopics.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+    },
 });
 
-export const { clearMaterialState } = materialSlice.actions;
-export default materialSlice.reducer;
+export default materialsSlice.reducer;
