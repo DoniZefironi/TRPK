@@ -1,66 +1,82 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { addSection, fetchSections } from '../../service/SectionService';
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import { 
+//   fetchSectionsByForum, 
+//   fetchSectionById, 
+//   createSection 
+// } from '../../service/SectionService';
 
-// Асинхронный экшен для добавления секции
-export const createSection = createAsyncThunk(
-  'sections/createSection',
-  async (sectionData, { rejectWithValue }) => {
-    try {
-      return await addSection(sectionData);
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка добавления секции');
-    }
-  }
-);
+// const initialState = {
+//   sections: [],
+//   currentSection: null,
+//   status: 'idle',
+//   error: null,
+// };
 
-// Асинхронный экшен для получения секций
-export const getSections = createAsyncThunk(
-  'sections/getSections',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await fetchSections();
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Ошибка получения секций');
-    }
-  }
-);
+// export const fetchSections = createAsyncThunk(
+//   'section/fetchSections',
+//   async (forumId, { rejectWithValue }) => {
+//     try {
+//       return await fetchSectionsByForum(forumId);
+//     } catch (error) {
+//       return rejectWithValue(error.message);
+//     }
+//   }
+// );
 
-// Слайс
-const sectionSlice = createSlice({
-  name: 'sections',
-  initialState: {
-    sections: [],
-    isLoading: false,
-    error: null,
-  },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(createSection.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(createSection.fulfilled, (state, action) => {
-        state.sections.push(action.payload);
-        state.isLoading = false;
-      })
-      .addCase(createSection.rejected, (state, action) => {
-        state.error = action.payload;
-        state.isLoading = false;
-      })
-      .addCase(getSections.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(getSections.fulfilled, (state, action) => {
-        state.sections = action.payload.sections;
-        state.isLoading = false;
-      })
-      .addCase(getSections.rejected, (state, action) => {
-        state.error = action.payload;
-        state.isLoading = false;
-      });
-  },
-});
+// export const fetchSectionById = createAsyncThunk(
+//   'section/fetchSectionById',
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       return await sectionService.getOne(id);
+//     } catch (error) {
+//       return rejectWithValue(error.response.data);
+//     }
+//   }
+// );
 
-export default sectionSlice.reducer;
+// export const createSection = createAsyncThunk(
+//   'section/createSection',
+//   async (sectionData, { rejectWithValue }) => {
+//     try {
+//       return await sectionService.create(sectionData);
+//     } catch (error) {
+//       return rejectWithValue(error.response.data);
+//     }
+//   }
+// );
+
+// const sectionSlice = createSlice({
+//   name: 'section',
+//   initialState,
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchSections.pending, (state) => {
+//         state.status = 'loading';
+//       })
+//       .addCase(fetchSections.fulfilled, (state, action) => {
+//         state.status = 'succeeded';
+//         state.sections = action.payload;
+//       })
+//       .addCase(fetchSections.rejected, (state, action) => {
+//         state.status = 'failed';
+//         state.error = action.payload;
+//       })
+//       .addCase(fetchSectionById.pending, (state) => {
+//         state.status = 'loading';
+//       })
+//       .addCase(fetchSectionById.fulfilled, (state, action) => {
+//         state.status = 'succeeded';
+//         state.currentSection = action.payload;
+//       })
+//       .addCase(fetchSectionById.rejected, (state, action) => {
+//         state.status = 'failed';
+//         state.error = action.payload;
+//       })
+//       .addCase(createSection.fulfilled, (state, action) => {
+//         state.sections.push(action.payload);
+//       });
+//   },
+// });
+
+// export default sectionSlice.reducer;

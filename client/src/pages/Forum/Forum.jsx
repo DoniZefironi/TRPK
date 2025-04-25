@@ -1,31 +1,35 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchSections } from '../../store/slice/forumThunks';
-import ForumSectionCard from '../../components/ForumList/ForumList';
-import Headers from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer'
-import './Forum.css'
+// import React from 'react';
+// import { useSelector } from 'react-redux';
+// import { useParams } from 'react-router-dom';
+// import ForumList from '../../components/ForumList/ForumList';
+// import ForumDetail from '../../components/ForumDetail/ForumDetail';
+// import SectionDetail from '../../components/SectionDetail/SectionDetail';
+// import TopicDetail from '../../components/TopicDetail/TopicDetail';
+// import Header from '../../components/Header/Header';
+// import Footer from '../../components/Footer/Footer'
 
-export const ForumPage = () => {
-  const dispatch = useDispatch();
-  const { sections } = useSelector(state => state.forum);
+// const ForumPage = () => {
+//   const { forumId, sectionId, topicId } = useParams();
+  
+//   if (topicId) {
+//     return <TopicDetail />;
+//   }
+  
+//   if (sectionId) {
+//     return <SectionDetail />;
+//   }
+  
+//   if (forumId) {
+//     return <ForumDetail />;
+//   }
+  
+//   return (
+//     <>
+//     <Header />
+//     <ForumList />
+//     <Footer />
+//     </>
+//     );
+// };
 
-  useEffect(() => {
-    dispatch(fetchSections());
-  }, [dispatch]);
-
-  return (
-    <>
-    <Headers />
-    <div className="forum-container">
-      <h1>Форум</h1>
-      <div className="sections-grid">
-        {sections.map(section => (
-          <ForumSectionCard key={section.id} section={section} />
-        ))}
-      </div>
-    </div>
-    <Footer />
-    </>
-  );
-};
+// export default ForumPage;

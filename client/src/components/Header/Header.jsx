@@ -44,6 +44,9 @@ const Header = () => {
         <Link to="/forum">Блог</Link>
         <Link to="/contacts">Контакты</Link>
         <Link to="/journal">Журнал</Link>
+        <Link to="/elective">Факультативы</Link>
+        <Link to="/users">Пользователи</Link>
+        <Link to="/career-guidance"> Проф.Ориентация</Link>
         <Link to="/groups">
   Группы
 </Link>

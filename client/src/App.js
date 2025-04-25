@@ -13,11 +13,14 @@ import Profile from './pages/Profile/Profile.jsx';
 import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx';
 import MaterialsPage from './pages/MaterialsPage/MaterialsPage.jsx';
 import Section from './pages/Section/Section.jsx';
-import { ForumPage } from './pages/Forum/Forum';
-import { SectionPage } from './pages/SectionPage/SectionPage';
-import { TopicPage } from './pages/TopicPage/TopicPage';
+import ForumPage from './pages/Forum/Forum.jsx';
 import Journal from './pages/Journal/Journal.jsx';
 import GroupsPage from './pages/Groups/Groups.jsx';
+import Elective from './pages/Electives/Electives.jsx';
+import Users from './pages/Users/Users.jsx'
+import Career from './pages/Career/Career.jsx'
+import CareerGuidanceFormPage from './components/CareerGuidanceFormPage/CareerGuidanceFormPage.jsx'
+import CareerGuidanceViewPage from './components/CareerGuidanceViewPage/CareerGuidanceViewPage.jsx'
 
 const App = () => {
     const dispatch = useDispatch();
@@ -35,19 +38,26 @@ const App = () => {
                 <Routes>
                     <Route path="/journal" element={<Journal />}/>
                     <Route path="/" element={<Main />} />
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/career-guidance" element={<Career />} />
+                    <Route path="/career-guidance/create" element={<CareerGuidanceFormPage />} />
+                    <Route path="/career-guidance/edit/:id" element={<CareerGuidanceFormPage />} />
+                    <Route path="/career-guidance/view/:id" element={<CareerGuidanceViewPage />} />
                     <Route path="/course" element={<CoursesSection />} />
                     <Route path="/groups" element={<GroupsPage />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/events" element={<Events />} />
+                    <Route path="/elective" element={<Elective />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/edit-profile" element={<EditProfileComp />} />
                     <Route path="/materials-panel" element={<MaterialsPage />} />
                     <Route path="/section" element={<Section />} />
-                    <Route path="/forum" element={<ForumPage />} />
-                    <Route path="/forum/sections/:sectionId" element={<SectionPage />} />
-                    <Route path="/forum/topics/:topicId" element={<TopicPage />} />
+                    {/* <Route path="/forum" element={<ForumPage />} />
+        <Route path="/forum/:forumId" element={<ForumPage />} />
+        <Route path="/forum/:forumId/section/:sectionId" element={<ForumPage />} />
+        <Route path="/forum/:forumId/section/:sectionId/topic/:topicId" element={<ForumPage />} /> */}
                 </Routes>
             </main>
         </div>

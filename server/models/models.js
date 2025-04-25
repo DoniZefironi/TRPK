@@ -334,8 +334,14 @@ const setupAssociations = () => {
   models.User.hasMany(models.OlympiadInformatics, { foreignKey: 'id_user' });
   models.OlympiadInformatics.belongsTo(models.User, { foreignKey: 'id_user' });
 
-  models.User.hasMany(models.ElectiveInformatics, { foreignKey: 'id_user' });
-  models.ElectiveInformatics.belongsTo(models.User, { foreignKey: 'id_user' });
+  models.User.hasMany(models.ElectiveInformatics, { 
+    foreignKey: 'id_user',
+    as: 'user' // Указываем явно алиас
+  });
+  models.ElectiveInformatics.belongsTo(models.User, { 
+    foreignKey: 'id_user',
+    as: 'user' // Указываем явно алиас
+  });
 
   models.HackathonElectric.hasMany(models.HackathonResultsElectric, { foreignKey: 'id_hackathon' });
   models.HackathonResultsElectric.belongsTo(models.HackathonElectric, { foreignKey: 'id_hackathon' });

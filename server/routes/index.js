@@ -20,10 +20,10 @@ const internshipRouter = require('./internshipRouter');
 
 // Основные маршруты
 router.use('/user', userRouter);
-router.use('/forum/topics', topicRouter);
-router.use('/forum/sections', sectionRouter);
+router.use('/topic', topicRouter);
+router.use('/section', sectionRouter);
 router.use('/projects', projectRouter);
-router.use('/forum/posts', postRouter);
+router.use('/post', postRouter);
 router.use('/materials', materialRouter);
 router.use('/lessons', lessonRouter);
 router.use('/journal', journalRouter);
@@ -31,8 +31,8 @@ router.use('/groups', groupRouter);
 router.use('/forum', forumRouter);
 router.use('/competitions', competitionRouter);
 router.use('/schedule', scheduleRouter);
-router.use('/elective', electiveInformaticsRouter);
-router.use('/career', careerGuidanceRouter);
+router.use('/electives', electiveInformaticsRouter);
+router.use('/career-guidance', careerGuidanceRouter);
 router.use('/internship', internshipRouter);
 
 module.exports = router;

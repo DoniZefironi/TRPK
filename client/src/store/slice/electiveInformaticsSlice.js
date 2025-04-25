@@ -1,5 +1,17 @@
+import axios from 'axios';
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import ElectiveInformaticsService from "../../service/ElectiveInformaticsService";
+
+const API_URL = 'http://localhost:2280/api/';
+
+// Создаем экземпляр axios с базовыми настройками
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
 
 export const fetchElectives = createAsyncThunk(
     'electives/fetchElectives',
@@ -73,8 +85,22 @@ export const addParticipant = createAsyncThunk(
     }
 );
 
+export const fetchUsers = createAsyncThunk(
+    'electives/fetchUsers',
+    async (_, { rejectWithValue }) => {
+      try {
+        const response = await api.get('/user'); // Ваш endpoint для получения пользователей
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message);
+      }
+    }
+  );
+
 const initialState = {
     electives: [],
+    users: [],
+usersLoading: false,
     currentElective: null,
     loading: false,
     error: null,
@@ -98,7 +124,17 @@ const electiveInformaticsSlice = createSlice({
                 ...state.pagination,
                 ...action.payload
             };
-        }
+        },
+        fetchUsers: (state) => {
+            state.usersLoading = true;
+          },
+          fetchUsersSuccess: (state, action) => {
+            state.users = action.payload;
+            state.usersLoading = false;
+          },
+          fetchUsersFailure: (state) => {
+            state.usersLoading = false;
+          },
     },
     extraReducers: (builder) => {
         builder
@@ -116,6 +152,17 @@ const electiveInformaticsSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+            .addCase(fetchUsers.fulfilled, (state, action) => {
+                state.users = action.payload;
+                state.usersLoading = false;
+              })
+              .addCase(fetchUsers.pending, (state) => {
+                state.usersLoading = true;
+              })
+              .addCase(fetchUsers.rejected, (state) => {
+                state.usersLoading = false;
+              })
             
             // Получение одного факультатива
             .addCase(fetchElectiveById.pending, (state) => {

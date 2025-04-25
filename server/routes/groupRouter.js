@@ -6,7 +6,7 @@ router.get('/:course', groupController.getAllGroups);
 
 router.get('/:course/:id', groupController.getGroup);
 
-router.post('/', groupController.createGroup);
+router.post('/:course', groupController.createGroup);
 
 router.put('/:course/:id', groupController.updateGroup);
 

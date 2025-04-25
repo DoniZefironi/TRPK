@@ -32,6 +32,7 @@ class ElectiveInformaticsController {
     async getAll(req, res, next) {
         try {
             let { page = 1, limit = 10, search } = req.query;
+            const { Op } = require('sequelize');
             
             const where = {};
             if (search) {
@@ -40,7 +41,7 @@ class ElectiveInformaticsController {
                     { topic_elective: { [Op.iLike]: `%${search}%` } }
                 ];
             }
-
+    
             const { count, rows: electives } = await models.ElectiveInformatics.findAndCountAll({
                 where,
                 limit: parseInt(limit),
@@ -48,11 +49,11 @@ class ElectiveInformaticsController {
                 order: [['name', 'ASC']],
                 include: [{
                     model: models.User,
-                    as: 'user',
+                    as: 'user', // Должен совпадать с алиасом в ассоциации
                     attributes: ['id_user', 'username', 'avatar']
                 }]
             });
-
+    
             return res.json({
                 success: true,
                 data: electives,

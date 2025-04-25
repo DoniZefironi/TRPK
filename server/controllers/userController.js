@@ -35,6 +35,51 @@ class UserController {
     }
   }
 
+  async getAllUsers(req, res, next) {
+    try {
+        console.log('Запрос на получение всех пользователей');
+
+        const users = await User.findAll({
+            attributes: { exclude: ['password', 'refreshToken'] }
+        });
+
+        return res.json(users);
+    } catch (error) {
+        console.error('Ошибка получения пользователей:', error);
+        next(ApiError.internal('Ошибка при получении списка пользователей'));
+    }
+}
+
+async changeUserRole(req, res, next) {
+  try {
+      const { userId } = req.params;
+      const { role } = req.body;
+
+      const validRoles = ['USER', 'TEACHER', 'ADMIN'];
+
+      if (!validRoles.includes(role)) {
+          return next(ApiError.badRequest('Недопустимая роль. Возможные варианты: USER, TEACHER, ADMIN'));
+      }
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+          return next(ApiError.notFound('Пользователь не найден'));
+      }
+
+      await user.update({ permissions: role });
+
+      return res.json({
+          success: true,
+          data: user,
+          message: `Роль пользователя успешно изменена на ${role}`
+      });
+  } catch (error) {
+      console.error('Ошибка изменения роли пользователя:', error);
+      next(ApiError.internal('Ошибка при изменении роли'));
+  }
+}
+
+
   async login(req, res, next) {
     try {
       const { email, password } = req.body;

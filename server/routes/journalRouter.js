@@ -7,7 +7,7 @@ router.get('/:course', journalController.getJournal);
 
 router.get('/:course/student/:id_user', journalController.getStudentGrades);
 
-router.post('/', journalController.addGrade);
+router.post('/:course', journalController.addGrade);
 
 router.put('/:course/:id_journal', journalController.updateGrade);
 

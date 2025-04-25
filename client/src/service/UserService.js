@@ -51,3 +51,34 @@ export const updateUserById = async ({ userId, userData, avatar }) => {
     throw new Error(error.response?.data?.message || 'Ошибка обновления пользователя');
   }
 };
+
+export const fetchAllUsers = async () => {
+  try {
+    const response = await axios.get(`${API_URL}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('[UserService] Ошибка получения списка пользователей:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка загрузки списка пользователей');
+  }
+};
+
+// 🔹 Смена роли пользователя
+export const changeUserRole = async ({ userId, role }) => {
+  try {
+    const response = await axios.put(`${API_URL}/${userId}/role`, { role }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('[UserService] Ошибка смены роли пользователя:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка смены роли');
+  }
+};

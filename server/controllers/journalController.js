@@ -2,6 +2,10 @@ const models = require('../models/models');
 const ApiError = require('../error/ApiError');
 
 const getJournalModel = (course) => {
+    if (!course || typeof course !== 'string') {
+        return null;
+    }
+
     switch (course.toLowerCase()) {
         case 'electric': return models.JournalElectric;
         case 'iot': return models.JournalIoT;
@@ -9,6 +13,7 @@ const getJournalModel = (course) => {
         default: return null;
     }
 };
+
 
 class JournalController {
     // Добавление оценки и успеваемости студенту

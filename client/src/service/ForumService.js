@@ -2,47 +2,86 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:2280/api/forum';
 
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 10000,
-});
+// 🔹 Получение всех форумов
+export const fetchAllForums = async () => {
+  try {
+    const response = await axios.get(`${API_URL}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
 
-// Request interceptor
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    return response.data;
+  } catch (error) {
+    console.error('[ForumService] Ошибка получения списка форумов:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка загрузки списка форумов');
   }
-  return config;
-}, error => Promise.reject(error));
+};
 
-// Response interceptor
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      console.error('Unauthorized - please login again');
+// 🔹 Получение форума по ID
+export const fetchForumById = async (forumId) => {
+  try {
+    const response = await axios.get(`${API_URL}/${forumId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (!response.data) {
+      throw new Error('Сервер не вернул данные');
     }
-    return Promise.reject(error.response?.data || error.message);
+
+    return response.data;
+  } catch (error) {
+    console.error('[ForumService] Ошибка получения форума:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка загрузки форума');
   }
-);
+};
 
-export const forumService = {
-  // Sections
-  getSections: () => api.get('/sections'),
-  getSectionById: (id) => api.get(`/sections/${id}`),
-  createSection: (data) => api.post('/sections', data),
-  deleteSection: (id) => api.delete(`/sections/${id}`),
+// 🔹 Создание нового форума
+export const createForum = async (forumData) => {
+  try {
+    const response = await axios.post(`${API_URL}`, forumData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
 
-  // Topics
-  getTopicsBySection: (sectionId) => api.get(`/topics/section/${sectionId}`),
-  createTopic: (data) => api.post('/topics', data),
-  getTopic: (id) => api.get(`/topics/${id}`),
-  updateTopic: (id, data) => api.put(`/topics/${id}`, data),
-  deleteTopic: (id) => api.delete(`/topics/${id}`),
+    return response.data;
+  } catch (error) {
+    console.error('[ForumService] Ошибка создания форума:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка создания форума');
+  }
+};
 
-  // Posts
-  getPostsByTopic: (topicId) => api.get(`/posts/topic/${topicId}`),
-  createPost: (data) => api.post('/posts', data),
-  deletePost: (id) => api.delete(`/posts/${id}`),
+// 🔹 Обновление форума
+export const updateForum = async ({ forumId, forumData }) => {
+  try {
+    const response = await axios.put(`${API_URL}/${forumId}`, forumData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('[ForumService] Ошибка обновления форума:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка обновления форума');
+  }
+};
+
+// 🔹 Удаление форума
+export const deleteForum = async (forumId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${forumId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('[ForumService] Ошибка удаления форума:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка удаления форума');
+  }
 };

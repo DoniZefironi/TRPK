@@ -6,10 +6,13 @@ import {
     updateElective, 
     deleteElective,
     clearCurrentElective,
-    setPagination
-} from '../store/slices/electiveInformaticsSlice';
-import { Button, Table, Modal, Form, Input, message, Pagination, Space, Card } from 'antd';
+    setPagination,
+    fetchUsers
+} from '../../store/slice/electiveInformaticsSlice';
+import { Button, Table, Modal, Form, Input, message, Pagination, Space, Card, Select, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
 
 const ElectivesPage = () => {
     const dispatch = useDispatch();
@@ -18,12 +21,17 @@ const ElectivesPage = () => {
         currentElective, 
         loading, 
         error,
-        pagination 
+        pagination,
+        users,
+        usersLoading
     } = useSelector(state => state.electives);
     
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
     const [searchTerm, setSearchTerm] = useState('');
+    
+    // Фильтруем пользователей с ролью преподавателя
+    const teachers = users.filter(user => user.role === 'TEACHER');
     
     useEffect(() => {
         dispatch(fetchElectives({ 
@@ -31,6 +39,7 @@ const ElectivesPage = () => {
             limit: pagination.limit,
             search: searchTerm
         }));
+        dispatch(fetchUsers()); // Загружаем всех пользователей
     }, [dispatch, pagination.page, pagination.limit, searchTerm]);
     
     useEffect(() => {
@@ -38,6 +47,16 @@ const ElectivesPage = () => {
             message.error(error);
         }
     }, [error]);
+    
+    useEffect(() => {
+        if (currentElective) {
+            form.setFieldsValue({
+                name: currentElective.name,
+                topic_elective: currentElective.topic_elective,
+                id_user: currentElective.id_user
+            });
+        }
+    }, [currentElective, form]);
     
     const handleCreate = () => {
         form.resetFields();
@@ -48,37 +67,62 @@ const ElectivesPage = () => {
     const handleEdit = (elective) => {
         form.setFieldsValue({
             name: elective.name,
-            topic_elective: elective.topic_elective
+            topic_elective: elective.topic_elective,
+            id_user: elective.id_user
         });
         setIsModalVisible(true);
     };
     
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         Modal.confirm({
             title: 'Удалить факультатив?',
             content: 'Вы уверены, что хотите удалить этот факультатив?',
             okText: 'Удалить',
             okType: 'danger',
             cancelText: 'Отмена',
-            onOk: () => dispatch(deleteElective(id))
+            onOk: async () => {
+                try {
+                    await dispatch(deleteElective(id)).unwrap();
+                    message.success('Факультатив успешно удален');
+                    dispatch(fetchElectives({ 
+                        page: pagination.page, 
+                        limit: pagination.limit,
+                        search: searchTerm
+                    }));
+                } catch (err) {
+                    message.error('Ошибка при удалении факультатива');
+                }
+            }
         });
     };
     
     const handleSubmit = () => {
         form.validateFields()
             .then(values => {
-                if (currentElective) {
-                    dispatch(updateElective({
+                const action = currentElective 
+                    ? dispatch(updateElective({
                         id: currentElective.id,
                         ...values
-                    }));
-                } else {
-                    dispatch(createElective({
-                        ...values,
-                        id_user: 1 // Здесь должен быть ID текущего пользователя
-                    }));
-                }
-                setIsModalVisible(false);
+                    }))
+                    : dispatch(createElective(values));
+                
+                action.unwrap()
+                    .then(() => {
+                        message.success(
+                            currentElective 
+                                ? 'Факультатив успешно обновлен' 
+                                : 'Факультатив успешно создан'
+                        );
+                        setIsModalVisible(false);
+                        dispatch(fetchElectives({ 
+                            page: pagination.page, 
+                            limit: pagination.limit,
+                            search: searchTerm
+                        }));
+                    })
+                    .catch(err => {
+                        message.error('Произошла ошибка');
+                    });
             })
             .catch(info => {
                 console.log('Validate Failed:', info);
@@ -118,6 +162,7 @@ const ElectivesPage = () => {
                         danger 
                         icon={<DeleteOutlined />} 
                         onClick={() => handleDelete(record.id)}
+                        loading={loading}
                     />
                 </Space>
             ),
@@ -187,6 +232,29 @@ const ElectivesPage = () => {
                         label="Тематика"
                     >
                         <Input.TextArea rows={4} />
+                    </Form.Item>
+                    
+                    <Form.Item
+                        name="id_user"
+                        label="Преподаватель"
+                        rules={[{ required: true, message: 'Пожалуйста, выберите преподавателя' }]}
+                    >
+                        <Select
+                            placeholder="Выберите преподавателя"
+                            loading={usersLoading}
+                            notFoundContent={usersLoading ? <Spin size="small" /> : 'Нет преподавателей'}
+                            showSearch
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                        >
+                            {teachers.map(teacher => (
+                                <Option key={teacher.id_user} value={teacher.id_user}>
+                                    {teacher.username} ({teacher.email})
+                                </Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                 </Form>
             </Modal>
