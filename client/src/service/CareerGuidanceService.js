@@ -9,8 +9,8 @@ const getAll = async (page = 1, limit = 10, dateFrom, dateTo, search) => {
   return response.data;
 };
 
-const getById = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`);
+const getById = async (id_guidance) => {
+  const response = await axios.get(`${API_URL}/${id_guidance}`);
   return response.data.data;
 };
 
@@ -19,13 +19,13 @@ const create = async (data) => {
   return response.data.data;
 };
 
-const update = async (id, data) => {
-  const response = await axios.put(`${API_URL}/${id}`, data);
+const update = async (id_guidance, data) => {
+  const response = await axios.put(`${API_URL}/${id_guidance}`, data);
   return response.data.data;
 };
 
-const deleteById = async (id) => {
-  await axios.delete(`${API_URL}/${id}`);
+const deleteById = async (id_guidance) => {
+  await axios.delete(`${API_URL}/${id_guidance}`);
 };
 
 const getByDate = async (date) => {

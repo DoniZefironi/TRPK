@@ -101,10 +101,22 @@ const createJournalModel = (course) => {
   return createModel(`Journal${course}`, {
     id_journal: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     grades: { type: DataTypes.STRING },
-    id_classes: { type: DataTypes.INTEGER },
+    id_classes: { 
+      type: DataTypes.INTEGER,
+      references: {
+        model: `Lecture${course}`,
+        key: 'id_classes'
+      }
+    },
     change_date: { type: DataTypes.DATE },
     academic_performance: { type: DataTypes.STRING },
-    id_user: { type: DataTypes.INTEGER }
+    id_user: { 
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Users',
+        key: 'id_user'
+      }
+    }
   });
 };
 
@@ -215,7 +227,14 @@ models.OlympiadResultsInformatics = createModel('OlympiadResultsInformatics', {
 models.ElectiveInformatics = createModel('ElectiveInformatics', {
   id_elective: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING },
-  topic_elective: { type: DataTypes.STRING },
+  topic_elective: { type: DataTypes.STRING }
+  // Убрали id_user, так как теперь связь через промежуточную таблицу
+});
+
+// Промежуточная таблица
+models.ElectiveUser = createModel('ElectiveUser', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id_elective: { type: DataTypes.INTEGER },
   id_user: { type: DataTypes.INTEGER }
 });
 
@@ -311,6 +330,9 @@ const setupAssociations = () => {
     Group.hasMany(Journal, { foreignKey: 'id_group' });
     Journal.belongsTo(Group, { foreignKey: 'id_group' });
 
+    models.User.hasMany(Journal, { foreignKey: 'id_user' });
+    Journal.belongsTo(models.User, { foreignKey: 'id_user' });
+
     Group.hasMany(Schedule, { foreignKey: 'id_group' });
     Schedule.belongsTo(Group, { foreignKey: 'id_group' });
 
@@ -334,13 +356,18 @@ const setupAssociations = () => {
   models.User.hasMany(models.OlympiadInformatics, { foreignKey: 'id_user' });
   models.OlympiadInformatics.belongsTo(models.User, { foreignKey: 'id_user' });
 
-  models.User.hasMany(models.ElectiveInformatics, { 
-    foreignKey: 'id_user',
-    as: 'user' // Указываем явно алиас
+  models.ElectiveInformatics.belongsToMany(models.User, {
+    through: models.ElectiveUser,
+    foreignKey: 'id_elective',
+    otherKey: 'id_user',
+    as: 'participants'
   });
-  models.ElectiveInformatics.belongsTo(models.User, { 
+  
+  models.User.belongsToMany(models.ElectiveInformatics, {
+    through: models.ElectiveUser,
     foreignKey: 'id_user',
-    as: 'user' // Указываем явно алиас
+    otherKey: 'id_elective',
+    as: 'electives'
   });
 
   models.HackathonElectric.hasMany(models.HackathonResultsElectric, { foreignKey: 'id_hackathon' });

@@ -47,9 +47,9 @@ const CareerGuidanceListPage = () => {
     dispatch(clearCurrentItem());
   }, [dispatch, searchParams]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id_guidance) => {
     try {
-      await dispatch(deleteCareerGuidance(id)).unwrap();
+      await dispatch(deleteCareerGuidance(id_guidance)).unwrap();
       message.success('Запись успешно удалена');
       // Refresh the list if we're on the last page and it's the only item
       if (items.length === 1 && pagination.page > 1) {
@@ -111,12 +111,12 @@ const CareerGuidanceListPage = () => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle">
-          <Link to={`/career-guidance/edit/${record.id}`}>
+          <Link to={`/career-guidance/edit/${record.id_guidance}`}>
             <Button icon={<EditOutlined />} />
           </Link>
           <Popconfirm
             title="Вы уверены, что хотите удалить эту запись?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record.id_guidance)}
             okText="Да"
             cancelText="Нет"
           >
@@ -160,7 +160,7 @@ const CareerGuidanceListPage = () => {
         <Table
           columns={columns}
           dataSource={items}
-          rowKey="id"
+          rowKey="id_guidance"
           loading={loading}
           pagination={false}
         />

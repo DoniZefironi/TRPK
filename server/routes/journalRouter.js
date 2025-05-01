@@ -1,16 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const journalController = require('../controllers/journalController');
-const authMiddleware = require('../middleware/authMiddleware'); // Авторизация для добавления, обновления и удаления записей
 
-router.get('/:course', journalController.getJournal);
+// Получение всех оценок с возможностью фильтрации
+router.get('/:course', 
+  journalController.getAllGrades
+);
 
-router.get('/:course/student/:id_user', journalController.getStudentGrades);
+// Получение конкретной оценки по ID
+router.get('/:course/grade/:id', 
+  journalController.getGradeById
+);
 
-router.post('/:course', journalController.addGrade);
+// Получение оценок конкретного студента
+router.get('/:course/student/:userId', 
+  journalController.getStudentGrades
+);
 
-router.put('/:course/:id_journal', journalController.updateGrade);
+// Получение оценок по конкретной лекции
+router.get('/:course/lecture/:lectureId', 
+  journalController.getLectureGrades
+);
 
-router.delete('/:course/:id_journal', journalController.deleteGrade);
+// Добавление новой оценки
+router.post('/:course', 
+  journalController.addGrade
+);
+
+// Обновление оценки
+router.put('/:course/:id', 
+  journalController.updateGrade
+);
+
+// Удаление оценки
+router.delete('/:course/:id', 
+  journalController.deleteGrade
+);
 
 module.exports = router;

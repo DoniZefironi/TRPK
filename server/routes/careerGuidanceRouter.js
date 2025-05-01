@@ -10,13 +10,13 @@ router.get('/', careerGuidanceController.getAll);
 
 router.get('/by-date', careerGuidanceController.getByDate);
 
-router.get('/:id', careerGuidanceController.getOne);
+router.get('/:id_guidance', careerGuidanceController.getOne);
 
-router.put('/:id', 
+router.put('/:id_guidance', 
     careerGuidanceController.update
 );
 
-router.delete('/:id', 
+router.delete('/:id_guidance', 
     careerGuidanceController.delete
 );
 

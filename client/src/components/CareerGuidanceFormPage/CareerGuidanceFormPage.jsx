@@ -26,7 +26,7 @@ const CareerGuidanceFormPage = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id_guidance } = useParams();
   
   const { currentItem, loading, error } = useSelector(
     (state) => state.careerGuidance
@@ -35,22 +35,22 @@ const CareerGuidanceFormPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchCareerGuidanceById(id));
+    if (id_guidance) {
+      dispatch(fetchCareerGuidanceById(id_guidance));
     } else {
       form.resetFields();
     }
-  }, [id, dispatch, form]);
+  }, [id_guidance, dispatch, form]);
 
   useEffect(() => {
-    if (currentItem && id) {
+    if (currentItem && id_guidance) {
       form.setFieldsValue({
         date_career_guidance: moment(currentItem.date_career_guidance),
         topic_career_guidance: currentItem.topic_career_guidance,
         consultants: currentItem.consultants || '',
       });
     }
-  }, [currentItem, id, form]);
+  }, [currentItem, id_guidance, form]);
 
   useEffect(() => {
     if (error) {
@@ -68,8 +68,8 @@ const CareerGuidanceFormPage = () => {
         consultants: values.consultants || null,
       };
 
-      if (id) {
-        await dispatch(updateCareerGuidance({ id, data })).unwrap();
+      if (id_guidance) {
+        await dispatch(updateCareerGuidance({ id_guidance, data })).unwrap();
         message.success('Запись успешно обновлена');
       } else {
         await dispatch(createCareerGuidance(data)).unwrap();
@@ -86,7 +86,7 @@ const CareerGuidanceFormPage = () => {
   return (
     <div className="career-guidance-form">
       <Card
-        title={id ? 'Редактирование записи' : 'Создание новой записи'}
+        title={id_guidance ? 'Редактирование записи' : 'Создание новой записи'}
         extra={
           <Button onClick={() => navigate('/career-guidance')}>
             Назад к списку
@@ -166,7 +166,7 @@ const CareerGuidanceFormPage = () => {
                 htmlType="submit"
                 loading={isSubmitting}
               >
-                {id ? 'Обновить' : 'Создать'}
+                {id_guidance ? 'Обновить' : 'Создать'}
               </Button>
             </Form.Item>
           </Form>

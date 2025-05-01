@@ -1,273 +1,387 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
-  fetchJournal, 
-  deleteGrade, 
-  updateGrade, 
-  addGrade,
-  clearError
+  fetchLectureGrades,
+  addNewGrade,
+  updateExistingGrade,
+  clearLectureGrades
 } from '../../store/slice/journalSlice';
-import { 
-  Button, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  TextField, 
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel
-} from '@mui/material';
-import JournalModal from '../JournalModal/JournalModal';
-import './JournalPage.css';
+import { fetchLessons } from '../../store/slice/lectureSlice';
+import { getAllUsers } from '../../store/slice/userSlice';
+import { Select, Button, Table, message, Spin, Card, Row, Col } from 'antd';
 
-const JournalPage = () => {
+const { Option } = Select;
+
+const GradeManagementPage = () => {
   const dispatch = useDispatch();
-  const { 
-    entries, 
-    loading, 
-    error,
-    currentPage,
-    totalPages
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedLecture, setSelectedLecture] = useState(null);
+  const [gradesData, setGradesData] = useState({});
+  const [performanceData, setPerformanceData] = useState({});
+
+  // Получаем данные из Redux store
+  const {
+    byCourse: lessonsByCourse,
+    loading: lessonsLoading,
+    error: lessonsError
+  } = useSelector((state) => state.lessons);
+
+  const {
+    users,
+    loading: usersLoading,
+    error: usersError
+  } = useSelector((state) => state.user);
+
+  const {
+    lectureGrades,
+    loading: gradesLoading,
+    error: gradesError
   } = useSelector((state) => state.journal);
-  
-  // Получаем сохраненный курс из localStorage или используем первый доступный
-  const [course, setCourse] = useState(() => {
-    const savedCourse = localStorage.getItem('selectedCourse');
-    return savedCourse; // значение по умолчанию
-  });
-  
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
-  
-  // Состояния для модального окна
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingEntry, setEditingEntry] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchJournal({ course, page, limit }));
-  }, [dispatch, course, page, limit]);
+  // Доступные курсы
+  const availableCourses = [
+    { value: 'electric', label: 'Электроника' },
+    { value: 'iot', label: 'IoT' },
+    { value: 'informatics', label: 'Информатика' }
+  ];
 
-  const handleCourseChange = (newCourse) => {
-    setCourse(newCourse);
-    localStorage.setItem('selectedCourse', newCourse); // Сохраняем выбор в localStorage
-    setPage(1); // Сбрасываем страницу при смене курса
+  // Варианты успеваемости
+  const performanceOptions = [
+    { value: 'excellent', label: 'Отлично' },
+    { value: 'good', label: 'Хорошо' },
+    { value: 'satisfactory', label: 'Удовлетворительно' },
+    { value: 'unsatisfactory', label: 'Неудовлетворительно' }
+  ];
+
+  // Обработчик выбора курса
+  const handleCourseSelect = (course) => {
+    setSelectedCourse(course);
+    setSelectedLecture(null);
+    dispatch(clearLectureGrades());
+    dispatch(fetchLessons(course));
+    dispatch(getAllUsers());
   };
 
-  const handleUpdate = async (id_journal, updatedData) => {
-    if (!id_journal || !updatedData) {
-      console.error('Не указан ID или данные для обновления');
-      return;
-    }
-    setIsUpdating(true);
+  // Обработчик выбора лекции с обработкой ошибок
+  const handleLectureSelect = async (lectureId) => {
     try {
-      await dispatch(updateGrade({ course, id_journal, data: updatedData })).unwrap();
-    } catch (error) {
-      console.error('Ошибка при обновлении:', error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleDelete = async (id_journal) => {
-    if (!id_journal) {
-      console.error('Не указан ID записи');
-      return;
-    }
-    if (window.confirm('Вы уверены, что хотите удалить эту запись?')) {
-      setIsDeleting(true);
-      try {
-        await dispatch(deleteGrade({ course, id_journal })).unwrap();
-      } catch (error) {
-        console.error('Ошибка при удалении:', error);
-      } finally {
-        setIsDeleting(false);
-      }
-    }
-  };
-
-  const openEditModal = (entry) => {
-    setEditingEntry(entry);
-    setModalOpen(true);
-  };
-
-  const handleModalSubmit = async (data) => {
-    try {
-      if (editingEntry) {
-        await handleUpdate(editingEntry.id_journal, data);
-      } else {
-        await dispatch(addGrade({ 
-          course,
-          id_user: data.id_user,
-          id_classes: data.id_classes,
-          grades: data.grades,
-          academic_performance: data.academic_performance
+      setSelectedLecture(lectureId);
+      if (selectedCourse) {
+        await dispatch(fetchLectureGrades({ 
+          course: selectedCourse, 
+          lectureId 
         })).unwrap();
       }
-      setModalOpen(false);
-      setEditingEntry(null);
-      dispatch(fetchJournal({ course, page, limit }));
     } catch (error) {
-      console.error('Ошибка сохранения:', error);
+      console.error('Ошибка загрузки оценок:', error);
+      message.error(`Не удалось загрузить оценки: ${error.message}`);
     }
   };
 
-  const handleCloseError = () => {
-    dispatch(clearError());
+  // Обновляем локальное состояние оценок
+  useEffect(() => {
+    if (lectureGrades) {
+      const newGrades = {};
+      const newPerformance = {};
+      
+      lectureGrades.grades?.forEach(grade => {
+        newGrades[grade.id_user] = grade.grades;
+        newPerformance[grade.id_user] = grade.academic_performance;
+      });
+      
+      setGradesData(newGrades);
+      setPerformanceData(newPerformance);
+    }
+  }, [lectureGrades]);
+
+  // Фильтрация пользователей по курсу с учетом разных форматов permissions
+  const courseUsers = useMemo(() => {
+    if (!selectedCourse || !users?.length) return [];
+    
+    return users.filter(user => {
+      try {
+        if (!user.permissions) return false;
+        
+        const courseLower = selectedCourse.toLowerCase();
+        const permissions = user.permissions;
+
+        // Если permissions - массив
+        if (Array.isArray(permissions)) {
+          return permissions.some(p => 
+            String(p).toLowerCase() === courseLower
+          );
+        }
+        
+        // Если permissions - строка
+        if (typeof permissions === 'string') {
+          return permissions.toLowerCase()
+            .split(',')
+            .map(p => p.trim())
+            .includes(courseLower);
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Ошибка фильтрации пользователя:', user.id_user, error);
+        return false;
+      }
+    });
+  }, [users, selectedCourse]);
+
+  // Обработчик изменения оценки
+  const handleGradeChange = (userId, value) => {
+    setGradesData(prev => ({
+      ...prev,
+      [userId]: value
+    }));
   };
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
+  // Обработчик изменения успеваемости
+  const handlePerformanceChange = (userId, value) => {
+    setPerformanceData(prev => ({
+      ...prev,
+      [userId]: value
+    }));
   };
+
+  // Сохранение оценок с улучшенной обработкой ошибок
+  const handleSaveGrades = async () => {
+    if (!selectedCourse || !selectedLecture) {
+      message.warning('Пожалуйста, выберите курс и лекцию');
+      return;
+    }
+
+    try {
+      const updates = [];
+      let savedCount = 0;
+      
+      for (const user of courseUsers) {
+        const grade = gradesData[user.id_user];
+        const performance = performanceData[user.id_user];
+        
+        if (grade == null && performance == null) continue;
+        
+        const gradeData = {
+          id_user: user.id_user,
+          id_classes: selectedLecture,
+          grades: grade,
+          academic_performance: performance
+        };
+
+        const existingGrade = lectureGrades?.grades?.find(
+          g => g.id_user === user.id_user
+        );
+
+        try {
+          if (existingGrade) {
+            await dispatch(updateExistingGrade({
+              course: selectedCourse,
+              id: existingGrade.id,
+              data: gradeData
+            })).unwrap();
+          } else {
+            await dispatch(addNewGrade({
+              course: selectedCourse,
+              data: gradeData
+            })).unwrap();
+          }
+          savedCount++;
+        } catch (error) {
+          console.error(`Ошибка сохранения оценки для пользователя ${user.id_user}:`, error);
+        }
+      }
+      
+      if (savedCount > 0) {
+        message.success(`Сохранено ${savedCount} оценок`);
+        dispatch(fetchLectureGrades({ 
+          course: selectedCourse, 
+          lectureId: selectedLecture 
+        }));
+      } else {
+        message.info('Нет изменений для сохранения');
+      }
+    } catch (error) {
+      console.error('Ошибка сохранения оценок:', error);
+      message.error('Ошибка при сохранении оценок');
+    }
+  };
+
+  // Получаем лекции для выбранного курса
+  const currentCourseLessons = selectedCourse 
+    ? lessonsByCourse[selectedCourse] || []
+    : [];
+
+  // Колонки таблицы
+  const columns = [
+    {
+      title: 'Студент',
+      dataIndex: 'username',
+      key: 'username',
+      render: (text, record) => (
+        <div>
+          <div>{text}</div>
+          <div style={{ fontSize: '0.8em', color: '#666' }}>
+            {record.email}
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Оценка',
+      dataIndex: 'grade',
+      key: 'grade',
+      render: (_, record) => (
+        <Select
+          style={{ width: '100%' }}
+          value={gradesData[record.id_user] ?? undefined}
+          onChange={(value) => handleGradeChange(record.id_user, value)}
+          placeholder="Выберите оценку"
+          allowClear
+        >
+          {[1, 2, 3, 4, 5].map(num => (
+            <Option key={num} value={num}>
+              {num}
+            </Option>
+          ))}
+        </Select>
+      )
+    },
+    {
+      title: 'Успеваемость',
+      dataIndex: 'performance',
+      key: 'performance',
+      render: (_, record) => (
+        <Select
+          style={{ width: '100%' }}
+          value={performanceData[record.id_user] ?? undefined}
+          onChange={(value) => handlePerformanceChange(record.id_user, value)}
+          placeholder="Успеваемость"
+          allowClear
+        >
+          {performanceOptions.map(opt => (
+            <Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Option>
+          ))}
+        </Select>
+      )
+    }
+  ];
+
+  // Логирование для отладки
+  useEffect(() => {
+    if (selectedCourse) {
+      console.log('Отладочная информация:');
+      console.log('Выбранный курс:', selectedCourse);
+      console.log('Пользователи курса:', courseUsers);
+      console.log('Текущие оценки:', gradesData);
+    }
+  }, [selectedCourse, courseUsers, gradesData]);
 
   return (
-    <Paper style={{ padding: 20 }}>
-      <h2>Журнал успеваемости</h2>
+    <div style={{ padding: '20px' }}>
+      <Card title="Управление оценками" style={{ marginBottom: '20px' }}>
+        <Row gutter={16}>
+          <Col span={8}>
+            <div style={{ marginBottom: '16px' }}>
+              <label>Курс:</label>
+              <Select
+                style={{ width: '100%' }}
+                value={selectedCourse}
+                onChange={handleCourseSelect}
+                placeholder="Выберите курс"
+                loading={lessonsLoading}
+              >
+                {availableCourses.map(course => (
+                  <Option key={course.value} value={course.value}>
+                    {course.label}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          </Col>
+          
+          <Col span={16}>
+            <div style={{ marginBottom: '16px' }}>
+              <label>Лекция:</label>
+              <Select
+                style={{ width: '100%' }}
+                value={selectedLecture}
+                onChange={handleLectureSelect}
+                placeholder="Выберите лекцию"
+                disabled={!selectedCourse || lessonsLoading}
+                loading={lessonsLoading || gradesLoading}
+              >
+                {currentCourseLessons.map(lecture => (
+                  <Option 
+                    key={lecture.id_classes} 
+                    value={lecture.id_classes}
+                  >
+                    {lecture.lecture_title} ({new Date(lecture.date).toLocaleDateString()})
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          </Col>
+        </Row>
+      </Card>
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Курс</InputLabel>
-        <Select
-          value={course}
-          onChange={(e) => handleCourseChange(e.target.value)}
-          label="Курс"
-        >
-          <MenuItem value="electric">Electric</MenuItem>
-          <MenuItem value="informatics">Informatics</MenuItem>
-          <MenuItem value="iot">IoT</MenuItem>
-        </Select>
-      </FormControl>
+      {usersLoading || lessonsLoading ? (
+        <Spin tip="Загрузка данных..." size="large" />
+      ) : (
+        <>
+          {selectedCourse && selectedLecture && (
+            <>
+              {courseUsers.length > 0 ? (
+                <>
+                  <Table
+                    columns={columns}
+                    dataSource={courseUsers}
+                    rowKey="id_user"
+                    pagination={false}
+                    style={{ marginBottom: '20px' }}
+                    loading={gradesLoading}
+                  />
+                  
+                  <Button 
+                    type="primary" 
+                    onClick={handleSaveGrades}
+                    disabled={!selectedLecture || !selectedCourse || gradesLoading}
+                    loading={gradesLoading}
+                  >
+                    Сохранить оценки
+                  </Button>
+                </>
+              ) : (
+                <Card>
+                  <div style={{ textAlign: 'center', padding: '20px' }}>
+                    <h4>Нет студентов с доступом к курсу "{selectedCourse}"</h4>
+                    <p>Проверьте:</p>
+                    <ul style={{ textAlign: 'left', maxWidth: '500px', margin: '10px auto' }}>
+                      <li>Назначены ли пользователям права на этот курс</li>
+                      <li>Соответствие формата данных (проверьте консоль)</li>
+                    </ul>
+                  </div>
+                </Card>
+              )}
+            </>
+          )}
+        </>
+      )}
 
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-      >
-        <Alert onClose={handleCloseError} severity="error">
-          {error}
-        </Alert>
-      </Snackbar>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID студента</TableCell>
-              <TableCell>ID занятия</TableCell>
-              <TableCell>Оценка</TableCell>
-              <TableCell>Успеваемость</TableCell>
-              <TableCell>Действия</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  <CircularProgress />
-                </TableCell>
-              </TableRow>
-            ) : entries.length > 0 ? (
-              entries.map(entry => (
-                <TableRow key={entry.id_journal}>
-                  <TableCell>{entry.id_user}</TableCell>
-                  <TableCell>{entry.id_classes}</TableCell>
-                  <TableCell>
-                    <TextField 
-                      size="small"
-                      value={entry.grades} 
-                      onChange={(e) => handleUpdate(entry.id_journal, { grades: e.target.value })} 
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <TextField 
-                      size="small"
-                      value={entry.academic_performance} 
-                      onChange={(e) => handleUpdate(entry.id_journal, { academic_performance: e.target.value })} 
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button 
-                      onClick={() => openEditModal(entry)}
-                      variant="outlined"
-                      size="small"
-                      style={{ marginRight: 8 }}
-                      disabled={isUpdating}
-                    >
-                      {isUpdating ? <CircularProgress size={24} /> : 'Редактировать'}
-                    </Button>
-                    <Button 
-                      onClick={() => handleDelete(entry.id_journal)} 
-                      variant="outlined"
-                      color="error"
-                      size="small"
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? <CircularProgress size={24} /> : 'Удалить'}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  Нет данных для отображения
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Button 
-          onClick={() => setModalOpen(true)} 
-          variant="contained" 
-          color="primary"
-        >
-          Добавить запись
-        </Button>
-        
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Button 
-            onClick={() => handlePageChange(page - 1)} 
-            variant="contained"
-            disabled={page <= 1}
-          >
-            Предыдущая
-          </Button>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
-            Страница {page} из {totalPages}
-          </span>
-          <Button 
-            onClick={() => handlePageChange(page + 1)} 
-            variant="contained"
-            disabled={page >= totalPages}
-          >
-            Следующая
-          </Button>
+      {(lessonsError || usersError || gradesError) && (
+        <div style={{ 
+          color: 'red', 
+          marginTop: '10px',
+          padding: '10px',
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ffccc7'
+        }}>
+          {lessonsError || usersError || gradesError}
         </div>
-      </div>
-
-      <JournalModal 
-        open={modalOpen}
-        handleClose={() => {
-          setModalOpen(false);
-          setEditingEntry(null);
-        }}
-        initialData={editingEntry}
-        handleSubmit={handleModalSubmit}
-        course={course}
-      />
-    </Paper>
+      )}
+    </div>
   );
 };
 
-export default JournalPage;
+export default GradeManagementPage;

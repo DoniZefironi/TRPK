@@ -1,194 +1,99 @@
 const models = require('../models/models');
 const ApiError = require('../error/ApiError');
 
+// Функция для получения модели урока по курсу с выбрасыванием ошибки
 const getLessonModel = (course) => {
     const modelsMap = {
         'electric': models.LectureElectric,
         'iot': models.LectureIoT,
         'informatics': models.LectureInformatics
     };
-    return modelsMap[course.toLowerCase()] || null;
+    const model = modelsMap[course.toLowerCase()];
+    if (!model) {
+        throw new ApiError.badRequest(`Недопустимый курс: ${course}`);
+    }
+    return model;
 };
 
 class LessonController {
-
-    // Создание урока
-    async createLesson(req, res, next) {
+    // Создание лекции
+    async create(req, res, next) {
         try {
             const { course } = req.params;
-            const { title, description, id_materials, duration, date, slides } = req.body;
-            
             const lessonModel = getLessonModel(course);
-            if (!lessonModel) {
-                return next(ApiError.badRequest('Недопустимый курс'));
+
+            const existingLesson = await lessonModel.findOne({ where: { lecture_title: req.body.lecture_title } });
+            if (existingLesson) {
+                return next(ApiError.badRequest('Лекция с таким названием уже существует.'));
             }
 
-            // Проверка существования материала, если указан
-            if (id_materials) {
-                const material = await models.MaterialsLibrary.findByPk(id_materials);
-                if (!material) {
-                    return next(ApiError.notFound('Материал не найден'));
-                }
-            }
-
-            const newLesson = await lessonModel.create({
-                lecture_title: title,
-                description,
-                id_materials,
-                duration,
-                date,
-                slides
-            });
-            
-            return res.json(newLesson);
-        } catch (e) {
-            next(ApiError.internal(e.message));
-        }
-    }
-
-    // Получение всех уроков с пагинацией
-    async getAllLessons(req, res, next) {
-        try {
-            const { course } = req.params;
-            let { page = 1, limit = 10 } = req.query;
-            const offset = (page - 1) * limit;
-
-            const lessonModel = getLessonModel(course);
-            if (!lessonModel) {
-                return next(ApiError.badRequest('Недопустимый курс'));
-            }
-
-            const lessons = await lessonModel.findAndCountAll({
-                include: [{
-                    model: models.MaterialsLibrary,
-                    attributes: ['id_material', 'title', 'file_url']
-                }],
-                limit,
-                offset,
-                order: [['date', 'DESC']]
-            });
-            
-            return res.json(lessons);
-        } catch (e) {
-            next(ApiError.internal(e.message));
-        }
-    }
-
-    // Получение конкретного урока
-    async getLesson(req, res, next) {
-        try {
-            const { course, id } = req.params;
-            const lessonModel = getLessonModel(course);
-            
-            if (!lessonModel) {
-                return next(ApiError.badRequest('Недопустимый курс'));
-            }
-
-            const lesson = await lessonModel.findByPk(id, {
-                include: [{
-                    model: models.MaterialsLibrary,
-                    attributes: ['id_material', 'title', 'description', 'file_url']
-                }]
-            });
-            
-            if (!lesson) {
-                return next(ApiError.notFound('Урок не найден'));
-            }
-            
+            const lesson = await lessonModel.create(req.body);
             return res.json(lesson);
         } catch (e) {
-            next(ApiError.internal(e.message));
+            console.error(e);  // Логируем ошибку на сервере
+            next(ApiError.internal('Произошла ошибка при создании лекции.'));
         }
     }
 
-    // Обновление урока
-    async updateLesson(req, res, next) {
-        try {
-            const { course, id } = req.params;
-            const { title, description, id_materials, duration, date, slides } = req.body;
-            
-            const lessonModel = getLessonModel(course);
-            if (!lessonModel) {
-                return next(ApiError.badRequest('Недопустимый курс'));
-            }
-
-            const lesson = await lessonModel.findByPk(id);
-            if (!lesson) {
-                return next(ApiError.notFound('Урок не найден'));
-            }
-
-            // Проверка существования материала, если указан
-            if (id_materials) {
-                const material = await models.MaterialsLibrary.findByPk(id_materials);
-                if (!material) {
-                    return next(ApiError.notFound('Материал не найден'));
-                }
-            }
-
-            await lesson.update({
-                lecture_title: title,
-                description,
-                id_materials,
-                duration,
-                date,
-                slides
-            });
-            
-            return res.json(lesson);
-        } catch (e) {
-            next(ApiError.internal(e.message));
-        }
-    }
-
-    // Удаление урока
-    async deleteLesson(req, res, next) {
-        try {
-            const { course, id } = req.params;
-            const lessonModel = getLessonModel(course);
-            
-            if (!lessonModel) {
-                return next(ApiError.badRequest('Недопустимый курс'));
-            }
-
-            const lesson = await lessonModel.findByPk(id);
-            if (!lesson) {
-                return next(ApiError.notFound('Урок не найден'));
-            }
-
-            await lesson.destroy();
-            return res.json({ message: 'Урок успешно удален' });
-        } catch (e) {
-            next(ApiError.internal(e.message));
-        }
-    }
-
-    // Получение уроков по дате (дополнительный метод)
-    async getLessonsByDate(req, res, next) {
+    // Получение всех лекций курса
+    async getAll(req, res, next) {
         try {
             const { course } = req.params;
-            const { date } = req.query;
-            
             const lessonModel = getLessonModel(course);
-            if (!lessonModel) {
-                return next(ApiError.badRequest('Недопустимый курс'));
-            }
-
-            if (!date) {
-                return next(ApiError.badRequest('Не указана дата'));
-            }
-
-            const lessons = await lessonModel.findAll({
-                where: { date },
-                include: [{
-                    model: models.MaterialsLibrary,
-                    attributes: ['id_material', 'title']
-                }],
-                order: [['time', 'ASC']]
-            });
-            
+            const lessons = await lessonModel.findAll();
             return res.json(lessons);
         } catch (e) {
-            next(ApiError.internal(e.message));
+            console.error(e);  // Логируем ошибку на сервере
+            next(ApiError.internal('Произошла ошибка при получении лекций.'));
+        }
+    }
+
+    // Получение лекции по ID
+    async getById(req, res, next) {
+        try {
+            const { course, id } = req.params;
+            const lessonModel = getLessonModel(course);
+            const lesson = await lessonModel.findByPk(id);
+            if (!lesson) {
+                return next(ApiError.notFound(`Лекция с ID ${id} не найдена в курсе ${course}.`));
+            }
+            return res.json(lesson);
+        } catch (e) {
+            console.error(e);  // Логируем ошибку на сервере
+            next(ApiError.internal('Произошла ошибка при получении лекции.'));
+        }
+    }
+
+    // Обновление лекции
+    async update(req, res, next) {
+        try {
+            const { course, id } = req.params;
+            const lessonModel = getLessonModel(course);
+            const [updated] = await lessonModel.update(req.body, { where: { id_classes: id } });
+            if (!updated) {
+                return next(ApiError.notFound(`Лекция с ID ${id} не найдена.`));
+            }
+            const updatedLesson = await lessonModel.findByPk(id);
+            return res.json(updatedLesson);
+        } catch (e) {
+            console.error(e);  // Логируем ошибку на сервере
+            next(ApiError.internal('Произошла ошибка при обновлении лекции.'));
+        }
+    }
+
+    // Удаление лекции
+    async delete(req, res, next) {
+        try {
+            const { course, id } = req.params;
+            const lessonModel = getLessonModel(course);
+            const deleted = await lessonModel.destroy({ where: { id_classes: id } });
+            if (!deleted) {
+                return next(ApiError.notFound(`Лекция с ID ${id} не найдена.`));
+            }
+            return res.json({ message: 'Лекция успешно удалена.' });
+        } catch (e) {
+            console.error(e);  // Логируем ошибку на сервере
+            next(ApiError.internal('Произошла ошибка при удалении лекции.'));
         }
     }
 }

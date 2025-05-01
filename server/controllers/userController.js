@@ -37,18 +37,27 @@ class UserController {
 
   async getAllUsers(req, res, next) {
     try {
-        console.log('Запрос на получение всех пользователей');
-
-        const users = await User.findAll({
-            attributes: { exclude: ['password', 'refreshToken'] }
-        });
-
-        return res.json(users);
+      console.log('Запрос на получение всех пользователей');
+  
+      const whereClause = {};
+  
+      // ✅ если передан query-параметр permissions
+      if (req.query.permissions) {
+        whereClause.permissions = req.query.permissions;
+      }
+  
+      const users = await User.findAll({
+        where: whereClause,
+        attributes: { exclude: ['password', 'refreshToken'] }
+      });
+  
+      return res.json(users);
     } catch (error) {
-        console.error('Ошибка получения пользователей:', error);
-        next(ApiError.internal('Ошибка при получении списка пользователей'));
+      console.error('Ошибка получения пользователей:', error);
+      next(ApiError.internal('Ошибка при получении списка пользователей'));
     }
-}
+  }
+  
 
 async changeUserRole(req, res, next) {
   try {

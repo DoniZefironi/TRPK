@@ -67,6 +67,8 @@ export const fetchMaterialTopics = createAsyncThunk(
     }
 );
 
+export const selectAllMaterials = (state) => state.materials.materials;
+
 const materialsSlice = createSlice({
     name: 'materials',
     initialState: {

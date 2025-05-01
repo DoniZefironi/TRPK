@@ -15,9 +15,9 @@ export const fetchCareerGuidances = createAsyncThunk(
 
 export const fetchCareerGuidanceById = createAsyncThunk(
   'careerGuidance/fetchById',
-  async (id, { rejectWithValue }) => {
+  async (id_guidance, { rejectWithValue }) => {
     try {
-      return await careerGuidanceService.getById(id);
+      return await careerGuidanceService.getById(id_guidance);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -37,9 +37,9 @@ export const createCareerGuidance = createAsyncThunk(
 
 export const updateCareerGuidance = createAsyncThunk(
   'careerGuidance/update',
-  async ({ id, data }, { rejectWithValue }) => {
+  async ({ id_guidance, data }, { rejectWithValue }) => {
     try {
-      return await careerGuidanceService.update(id, data);
+      return await careerGuidanceService.update(id_guidance, data);
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -48,10 +48,10 @@ export const updateCareerGuidance = createAsyncThunk(
 
 export const deleteCareerGuidance = createAsyncThunk(
   'careerGuidance/delete',
-  async (id, { rejectWithValue }) => {
+  async (id_guidance, { rejectWithValue }) => {
     try {
-      await careerGuidanceService.delete(id);
-      return id;
+      await careerGuidanceService.delete(id_guidance);
+      return id_guidance;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -145,11 +145,11 @@ const careerGuidanceSlice = createSlice({
       })
       .addCase(updateCareerGuidance.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.items.findIndex(item => item.id === action.payload.id);
+        const index = state.items.findIndex(item => item.id_guidance === action.payload.id_guidance);
         if (index !== -1) {
           state.items[index] = action.payload;
         }
-        if (state.currentItem && state.currentItem.id === action.payload.id) {
+        if (state.currentItem && state.currentItem.id_guidance === action.payload.id_guidance) {
           state.currentItem = action.payload;
         }
       })
@@ -165,7 +165,7 @@ const careerGuidanceSlice = createSlice({
       })
       .addCase(deleteCareerGuidance.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = state.items.filter(item => item.id !== action.payload);
+        state.items = state.items.filter(item => item.id_guidance !== action.payload);
       })
       .addCase(deleteCareerGuidance.rejected, (state, action) => {
         state.loading = false;

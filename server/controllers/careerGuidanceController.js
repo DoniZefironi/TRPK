@@ -84,9 +84,9 @@ class CareerGuidanceController {
     // Получение одной записи
     async getOne(req, res, next) {
         try {
-            const { id } = req.params;
+            const { id_guidance } = req.params;
             
-            const careerGuidance = await models.CareerGuidanceInformatics.findByPk(id);
+            const careerGuidance = await models.CareerGuidanceInformatics.findByPk(id_guidance);
             
             if (!careerGuidance) {
                 return next(ApiError.notFound('Запись о карьерном ориентировании не найдена'));
@@ -105,10 +105,10 @@ class CareerGuidanceController {
     // Обновление записи
     async update(req, res, next) {
         try {
-            const { id } = req.params;
+            const { id_guidance } = req.params;
             const { date_career_guidance, topic_career_guidance, consultants } = req.body;
             
-            const careerGuidance = await models.CareerGuidanceInformatics.findByPk(id);
+            const careerGuidance = await models.CareerGuidanceInformatics.findByPk(id_guidance);
             
             if (!careerGuidance) {
                 return next(ApiError.notFound('Запись о карьерном ориентировании не найдена'));
@@ -134,9 +134,9 @@ class CareerGuidanceController {
     // Удаление записи
     async delete(req, res, next) {
         try {
-            const { id } = req.params;
+            const { id_guidance } = req.params;
             
-            const careerGuidance = await models.CareerGuidanceInformatics.findByPk(id);
+            const careerGuidance = await models.CareerGuidanceInformatics.findByPk(id_guidance);
             
             if (!careerGuidance) {
                 return next(ApiError.notFound('Запись о карьерном ориентировании не найдена'));

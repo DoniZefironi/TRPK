@@ -1,40 +1,77 @@
-import axios from 'axios';
+import api from './api';
 
-const API_URL = 'http://localhost:2280/api/electives';
-
-// Создаем экземпляр axios с базовыми настройками
-const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
+class ElectiveInformaticsService {
+  // Создание факультатива
+  async create(data) {
+    try {
+      const response = await api.post('/electives', data);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
   }
-});
 
-export default class ElectiveInformaticsService {
-    static async createElective(name, topic_elective, id_user) {
-        return api.post('/', { name, topic_elective, id_user });
+  // Получение списка факультативов
+  async getAll({ page = 1, limit = 10, search = '' } = {}) {
+    try {
+      const response = await api.get('/electives', {
+        params: { page, limit, search }
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
     }
+  }
 
-    static async getAllElectives(page = 1, limit = 10, search = '') {
-        return api.get('/', {
-            params: { page, limit, search }
-        });
+  // Получение одного факультатива
+  async getOne(id) {
+    try {
+      const response = await api.get(`/electives/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
     }
+  }
 
-    static async getElectiveById(id) {
-        return api.get(`/${id}`);
+  // Обновление факультатива
+  async update(id, data) {
+    try {
+      const response = await api.put(`/electives/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
     }
+  }
 
-    static async updateElective(id, name, topic_elective) {
-        return api.put(`/${id}`, { name, topic_elective });
+  // Удаление факультатива
+  async delete(id) {
+    try {
+      const response = await api.delete(`/electives/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
     }
+  }
 
-    static async deleteElective(id) {
-        return api.delete(`/${id}`);
+  // Добавление участника
+  async addParticipant(electiveId, userId) {
+    try {
+      const response = await api.post(`/electives/${electiveId}/participants`, { userId });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
     }
+  }
 
-    static async addParticipant(id, userId) {
-        return api.post(`/${id}/participants`, { userId });
+  // Удаление участника
+  async removeParticipant(electiveId, userId) {
+    try {
+      const response = await api.delete(`/electives/${electiveId}/participants/${userId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
     }
+  }
 }
+
+export default new ElectiveInformaticsService();

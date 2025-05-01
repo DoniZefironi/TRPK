@@ -22,6 +22,7 @@ import Career from './pages/Career/Career.jsx'
 import CareerGuidanceFormPage from './components/CareerGuidanceFormPage/CareerGuidanceFormPage.jsx'
 import CareerGuidanceViewPage from './components/CareerGuidanceViewPage/CareerGuidanceViewPage.jsx'
 import GroupDetailsPage from './pages/GroupDetailsPage/GroupDetailsPage.jsx'
+import ElectiveDetailsPage from './components/ElectiveDetails/ElectiveDetails.jsx';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -42,14 +43,15 @@ const App = () => {
                     <Route path="/users" element={<Users />} />
                     <Route path="/career-guidance" element={<Career />} />
                     <Route path="/career-guidance/create" element={<CareerGuidanceFormPage />} />
-                    <Route path="/career-guidance/edit/:id" element={<CareerGuidanceFormPage />} />
-                    <Route path="/career-guidance/view/:id" element={<CareerGuidanceViewPage />} />
+                    <Route path="/career-guidance/edit/:id_guidance" element={<CareerGuidanceFormPage />} />
+                    <Route path="/career-guidance/view/:id_guidance" element={<CareerGuidanceViewPage />} />
                     <Route path="/course" element={<CoursesSection />} />
                     <Route path="/groups" element={<GroupsPage />} />
                     <Route path="/groups/:course/:groupId" element={<GroupDetailsPage  />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/events" element={<Events />} />
                     <Route path="/elective" element={<Elective />} />
+                    <Route path="/electives/:id" element={<ElectiveDetailsPage />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/profile" element={<Profile />} />

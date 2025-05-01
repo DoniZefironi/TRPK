@@ -1,87 +1,157 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2280/api/journal';
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    console.error('Токен авторизации не найден');
-    throw new Error('Требуется авторизация');
-  }
-  return { 
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  };
-};
-
-const journalService = {
-  getJournal: async (course, page = 1, limit = 10) => {
-    try {
-        page = Math.max(1, parseInt(page)) || 1;
-        limit = Math.min(50, Math.max(1, parseInt(limit))) || 10;
-        
-        const response = await axios.get(`${API_URL}/${course}`, {
-            params: { page, limit },
-            headers: getAuthHeaders()
-        });
-
-        // Приводим данные к ожидаемой фронтендом структуре
-        return {
-            rows: response.data.rows || [],
-            count: response.data.count || 0,
-            currentPage: page,
-            totalPages: Math.ceil(response.data.count / limit),
-            limit
-        };
-    } catch (error) {
-        console.error('Journal fetch error:', error);
-        throw error.response?.data?.message || error.message;
-    }
-},
-
-  getStudentGrades: async (course, id_user) => {
-    try {
-      const response = await axios.get(`${API_URL}/${course}/student/${id_user}`, {
-        headers: getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || error.message;
-    }
+// Создаем экземпляр axios с базовыми настройками
+const journalApi = axios.create({
+  baseURL: 'http://localhost:2280/api/journal', // Базовый URL будет проксироваться через настройки vite/webpack
+  withCredentials: true, // Для отправки кук аутентификации
+  headers: {
+    'Content-Type': 'application/json',
   },
+});
 
-  addGrade: async (data) => {
-    try {
-      const response = await axios.post(API_URL, data, {
-        headers: getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || error.message;
-    }
-  },
-
-  updateGrade: async (course, id_journal, data) => {
-    try {
-      const response = await axios.put(`${API_URL}/${course}/${id_journal}`, data, {
-        headers: getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || error.message;
-    }
-  },
-
-  deleteGrade: async (course, id_journal) => {
-    try {
-      const response = await axios.delete(`${API_URL}/${course}/${id_journal}`, {
-        headers: getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || error.message;
-    }
+// Обработчик ошибок
+const handleError = (error) => {
+  if (error.response) {
+    // Сервер ответил с кодом состояния вне 2xx
+    throw new Error(error.response.data.message || error.response.statusText);
+  } else if (error.request) {
+    // Запрос был сделан, но ответ не получен
+    throw new Error('No response received from server');
+  } else {
+    // Произошла ошибка при настройке запроса
+    throw new Error('Error setting up request');
   }
 };
 
-export default journalService;
+const JournalService = {
+  /**
+   * Получить все оценки с пагинацией и фильтрацией
+   * @param {string} course - Название курса
+   * @param {object} params - Параметры запроса (page, limit, userId, lectureId)
+   * @returns {Promise<object>} - Ответ сервера с данными и пагинацией
+   */
+  getAllGrades: async (course, params = {}) => {
+    try {
+      const response = await journalApi.get(`/${course}`, { params });
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Получить оценку по ID
+   * @param {string} course - Название курса
+   * @param {string|number} id - ID оценки
+   * @returns {Promise<object>} - Данные оценки
+   */
+  getGradeById: async (course, id) => {
+    try {
+      const response = await journalApi.get(`/${course}/grade/${id}`);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Получить оценки студента
+   * @param {string} course - Название курса
+   * @param {string|number} userId - ID пользователя
+   * @returns {Promise<array>} - Массив оценок студента
+   */
+  getStudentGrades: async (course, userId) => {
+    try {
+      const response = await journalApi.get(`/${course}/student/${userId}`);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Получить оценки по лекции
+   * @param {string} course - Название курса
+   * @param {string|number} lectureId - ID лекции
+   * @returns {Promise<object>} - Данные лекции и массив оценок
+   */
+  getLectureGrades: async (course, lectureId) => {
+    try {
+      const response = await journalApi.get(`/${course}/lecture/${lectureId}`);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Добавить оценку
+   * @param {string} course - Название курса
+   * @param {object} data - Данные для создания оценки
+   * @returns {Promise<object>} - Созданная оценка
+   */
+  addGrade: async (course, data) => {
+    try {
+      const response = await journalApi.post(`/${course}`, data);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Обновить оценку
+   * @param {string} course - Название курса
+   * @param {string|number} id - ID оценки
+   * @param {object} data - Данные для обновления
+   * @returns {Promise<object>} - Обновленная оценка
+   */
+  updateGrade: async (course, id, data) => {
+    try {
+      const response = await journalApi.put(`/${course}/${id}`, data);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Удалить оценку
+   * @param {string} course - Название курса
+   * @param {string|number} id - ID оценки
+   * @returns {Promise<void>}
+   */
+  deleteGrade: async (course, id) => {
+    try {
+      await journalApi.delete(`/${course}/${id}`);
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  // Дополнительные методы для управления API
+  /**
+   * Установка базового URL (может быть полезно для тестов)
+   * @param {string} baseURL - Базовый URL API
+   */
+  setBaseURL: (baseURL) => {
+    journalApi.defaults.baseURL = baseURL;
+  },
+
+  /**
+   * Установка заголовка авторизации
+   * @param {string} token - Токен авторизации
+   */
+  setAuthToken: (token) => {
+    journalApi.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  },
+
+  /**
+   * Удаление заголовка авторизации
+   */
+  removeAuthToken: () => {
+    delete journalApi.defaults.headers.common['Authorization'];
+  },
+};
+
+export default JournalService;

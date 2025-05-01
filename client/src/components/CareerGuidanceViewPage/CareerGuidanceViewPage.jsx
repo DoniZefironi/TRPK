@@ -9,15 +9,15 @@ import { EditOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 const CareerGuidanceViewPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id_guidance } = useParams();
   
   const { currentItem, loading, error } = useSelector(
     (state) => state.careerGuidance
   );
 
   useEffect(() => {
-    dispatch(fetchCareerGuidanceById(id));
-  }, [id, dispatch]);
+    dispatch(fetchCareerGuidanceById(id_guidance));
+  }, [id_guidance, dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -40,7 +40,7 @@ const CareerGuidanceViewPage = () => {
             <Button
               type="primary"
               icon={<EditOutlined />}
-              onClick={() => navigate(`/career-guidance/edit/${id}`)}
+              onClick={() => navigate(`/career-guidance/edit/${id_guidance}`)}
             >
               Редактировать
             </Button>

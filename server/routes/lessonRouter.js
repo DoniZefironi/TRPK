@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const lessonController = require('../controllers/lessonController');
-const authMiddleware = require('../middleware/authMiddleware'); // Авторизация для создания, обновления и удаления
+const controller = require('../controllers/lessonController');
 
-router.get('/:course', lessonController.getAllLessons);
+// Создание лекции
+router.post('/:course', controller.create);
 
-router.get('/:course/by-date', lessonController.getLessonsByDate);
+// Получение всех лекций курса
+router.get('/:course', controller.getAll);
 
-router.get('/:course/:id', lessonController.getLesson);
+// Получение лекции по ID
+router.get('/:course/:id', controller.getById);
 
-router.post('/:course', lessonController.createLesson);
+// Обновление лекции
+router.put('/:course/:id', controller.update);
 
-router.put('/:course/:id', lessonController.updateLesson);
-
-router.delete('/:course/:id', lessonController.deleteLesson);
+// Удаление лекции
+router.delete('/:course/:id', controller.delete);
 
 module.exports = router;
