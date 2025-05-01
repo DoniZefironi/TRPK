@@ -5,29 +5,31 @@ const bcrypt = require("bcryptjs");
 const UserDto = require('../dtos/userDto'); 
 
 class UserService {
-    async register(email, password, username, role) {
+    async register(email, password, username, permissions) {
         const candidate = await User.findOne({ where: { email } });
         if (candidate) {
-            throw ApiError.badRequest(`Пользователь с почтой ${email} уже существует`);
+          throw ApiError.badRequest(`Пользователь с почтой ${email} уже существует`);
         }
+        
         const hashPassword = await bcrypt.hash(password, 3);
         const user = await User.create({
-            email,
-            password: hashPassword,
-            username,
-            role: role || 'USER'
+          email,
+          password: hashPassword,
+          username,
+          permissions, // Теперь передаем permissions
+          role: 'USER'  // Роль по умолчанию
         });
-
+      
         const userDto = new UserDto(user);
         const tokens = tokenService.generateTokens({ ...userDto });
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         
         return {
-            user: userDto,
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken
+          user: userDto,
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken
         };
-    }
+      }
 
     async login(email, password) {
         console.log('Login attempt for email:', email); // Debug log

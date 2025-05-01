@@ -98,6 +98,18 @@ export const fetchGroupMembers = createAsyncThunk(
   }
 );
 
+export const fetchSpecificGroupMembers = createAsyncThunk(
+  'groups/fetchSpecificGroupMembers',
+  async ({ course, groupId }, { rejectWithValue }) => {
+    try {
+      const members = await groupService.getSpecificGroupMembers(course, groupId);
+      return { course, groupId, members };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 export const updateMember = createAsyncThunk(
   'groups/updateMember',
   async ({ course, id, userId, memberData }, { rejectWithValue }) => {
@@ -215,6 +227,10 @@ const groupSlice = createSlice({
       .addCase(removeMember.fulfilled, (state, action) => {
         state.loading = false;
         state.members = state.members.filter(m => m.id_user !== action.payload.userId);
+      })
+      .addCase(fetchSpecificGroupMembers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.members = action.payload.members;
       });
 
     // Общие обработчики (addMatcher) - должны быть после всех addCase

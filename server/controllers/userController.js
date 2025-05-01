@@ -12,11 +12,11 @@ class UserController {
   async register(req, res, next) {
     try {
       const { username, email, password, permissions } = req.body;
-      
+    
       if (!username || !email || !password || !permissions) {
         return next(ApiError.badRequest('Все поля обязательны для заполнения'));
       }
-
+  
       const userData = await UserService.register(email, password, username, permissions);
 
       res.cookie('refreshToken', userData.refreshToken, {

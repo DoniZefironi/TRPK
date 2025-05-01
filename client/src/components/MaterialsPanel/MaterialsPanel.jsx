@@ -6,6 +6,8 @@ import {
 } from '../../store/slice/materialSlice';
 import CreateMaterialComp from '../CreateMaterialComp/CreateMaterialComp';
 import UpdateMaterialModal from '../UpdateMaterialComp/UpdateMaterialComp';
+import { FaFileAlt, FaEdit, FaTrash } from 'react-icons/fa';
+
 
 const MaterialsList = () => {
     const dispatch = useDispatch();
@@ -45,22 +47,38 @@ const MaterialsList = () => {
     };
 
     return (
-        <div>
-            <h2>Список материалов</h2>
-            <button onClick={handleOpenModal}>Добавить материал</button>
+      <div>
+          <h2>Список материалов</h2>
+          <button onClick={handleOpenModal}>Добавить материал</button>
 
-            {loading ? <p>Загрузка...</p> : (
-                <ul>
-{materials.map((material) => (
-  <li key={material.id_material}>
-    <h3>{material.title}</h3>
-    <p>{material.description}</p>
-    <button onClick={() => handleUpdate(material)}>Обновить</button>
-    <button onClick={() => handleDelete(material.id_material)}>Удалить</button>
-  </li>
-))}
-                </ul>
-            )}
+          {loading ? <p>Загрузка...</p> : (
+              <ul>
+                  {materials.map((material) => (
+                      <li key={material.id_material}>
+                          <h3>{material.title}</h3>
+                          <p>{material.description}</p>
+                          <div className="material-actions">
+                              {material.file_url && (
+                                  <a 
+                                      href={material.file_url} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      title="Открыть файл"
+                                  >
+                                      <FaFileAlt className="file-icon" />
+                                  </a>
+                              )}
+                              <button onClick={() => handleUpdate(material)}>
+                                  <FaEdit /> Обновить
+                              </button>
+                              <button onClick={() => handleDelete(material.id_material)}>
+                                  <FaTrash /> Удалить
+                              </button>
+                          </div>
+                      </li>
+                  ))}
+              </ul>
+          )}
 
             <div>
                 <button 

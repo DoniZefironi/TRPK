@@ -3,14 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   fetchGroupDetails, 
-  fetchGroupMembers, 
-  resetGroupState,
-  addMember,
-  removeMember
+  fetchSpecificGroupMembers, 
+  resetGroupState
 } from '../../store/slice/groupSlice';
-import MemberTable from '../../components/MemberTable/MemberTable';
-import GroupInfo from '../../components/GroupInfo/GroupInfo';
-import { CircularProgress, Button, Alert, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, 
+         CircularProgress, Button, Alert, Typography, Box, IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './GroupDetailsPage.css';
 
 const GroupDetailsPage = () => {
@@ -21,169 +19,151 @@ const GroupDetailsPage = () => {
         currentGroup, 
         members, 
         loading, 
-        error,
-        memberOperationLoading
+        error 
     } = useSelector(state => state.groups);
     
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [operationError, setOperationError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(null);
 
-    // Загрузка данных группы
+    // Загрузка данных конкретной группы
     useEffect(() => {
         const loadGroupData = async () => {
-            setIsInitialLoading(true);
-            try {
-                await dispatch(fetchGroupDetails({ course, id: groupId })).unwrap();
-                const membersResponse = await dispatch(fetchGroupMembers({ course, id: groupId })).unwrap();
-                console.log('Loaded members:', membersResponse); // Логирование загруженных участников
-            } catch (err) {
-                console.error('Group data loading error:', err);
-            } finally {
-                setIsInitialLoading(false);
-            }
+          setIsLoading(true);
+          setErrorMessage(null);
+          
+          try {
+            // Загружаем данные группы
+            await dispatch(fetchGroupDetails({ course, id: groupId })).unwrap();
+            
+            // Загружаем участников конкретной группы
+            await dispatch(fetchSpecificGroupMembers({ course, groupId })).unwrap();
+      
+          } catch (err) {
+            console.error('Ошибка загрузки:', err);
+            setErrorMessage(err.message || 'Ошибка загрузки данных группы');
+          } finally {
+            setIsLoading(false);
+          }
         };
-
+      
         loadGroupData();
         
         return () => {
-            dispatch(resetGroupState());
+          dispatch(resetGroupState());
         };
-    }, [course, groupId, dispatch]);
+      }, [course, groupId, dispatch]);
 
-    // Обработка операций с участниками
-    const handleMemberOperation = async (operation, userId) => {
-        setOperationError(null);
-        try {
-            if (operation === 'add') {
-                await dispatch(addMember({
-                    course,
-                    id: groupId,
-                    memberData: { id_user: userId }
-                })).unwrap();
-            } else {
-                await dispatch(removeMember({
-                    course,
-                    id: groupId,
-                    userId
-                })).unwrap();
-            }
-            // Обновляем список участников после операции
-            await dispatch(fetchGroupMembers({ course, id: groupId }));
-        } catch (err) {
-            console.error(`${operation === 'add' ? 'Add' : 'Remove'} member error:`, err);
-            setOperationError(err.message || `Ошибка ${operation === 'add' ? 'добавления' : 'удаления'} участника`);
-        }
+    const handleBack = () => {
+        navigate(`/groups`);
     };
 
-    // Обработка навигации назад
-    const handleBackClick = () => {
-        navigate(`/groups/${course}`);
-    };
-
-    // Состояния загрузки
-    if (isInitialLoading) {
+    if (isLoading) {
         return (
-            <div className="loading-container">
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
                 <CircularProgress size={60} />
-                <Typography variant="body1" mt={2}>
+                <Typography variant="h6" ml={2}>
                     Загрузка данных группы...
                 </Typography>
-            </div>
+            </Box>
         );
     }
 
-    // Обработка ошибок
-    if (error) {
+    if (error || errorMessage) {
         return (
-            <div className="error-container">
+            <Box p={3}>
                 <Alert severity="error" sx={{ mb: 2 }}>
-                    {error}
+                    {error || errorMessage}
                 </Alert>
                 <Button 
                     variant="contained" 
-                    onClick={handleBackClick}
+                    onClick={handleBack}
+                    startIcon={<ArrowBackIcon />}
                 >
-                    Вернуться к списку групп
+                    Назад к списку групп
                 </Button>
-            </div>
+            </Box>
         );
     }
 
-    // Группа не найдена
-    if (!currentGroup) {
+    if (!currentGroup || currentGroup.id_group !== Number(groupId)) {
         return (
-            <div className="not-found-container">
+            <Box p={3}>
                 <Alert severity="warning" sx={{ mb: 2 }}>
-                    Группа не найдена или была удалена
+                    Группа не найдена
                 </Alert>
                 <Button 
                     variant="contained" 
-                    onClick={handleBackClick}
+                    onClick={handleBack}
+                    startIcon={<ArrowBackIcon />}
                 >
-                    Вернуться к списку групп
+                    Назад к списку групп
                 </Button>
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div className="group-details-container">
-            {/* Заголовок и кнопка назад */}
-            <div className="group-header">
-                <Button 
-                    variant="outlined" 
-                    onClick={handleBackClick}
-                    startIcon={<span>←</span>}
-                    sx={{ mr: 2 }}
-                >
-                    К списку групп
-                </Button>
-                <Typography variant="h4" component="h1">
-                    {currentGroup.name}
+        <Box p={3}>
+            <Box display="flex" alignItems="center" mb={3}>
+                <IconButton onClick={handleBack} sx={{ mr: 2 }}>
+                    <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h4">
+                    Группа: {currentGroup.name}
                 </Typography>
-            </div>
+            </Box>
 
-            {/* Отображение ошибок операций */}
-            {operationError && (
-                <Alert 
-                    severity="error" 
-                    onClose={() => setOperationError(null)}
-                    sx={{ mb: 3 }}
-                >
-                    {operationError}
-                </Alert>
-            )}
-
-            {/* Основная информация о группе */}
-            <GroupInfo 
-                group={currentGroup} 
-                course={course} 
-                sx={{ mb: 4 }}
-            />
+            {/* Информация о группе */}
+            <Box mb={4} p={2} bgcolor="background.paper" borderRadius={2}>
+                <Typography variant="h6" gutterBottom>
+                    Информация о группе
+                </Typography>
+                <Typography>Описание: {currentGroup.description || 'Нет описания'}</Typography>
+                <Typography>Статус: {currentGroup.status}</Typography>
+                <Typography>Дата создания: {new Date(currentGroup.created_at).toLocaleDateString()}</Typography>
+            </Box>
 
             {/* Список участников */}
-            <div className="members-section">
-                <Typography variant="h5" component="h2" gutterBottom>
-                    Участники группы
-                    {memberOperationLoading && (
-                        <CircularProgress size={24} sx={{ ml: 2 }} />
-                    )}
-                </Typography>
+            <Typography variant="h5" gutterBottom>
+                Участники группы
+            </Typography>
+            
+            {members && members.length > 0 ? (
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Имя</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Роль</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {members.map((member) => {
+    // Проверяем разные возможные пути к данным пользователя
+    const userData = member.user || member.User || member;
+    const username = userData.username || userData.user_name || 'Не указано';
+    const email = userData.email || 'Не указано';
 
-                {members && members.length > 0 ? (
-                    <MemberTable 
-                        members={members} 
-                        onAddMember={(userId) => handleMemberOperation('add', userId)}
-                        onRemoveMember={(userId) => handleMemberOperation('remove', userId)}
-                        isLoading={memberOperationLoading}
-                    />
-                ) : (
-                    <Typography variant="body1" color="textSecondary">
-                        В группе пока нет участников
-                    </Typography>
-                )}
-            </div>
-        </div>
+    return (
+        <TableRow key={member.id_user}>
+            <TableCell>{member.id_user}</TableCell>
+            <TableCell>{username}</TableCell>
+            <TableCell>{email}</TableCell>
+            <TableCell>{member.role}</TableCell>
+        </TableRow>
+    );
+})}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            ) : (
+                <Typography variant="body1" color="textSecondary">
+                    В группе пока нет участников
+                </Typography>
+            )}
+        </Box>
     );
 };
 

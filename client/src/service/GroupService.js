@@ -55,6 +55,16 @@ const getGroupMembers = async (course) => {
   }
 };
 
+const getSpecificGroupMembers = async (course, groupId) => {
+  try {
+    const response = await axios.get(`${API_URL}/${course}/${groupId}/members`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching specific group members:', error);
+    throw error;
+  }
+};
+
 const updateMember = async (course, id, userId, memberData) => {
   const response = await axios.put(`${API_URL}/${course}/${id}/members/${userId}`, memberData);
   return response.data;
@@ -73,5 +83,6 @@ export default {
   addMember,
   getGroupMembers,
   updateMember,
-  removeMember
+  removeMember,
+  getSpecificGroupMembers
 };

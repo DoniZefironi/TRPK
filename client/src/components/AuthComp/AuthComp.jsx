@@ -11,7 +11,7 @@ const AuthComp = () => {
     username: '',
     email: '',
     password: '',
-    permissions: 'Electric',
+    permissions: '',
   });
   const [formErrors, setFormErrors] = useState({});
   const dispatch = useDispatch();
