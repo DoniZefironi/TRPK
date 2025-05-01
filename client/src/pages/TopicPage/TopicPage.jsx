@@ -11,6 +11,7 @@ import {
 import { resetForumStatus } from '../../store/slice/forumSlice';
 import Header from '../../components/Header/Header';
 import './TopicPage.css'
+import noavatar from '../../img/noavatar.png'
 
 export const TopicPage = () => {
   const { topicId } = useParams();

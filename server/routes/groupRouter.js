@@ -20,4 +20,7 @@ router.put('/:course/:id/members/:userId', groupController.updateMember);
 
 router.delete('/:course/:id/members/:userId', groupController.removeMember);
 
+router.get('/:course/:id/members/check/:userId', groupController.checkUserInGroup);
+
+router.get('/:course/members/all', groupController.getAllMembers);
 module.exports = router;

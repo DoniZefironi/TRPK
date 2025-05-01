@@ -21,6 +21,7 @@ import Users from './pages/Users/Users.jsx'
 import Career from './pages/Career/Career.jsx'
 import CareerGuidanceFormPage from './components/CareerGuidanceFormPage/CareerGuidanceFormPage.jsx'
 import CareerGuidanceViewPage from './components/CareerGuidanceViewPage/CareerGuidanceViewPage.jsx'
+import GroupDetailsPage from './pages/GroupDetailsPage/GroupDetailsPage.jsx'
 
 const App = () => {
     const dispatch = useDispatch();
@@ -45,6 +46,7 @@ const App = () => {
                     <Route path="/career-guidance/view/:id" element={<CareerGuidanceViewPage />} />
                     <Route path="/course" element={<CoursesSection />} />
                     <Route path="/groups" element={<GroupsPage />} />
+                    <Route path="/groups/:course/:groupId" element={<GroupDetailsPage  />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/events" element={<Events />} />
                     <Route path="/elective" element={<Elective />} />

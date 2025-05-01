@@ -3,13 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removeMember } from '../../store/slice/groupSlice';
 import './MembersList.css';
 
-const MembersList = ({ members, groupId }) => {
+const MembersList = ({ members, groupId, course }) => {
   const dispatch = useDispatch();
   const { currentCourse } = useSelector(state => state.groups);
 
   const handleRemoveMember = (userId) => {
     if (window.confirm('Вы уверены, что хотите удалить этого участника?')) {
-      dispatch(removeMember({ course: currentCourse, id: groupId, userId }));
+      dispatch(removeMember({ 
+        course: course, // Используем переданный курс
+        id: groupId, 
+        userId 
+      }));
     }
   };
 

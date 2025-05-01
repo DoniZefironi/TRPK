@@ -1,42 +1,22 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { fetchGroupDetails, fetchGroupMembers } from '../../store/slice/groupSlice';
-import GroupDetails from '../GroupDetails/GroupDetails';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import './GroupCard.css';
 
 const GroupCard = ({ group, course }) => {
-  const dispatch = useDispatch();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpand = () => {
-    if (!isExpanded) {
-      dispatch(fetchGroupDetails({ 
-        course: course, 
-        id: group.id_group 
-      }));
-      dispatch(fetchGroupMembers({ 
-        course: course, 
-        id: group.id_group 
-      }));
-    }
-    setIsExpanded(!isExpanded);
-  };
-
   return (
-    <div className={`group-card ${isExpanded ? 'expanded' : ''}`}>
-      <div className="group-summary" onClick={toggleExpand}>
+    <Link 
+      to={`/groups/${course}/${group.id_group}`}
+      className="group-card-link"
+    >
+      <div className="group-card">
         <h3>{group.name}</h3>
-        <p>{group.description}</p>
-        <span className="toggle-icon">
-          {isExpanded ? '▲' : '▼'}
-        </span>
-      </div>
-      
-      {isExpanded && (
-        <div className="group-details-container">
-          <GroupDetails groupId={group.id_group} />
+        <p className="description">{group.description}</p>
+        <div className="meta-info">
+          <span>Участников: {group.member_count || 0}</span>
+          <span>Статус: {group.status}</span>
         </div>
-      )}
-    </div>
+      </div>
+    </Link>
   );
 };
 

@@ -4,7 +4,7 @@ import MembersList from '../MembersList/MembersList';
 import AddMemberForm from '../AddMemberForm/AddMemberForm';
 import './GroupDetails.css';
 
-const GroupDetails = ({ groupId }) => {
+const GroupDetails = ({ groupId, course }) => {
   const { groupDetails, members } = useSelector(state => state.groups);
 
   if (!groupDetails) return <div className="loading">Загрузка деталей группы...</div>;
@@ -20,8 +20,12 @@ const GroupDetails = ({ groupId }) => {
       
       <div className="group-members">
         <h4>Участники ({members.length})</h4>
-        <MembersList members={members} groupId={groupId} />
-        <AddMemberForm groupId={groupId} />
+        <MembersList 
+          members={members} 
+          groupId={groupId} 
+          course={course} // Передаем курс в MembersList
+        />
+        <AddMemberForm groupId={groupId} course={course} />
       </div>
     </div>
   );

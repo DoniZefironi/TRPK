@@ -66,7 +66,8 @@ async changeUserRole(req, res, next) {
           return next(ApiError.notFound('Пользователь не найден'));
       }
 
-      await user.update({ permissions: role });
+      // Изменяем поле role вместо permissions
+      await user.update({ role: role });
 
       return res.json({
           success: true,

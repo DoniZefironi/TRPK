@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchCareerGuidanceById } from '../../store/slice/careerGuidanceSlice';
 import { Button, Card, Descriptions, Spin, message, Space } from 'antd';
-
 import moment from 'moment';
 import { EditOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 

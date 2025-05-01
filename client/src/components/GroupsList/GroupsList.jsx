@@ -7,69 +7,49 @@ import './GroupsList.css';
 
 const GroupsList = () => {
   const dispatch = useDispatch();
-  const { groups, currentCourse, loading, pagination } = useSelector(state => state.groups);
+  const { groups, currentCourse, loading } = useSelector(state => state.groups);
   const [showCreatePanel, setShowCreatePanel] = useState(false);
-  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (currentCourse) {
-      dispatch(fetchGroups({ course: currentCourse, page }));
+      dispatch(fetchGroups({ course: currentCourse }));
     }
-  }, [currentCourse, page, dispatch]);
+  }, [currentCourse, dispatch]);
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-  };
-
-  if (!currentCourse) return null;
+  if (!currentCourse) {
+    return <div className="no-course-selected">Выберите курс</div>;
+  }
 
   return (
-    <div className="groups-list">
+    <div className="groups-container">
       <div className="groups-header">
-        <h2>Группы курса {currentCourse.toUpperCase()}</h2>
-        <button 
-          className="add-group-btn" 
-          onClick={() => setShowCreatePanel(!showCreatePanel)} // Тогглим панель
+        <h2 className="groups-title">Группы курса {currentCourse.toUpperCase()}</h2>
+        <button
+          type="button"
+          className="create-group-button"
+          onClick={() => setShowCreatePanel(true)}
         >
-          {showCreatePanel ? 'Скрыть' : 'Добавить группу'}
+          Создать группу
         </button>
       </div>
 
       {loading ? (
-        <div className="loading">Загрузка...</div>
+        <div className="loading-indicator">Загрузка групп...</div>
       ) : groups.length === 0 ? (
-        <div className="no-groups">Нет доступных групп</div>
+        <div className="empty-state">Нет доступных групп</div>
       ) : (
-        <>
-          <div className="groups-grid">
-            {groups.map(group => (
-              <GroupCard 
-                key={group.id_group} 
-                group={group}
-                course={currentCourse} // Передаем текущий курс явно
-              />
-            ))}
-          </div>
-          
-          <div className="pagination">
-            <button 
-              disabled={page === 1} 
-              onClick={() => handlePageChange(page - 1)}
-            >
-              Назад
-            </button>
-            <span>Страница {page}</span>
-            <button 
-              disabled={groups.length < pagination.limit}
-              onClick={() => handlePageChange(page + 1)}
-            >
-              Вперед
-            </button>
-          </div>
-        </>
+        <div className="groups-grid">
+          {groups.map(group => (
+            <GroupCard 
+              key={`${group.id_group}-${currentCourse}`}
+              group={group}
+              course={currentCourse}
+            />
+          ))}
+        </div>
       )}
 
-        <CreateGroupPanel 
+      <CreateGroupPanel
         isVisible={showCreatePanel}
         onClose={() => setShowCreatePanel(false)}
         course={currentCourse}

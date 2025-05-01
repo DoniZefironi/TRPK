@@ -1,68 +1,45 @@
-.groups-list {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-  
-  .groups-list .groups-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .groups-list .groups-header h2 {
-    color: #333;
-  }
-  
-  .groups-list .groups-header .add-group-btn {
-    padding: 0.6rem 1.2rem;
-    background-color: #4a6fa5;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .groups-list .groups-header .add-group-btn:hover {
-    background-color: #3a5a8f;
-  }
-  
-  .groups-list .loading,
-  .groups-list .no-groups {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-  }
-  
-  .groups-list .groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  
-  .groups-list .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-  
-  .groups-list .pagination button {
-    padding: 0.5rem 1rem;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .groups-list .pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .groups-list .pagination button:not(:disabled):hover {
-    background-color: #e0e0e0;
-  }
+.groups-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.groups-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.groups-title {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.create-group-button {
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-group-button:hover {
+  background-color: #2980b9;
+}
+
+.loading-indicator,
+.empty-state,
+.no-course-selected {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}
+
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
