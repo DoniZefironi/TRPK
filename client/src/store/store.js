@@ -13,6 +13,7 @@ import electiveInformaticsReducer from './slice/electiveInformaticsSlice';
 import careerGuidanceReducer from './slice/careerGuidanceSlice';
 import topicReducer from './slice/topicSlice';
 import postReducer from './slice/postSlice';
+import scheduleReducer from './slice/scheduleSlice'
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     competitions: competitionReducer,
     electives: electiveInformaticsReducer,
     careerGuidance: careerGuidanceReducer,
+    schedule: scheduleReducer,
     // forum: forumReducer,
     // section: sectionReducer,
     // topic: topicReducer,

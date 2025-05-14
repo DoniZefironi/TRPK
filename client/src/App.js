@@ -23,6 +23,7 @@ import CareerGuidanceFormPage from './components/CareerGuidanceFormPage/CareerGu
 import CareerGuidanceViewPage from './components/CareerGuidanceViewPage/CareerGuidanceViewPage.jsx'
 import GroupDetailsPage from './pages/GroupDetailsPage/GroupDetailsPage.jsx'
 import ElectiveDetailsPage from './components/ElectiveDetails/ElectiveDetails.jsx';
+import Schedule from './pages/Schedule/SchedulePage.jsx';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -55,6 +56,7 @@ const App = () => {
                     <Route path="/about" element={<About />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/schedule" element={<Schedule />} />
                     <Route path="/edit-profile" element={<EditProfileComp />} />
                     <Route path="/materials-panel" element={<MaterialsPage />} />
                     <Route path="/section" element={<Section />} />

@@ -26,8 +26,20 @@ const materialsService = {
     },
 
     async deleteMaterial(id) {
-        const response = await axios.delete(`${API_URL}/${id}`);
-        return response.data;
+        try {
+            console.log(`Attempting to delete material with ID: ${id} at ${API_URL}/${id}`);
+            const response = await axios.delete(`${API_URL}/${id}`);
+            console.log('Delete successful:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Delete error:', error);
+            console.error('Error details:', {
+                url: `${API_URL}/${id}`,
+                status: error.response?.status,
+                data: error.response?.data
+            });
+            throw error;
+        }
     },
 
     async fetchMaterialTopics() {

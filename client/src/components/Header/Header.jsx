@@ -40,7 +40,7 @@ const Header = () => {
       <nav className="navigation">
         <Link to="/about">О нас</Link>
         <Link to="/course">Курсы</Link>
-        <a href="#events">События</a>
+        <Link to="/schedule">Расписание</Link>
         <Link to="/forum">Блог</Link>
         <Link to="/contacts">Контакты</Link>
         <Link to="/journal">Журнал</Link>

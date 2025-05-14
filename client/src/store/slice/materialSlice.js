@@ -139,7 +139,7 @@ const materialsSlice = createSlice({
             .addCase(deleteMaterial.fulfilled, (state, action) => {
                 state.loading = false;
                 state.materials = state.materials.filter(
-                    (material) => material.id !== action.meta.arg
+                    (material) => material.id_material !== action.meta.arg  // Changed from id to id_material
                 );
             })
             .addCase(deleteMaterial.rejected, (state, action) => {

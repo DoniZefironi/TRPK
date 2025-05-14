@@ -23,18 +23,24 @@ const MaterialsList = () => {
     }, [dispatch, currentPage]);
 
     const handleDelete = (id) => {
-      if (!id) {
-        console.error('ID материала не определен');
-        return;
-      }
-      
-      if (window.confirm('Вы уверены, что хотите удалить этот материал?')) {
-        dispatch(deleteMaterial(id)).then(() => {
-          dispatch(fetchMaterials({ page: currentPage }));
-        }).catch(error => {
-          console.error('Ошибка при удалении:', error);
-        });
-      }
+        console.log('Attempting to delete material with ID:', id);
+        if (!id) {
+            console.error('ID материала не определен');
+            return;
+        }
+        
+        if (window.confirm('Вы уверены, что хотите удалить этот материал?')) {
+            console.log('Dispatching delete action for ID:', id);
+            dispatch(deleteMaterial(id))
+                .then(() => {
+                    console.log('Delete successful, refreshing materials');
+                    dispatch(fetchMaterials({ page: currentPage }));
+                })
+                .catch(error => {
+                    console.error('Ошибка при удалении:', error);
+                    console.error('Full error details:', error.response);
+                });
+        }
     };
     const handleOpenModal = () => {
       console.log('Открываем модальное окно');
