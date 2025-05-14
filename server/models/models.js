@@ -47,7 +47,23 @@ const ForumTopic = createModel('ForumTopic', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: { type: DataTypes.STRING, allowNull: false },
   content: { type: DataTypes.TEXT, allowNull: false },
-  views: { type: DataTypes.INTEGER, defaultValue: 0 }
+  views: { type: DataTypes.INTEGER, defaultValue: 0 },
+  userId: { 
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id_user'
+    }
+  },
+  sectionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'ForumSections',
+      key: 'id'
+    }
+  }
 }, { timestamps: true });
 
 const ForumPost = createModel('ForumPost', {
@@ -286,17 +302,33 @@ const setupAssociations = () => {
   models.RefreshToken.belongsTo(models.User, { foreignKey: 'id_user' });
 
   // Связи для форума
-  models.User.hasMany(models.ForumTopic, { foreignKey: 'userId' });
-  models.ForumTopic.belongsTo(models.User, { foreignKey: 'userId' });
+models.User.hasMany(models.ForumTopic, { 
+  foreignKey: 'userId',
+  sourceKey: 'id_user', // Явно указываем связь
+  as: 'topics'
+});
 
-  models.ForumSection.hasMany(models.ForumTopic, { foreignKey: 'sectionId' });
-  models.ForumTopic.belongsTo(models.ForumSection, { foreignKey: 'sectionId' });
+models.ForumTopic.belongsTo(User, { 
+  foreignKey: 'userId',
+  targetKey: 'id_user', // Явно указываем связь
+  as: 'author'
+});
 
-  models.ForumTopic.hasMany(models.ForumPost, { foreignKey: 'topicId' });
+
+models.ForumSection.hasMany(models.ForumTopic, {
+  foreignKey: 'sectionId',
+  as: 'topics'
+});
+models.ForumTopic.belongsTo(models.ForumSection, {
+  foreignKey: 'sectionId',
+  as: 'section'
+});
+
+  models.ForumTopic.hasMany(ForumPost, { foreignKey: 'topicId', as: 'ForumPosts' });
   models.ForumPost.belongsTo(models.ForumTopic, { foreignKey: 'topicId' });
 
   models.User.hasMany(models.ForumPost, { foreignKey: 'userId' });
-  models.ForumPost.belongsTo(models.User, { foreignKey: 'userId' });
+  models.ForumPost.belongsTo(models.User, { foreignKey: 'userId', as: 'author' });
 
   // Связи для материалов
   models.MaterialsLibrary.hasMany(models.LectureElectric, { foreignKey: 'id_materials' });

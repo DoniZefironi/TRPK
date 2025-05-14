@@ -47,9 +47,9 @@ const Header = () => {
         <Link to="/elective">Факультативы</Link>
         <Link to="/users">Пользователи</Link>
         <Link to="/career-guidance"> Проф.Ориентация</Link>
-        <Link to="/groups">
-  Группы
-</Link>
+        <Link to="/groups">Группы</Link>
+        <Link to="/project">Проекты</Link>
+        <Link to="/competition">Олимпиады</Link>
       </nav>
       <div className="header-actions">
         <button className="consultation-btn">Получить консультацию</button>

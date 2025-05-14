@@ -30,15 +30,15 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
     if (!isOpen) return null;
 
     return (
-        <div className={`modal-overlay ${isOpen ? 'active' : ''}`} onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className={`create-lesson-modal-overlay ${isOpen ? 'active' : ''}`} onClick={onClose}>
+            <div className="create-lesson-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="create-lesson-modal-header">
                     <h2>Создать урок</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button className="create-lesson-close-btn" onClick={onClose}>&times;</button>
                 </div>
                 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className="create-lesson-form-group">
                         <label>Название *</label>
                         <input 
                             type="text" 
@@ -49,7 +49,7 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-lesson-form-group">
                         <label>Описание *</label>
                         <textarea 
                             name="description" 
@@ -59,7 +59,7 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-lesson-form-group">
                         <label>Длительность (мин) *</label>
                         <input 
                             type="number" 
@@ -70,7 +70,7 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-lesson-form-group">
                         <label>Дата *</label>
                         <input 
                             type="date" 
@@ -81,7 +81,7 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-lesson-form-group">
                         <label>Ссылка на слайды</label>
                         <input 
                             type="text" 
@@ -91,7 +91,7 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-lesson-form-group">
                         <label>ID материала</label>
                         <input 
                             type="text" 
@@ -101,11 +101,11 @@ const CreateLessonModal = ({ isOpen, onClose, course, onLessonCreated }) => {
                         />
                     </div>
                     
-                    <div className="modal-buttons">
-                        <button type="submit" className="submit-btn">
+                    <div className="create-lesson-modal-buttons">
+                        <button type="submit" className="create-lesson-submit-btn">
                             Создать
                         </button>
-                        <button type="button" className="cancel-btn" onClick={onClose}>
+                        <button type="button" className="create-lesson-cancel-btn" onClick={onClose}>
                             Отмена
                         </button>
                     </div>

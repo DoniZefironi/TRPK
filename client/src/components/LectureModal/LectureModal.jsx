@@ -12,7 +12,6 @@ const LectureModal = ({ isOpen, onClose, lecture, course }) => {
         description: '',
     });
 
-    // Обновляем данные, когда лекция изменяется
     useEffect(() => {
         if (lecture) {
             setFormData({
@@ -43,7 +42,7 @@ const LectureModal = ({ isOpen, onClose, lecture, course }) => {
             } else {
                 await dispatch(addLecture({ course, data: formData })).unwrap();
             }
-            onClose(); // Закрываем модальное окно
+            onClose();
         } catch (error) {
             console.error('Ошибка сохранения:', error);
             alert('Ошибка сохранения лекции');
@@ -53,22 +52,22 @@ const LectureModal = ({ isOpen, onClose, lecture, course }) => {
     if (!isOpen) return null;
 
     return (
-        <div className={`modal-overlay ${isOpen ? 'show' : ''}`}>
-            <div className={`modal-container ${isOpen ? 'show' : ''}`}>
-                <div className="modal-header">
+        <div className={`lecture-modal-overlay ${isOpen ? 'show' : ''}`}>
+            <div className={`lecture-modal-container ${isOpen ? 'show' : ''}`}>
+                <div className="lecture-modal-header">
                     <h2>{lecture ? 'Редактировать лекцию' : 'Добавить лекцию'}</h2>
-                    <button onClick={onClose} >&times;</button>
+                    <button onClick={onClose} className="lecture-close-btn">&times;</button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="edit-lecture-form">
+                <form onSubmit={handleSubmit} className="lecture-form">
                     <input type="text" name="lecture_title" value={formData.lecture_title} onChange={handleChange} placeholder="Название лекции" required />
                     <input type="text" name="duration" value={formData.duration} onChange={handleChange} placeholder="Длительность" required />
                     <input type="text" name="slides" value={formData.slides} onChange={handleChange} placeholder="Ссылка на слайды" />
                     <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Описание"></textarea>
 
-                    <div className="form-actions">
-                        <button type="button" onClick={onClose} className="cancel-btn">Отмена</button>
-                        <button type="submit" className="submit-btn">{lecture ? 'Обновить' : 'Создать'}</button>
+                    <div className="lecture-form-actions">
+                        <button type="button" onClick={onClose} className="lecture-cancel-btn">Отмена</button>
+                        <button type="submit" className="lecture-submit-btn">{lecture ? 'Обновить' : 'Создать'}</button>
                     </div>
                 </form>
             </div>

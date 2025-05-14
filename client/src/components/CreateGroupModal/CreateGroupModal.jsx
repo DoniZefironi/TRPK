@@ -12,7 +12,6 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
     status: 'active'
   });
 
-  // Сбрасываем форму при открытии/закрытии
   useEffect(() => {
     if (isVisible) {
       setFormData({
@@ -36,7 +35,7 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
     try {
       await dispatch(createGroup({
         ...formData,
-        course: course // явно передаем курс
+        course: course
       })).unwrap();
       
       onClose();
@@ -48,14 +47,14 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
   if (!isVisible) return null;
 
   return (
-    <div className={`create-group-modal ${isVisible ? 'visible' : ''}`}>
-      <div className="modal-overlay" onClick={onClose} />
+    <div className={`create-group-modal-container ${isVisible ? 'visible' : ''}`}>
+      <div className="create-group-modal-overlay" onClick={onClose} />
       
-      <div className="modal-content">
-        <div className="modal-header">
+      <div className="create-group-modal-content">
+        <div className="create-group-modal-header">
           <h3>Создать новую группу ({course.toUpperCase()})</h3>
           <button 
-            className="close-btn" 
+            className="create-group-close-btn" 
             onClick={onClose}
             aria-label="Закрыть"
           >
@@ -64,7 +63,7 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
         </div>
         
         <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
+          <div className="create-group-form-group">
             <label htmlFor="group-name">Название:</label>
             <input
               id="group-name"
@@ -77,7 +76,7 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
             />
           </div>
           
-          <div className="form-group">
+          <div className="create-group-form-group">
             <label htmlFor="group-description">Описание:</label>
             <textarea
               id="group-description"
@@ -89,8 +88,8 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
             />
           </div>
           
-          <div className="form-row">
-            <div className="form-group">
+          <div className="create-group-form-row">
+            <div className="create-group-form-group">
               <label htmlFor="max-members">Макс. участников:</label>
               <input
                 id="max-members"
@@ -104,7 +103,7 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
               />
             </div>
             
-            <div className="form-group">
+            <div className="create-group-form-group">
               <label htmlFor="group-status">Статус:</label>
               <select
                 id="group-status"
@@ -119,11 +118,11 @@ const CreateGroupModal = ({ isVisible, onClose, course }) => {
             </div>
           </div>
           
-          <div className="form-actions">
-            <button type="button" className="cancel-btn" onClick={onClose}>
+          <div className="create-group-form-actions">
+            <button type="button" className="create-group-cancel-btn" onClick={onClose}>
               Отмена
             </button>
-            <button type="submit" className="submit-btn">
+            <button type="submit" className="create-group-submit-btn">
               Создать группу
             </button>
           </div>

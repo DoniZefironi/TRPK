@@ -14,7 +14,6 @@ const UpdateMaterialModal = ({ material, onClose }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
-    // Инициализация формы данными материала
     useEffect(() => {
         if (material) {
             setFormData({
@@ -56,17 +55,17 @@ const UpdateMaterialModal = ({ material, onClose }) => {
     };
 
     return (
-        <div className="modal-overlay active">
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="update-material-modal-overlay active">
+            <div className="update-material-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="update-material-modal-header">
                     <h2>Обновить материал</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button className="update-material-close-btn" onClick={onClose}>&times;</button>
                 </div>
                 
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="update-material-error-message">{error}</div>}
                 
                 <form onSubmit={handleSubmit} className="update-material-form">
-                    <div className="form-group">
+                    <div className="update-material-form-group">
                         <label>Тема *</label>
                         <input 
                             name="topic_materials" 
@@ -77,7 +76,7 @@ const UpdateMaterialModal = ({ material, onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="update-material-form-group">
                         <label>Название *</label>
                         <input 
                             name="title" 
@@ -88,7 +87,7 @@ const UpdateMaterialModal = ({ material, onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="update-material-form-group">
                         <label>Описание</label>
                         <textarea 
                             name="description" 
@@ -98,7 +97,7 @@ const UpdateMaterialModal = ({ material, onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="update-material-form-group">
                         <label>Ссылка на файл</label>
                         <input 
                             name="file_url" 
@@ -108,10 +107,10 @@ const UpdateMaterialModal = ({ material, onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-actions">
+                    <div className="update-material-form-actions">
                         <button 
                             type="button" 
-                            className="cancel-btn" 
+                            className="update-material-cancel-btn" 
                             onClick={onClose}
                             disabled={isSubmitting}
                         >
@@ -119,7 +118,7 @@ const UpdateMaterialModal = ({ material, onClose }) => {
                         </button>
                         <button 
                             type="submit" 
-                            className="submit-btn"
+                            className="update-material-submit-btn"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? 'Обновление...' : 'Обновить'}

@@ -2,7 +2,9 @@ const models = require('../models/models');
 const ApiError = require('../error/ApiError');
 const { Op } = require('sequelize');
 
-// Helper function to get schedule model by course
+// Helpers
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
 const getScheduleModel = (course) => {
     const modelsMap = {
         'electric': models.ScheduleElectric,
@@ -13,40 +15,35 @@ const getScheduleModel = (course) => {
 };
 
 class ScheduleController {
-    // Create schedule item for a group
     async createScheduleItem(req, res, next) {
         try {
             const { course } = req.params;
             const { id_group, id_classes, date, time } = req.body;
-            
             const scheduleModel = getScheduleModel(course);
+            const courseName = capitalize(course);
+
             if (!scheduleModel) {
                 return next(ApiError.badRequest('Invalid course'));
             }
 
-            // Validate required fields
             if (!id_group || !id_classes || !date) {
                 return next(ApiError.badRequest('Missing required fields: id_group, id_classes, date'));
             }
 
-            // Check if group exists
-            const groupModel = models[`${course}Group`];
+            const groupModel = models[`${courseName}Group`];
+            if (!groupModel) return next(ApiError.badRequest('Group model not found'));
             const group = await groupModel.findByPk(id_group);
-            if (!group) {
-                return next(ApiError.badRequest('Group not found'));
-            }
+            if (!group) return next(ApiError.badRequest('Group not found'));
 
-            // Check if lecture exists
-            const lectureModel = models[`Lecture${course}`];
+            const lectureModel = models[`Lecture${courseName}`];
+            if (!lectureModel) return next(ApiError.badRequest('Lecture model not found'));
             const lecture = await lectureModel.findByPk(id_classes);
-            if (!lecture) {
-                return next(ApiError.badRequest('Lecture not found'));
-            }
+            if (!lecture) return next(ApiError.badRequest('Lecture not found'));
 
-            const newItem = await scheduleModel.create({ 
+            const newItem = await scheduleModel.create({
                 id_group,
-                id_classes, 
-                date, 
+                id_classes,
+                date,
                 time: time || null
             });
 
@@ -61,140 +58,114 @@ class ScheduleController {
         }
     }
 
-    // Get schedule for a group with pagination
-    // In your scheduleController.js
-async getSchedule(req, res, next) {
-    try {
-        const { course } = req.params;
-        let { page = 1, limit = 10, startDate, endDate } = req.query;
-        
-        const scheduleModel = getScheduleModel(course);
-        if (!scheduleModel) {
-            return next(ApiError.badRequest('Invalid course'));
-        }
-
-        // Prepare conditions
-        const where = {};
-        if (startDate && endDate) {
-            where.date = {
-                [Op.between]: [new Date(startDate), new Date(endDate)]
-            };
-        } else if (startDate) {
-            where.date = { [Op.gte]: new Date(startDate) };
-        } else if (endDate) {
-            where.date = { [Op.lte]: new Date(endDate) };
-        }
-
-        // Correct include syntax
-        const include = [
-            {
-                model: models[`Lecture${course.charAt(0).toUpperCase() + course.slice(1)}`],
-                attributes: ['id_classes', 'lecture_title', 'description']
-            },
-            {
-                model: models[`${course.charAt(0).toUpperCase() + course.slice(1)}Group`],
-                attributes: ['id_group', 'name']
-            }
-        ];
-
-        const { count, rows: schedule } = await scheduleModel.findAndCountAll({
-            where,
-            include,
-            limit: parseInt(limit),
-            offset: (page - 1) * limit,
-            order: [['date', 'ASC'], ['time', 'ASC']]
-        });
-
-        return res.json({
-            success: true,
-            data: schedule,
-            pagination: {
-                total: count,
-                page: parseInt(page),
-                limit: parseInt(limit),
-                totalPages: Math.ceil(count / limit)
-            }
-        });
-    } catch (e) {
-        console.error('Error getting schedule:', e);
-        next(ApiError.internal('Failed to get schedule'));
-    }
-}
-
-    // Get specific schedule item
-    async getScheduleItem(req, res, next) {
+    async getSchedule(req, res, next) {
         try {
-            const { course, id } = req.params;
-            
+            const { course } = req.params;
+            let { page = 1, limit = 10, startDate, endDate } = req.query;
             const scheduleModel = getScheduleModel(course);
+            const courseName = capitalize(course);
+
             if (!scheduleModel) {
                 return next(ApiError.badRequest('Invalid course'));
             }
 
+            const where = {};
+            if (startDate && endDate) {
+                where.date = { [Op.between]: [new Date(startDate), new Date(endDate)] };
+            } else if (startDate) {
+                where.date = { [Op.gte]: new Date(startDate) };
+            } else if (endDate) {
+                where.date = { [Op.lte]: new Date(endDate) };
+            }
+
+            const include = [
+                {
+                    model: models[`Lecture${courseName}`],
+                    attributes: ['id_classes', 'lecture_title', 'description']
+                },
+                {
+                    model: models[`${courseName}Group`],
+                    attributes: ['id_group', 'name']
+                }
+            ];
+
+            const { count, rows: schedule } = await scheduleModel.findAndCountAll({
+                where,
+                include,
+                limit: parseInt(limit),
+                offset: (page - 1) * limit,
+                order: [['date', 'ASC'], ['time', 'ASC']]
+            });
+
+            return res.json({
+                success: true,
+                data: schedule,
+                pagination: {
+                    total: count,
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    totalPages: Math.ceil(count / limit)
+                }
+            });
+        } catch (e) {
+            console.error('Error getting schedule:', e);
+            next(ApiError.internal('Failed to get schedule'));
+        }
+    }
+
+    async getScheduleItem(req, res, next) {
+        try {
+            const { course, id } = req.params;
+            const courseName = capitalize(course);
+            const scheduleModel = getScheduleModel(course);
+            if (!scheduleModel) return next(ApiError.badRequest('Invalid course'));
+
             const item = await scheduleModel.findByPk(id, {
                 include: [
                     {
-                        model: models[`Lecture${course}`],
-                        as: 'lecture',
+                        model: models[`Lecture${courseName}`],
                         attributes: ['id_classes', 'lecture_title', 'description', 'slides']
                     },
                     {
-                        model: models[`${course}Group`],
-                        as: 'group',
+                        model: models[`${courseName}Group`],
                         attributes: ['id_group', 'name', 'description']
                     }
                 ]
             });
 
-            if (!item) {
-                return next(ApiError.notFound('Schedule item not found'));
-            }
+            if (!item) return next(ApiError.notFound('Schedule item not found'));
 
-            return res.json({
-                success: true,
-                data: item
-            });
+            return res.json({ success: true, data: item });
         } catch (e) {
             console.error('Error getting schedule item:', e);
             next(ApiError.internal('Failed to get schedule item'));
         }
     }
 
-    // Update schedule item
     async updateScheduleItem(req, res, next) {
         try {
             const { course, id } = req.params;
             const { id_group, id_classes, date, time } = req.body;
-            
+            const courseName = capitalize(course);
             const scheduleModel = getScheduleModel(course);
-            if (!scheduleModel) {
-                return next(ApiError.badRequest('Invalid course'));
-            }
+            if (!scheduleModel) return next(ApiError.badRequest('Invalid course'));
 
             const item = await scheduleModel.findByPk(id);
-            if (!item) {
-                return next(ApiError.notFound('Schedule item not found'));
-            }
+            if (!item) return next(ApiError.notFound('Schedule item not found'));
 
-            // Validate group if provided
             if (id_group) {
-                const groupModel = models[`${course}Group`];
+                const groupModel = models[`${courseName}Group`];
                 const group = await groupModel.findByPk(id_group);
-                if (!group) {
-                    return next(ApiError.badRequest('Group not found'));
-                }
+                if (!group) return next(ApiError.badRequest('Group not found'));
             }
 
-            // Validate lecture if provided
             if (id_classes) {
-                const lectureModel = models[`Lecture${course}`];
+                const lectureModel = models[`Lecture${courseName}`];
                 const lecture = await lectureModel.findByPk(id_classes);
-                if (!lecture) {
-                    return next(ApiError.badRequest('Lecture not found'));
-                }
+                if (!lecture) return next(ApiError.badRequest('Lecture not found'));
             }
 
-            await item.update({ 
+            await item.update({
                 id_group: id_group || item.id_group,
                 id_classes: id_classes || item.id_classes,
                 date: date || item.date,
@@ -212,46 +183,31 @@ async getSchedule(req, res, next) {
         }
     }
 
-    // Delete schedule item
     async deleteScheduleItem(req, res, next) {
         try {
             const { course, id } = req.params;
-            
             const scheduleModel = getScheduleModel(course);
-            if (!scheduleModel) {
-                return next(ApiError.badRequest('Invalid course'));
-            }
+            if (!scheduleModel) return next(ApiError.badRequest('Invalid course'));
 
             const item = await scheduleModel.findByPk(id);
-            if (!item) {
-                return next(ApiError.notFound('Schedule item not found'));
-            }
+            if (!item) return next(ApiError.notFound('Schedule item not found'));
 
             await item.destroy();
-            return res.json({
-                success: true,
-                message: 'Schedule item deleted successfully'
-            });
+            return res.json({ success: true, message: 'Schedule item deleted successfully' });
         } catch (e) {
             console.error('Error deleting schedule item:', e);
             next(ApiError.internal('Failed to delete schedule item'));
         }
     }
 
-    // Get schedule by specific date
     async getScheduleByDate(req, res, next) {
         try {
             const { course } = req.params;
             const { date, id_group } = req.query;
-            
+            const courseName = capitalize(course);
             const scheduleModel = getScheduleModel(course);
-            if (!scheduleModel) {
-                return next(ApiError.badRequest('Invalid course'));
-            }
-
-            if (!date) {
-                return next(ApiError.badRequest('Date not specified'));
-            }
+            if (!scheduleModel) return next(ApiError.badRequest('Invalid course'));
+            if (!date) return next(ApiError.badRequest('Date not specified'));
 
             const where = { date: new Date(date) };
             if (id_group) where.id_group = id_group;
@@ -261,52 +217,38 @@ async getSchedule(req, res, next) {
                 order: [['time', 'ASC']],
                 include: [
                     {
-                        model: models[`Lecture${course}`],
-                        as: 'lecture',
+                        model: models[`Lecture${courseName}`],
                         attributes: ['id_classes', 'lecture_title']
                     },
                     {
-                        model: models[`${course}Group`],
-                        as: 'group',
+                        model: models[`${courseName}Group`],
                         attributes: ['id_group', 'name']
                     }
                 ]
             });
 
-            return res.json({
-                success: true,
-                data: schedule
-            });
+            return res.json({ success: true, data: schedule });
         } catch (e) {
             console.error('Error getting schedule by date:', e);
             next(ApiError.internal('Failed to get schedule by date'));
         }
     }
 
-    // Get schedule for a specific group
     async getGroupSchedule(req, res, next) {
         try {
             const { course, id_group } = req.params;
             let { page = 1, limit = 10, startDate, endDate } = req.query;
-            
+            const courseName = capitalize(course);
             const scheduleModel = getScheduleModel(course);
-            if (!scheduleModel) {
-                return next(ApiError.badRequest('Invalid course'));
-            }
+            if (!scheduleModel) return next(ApiError.badRequest('Invalid course'));
 
-            // Check if group exists
-            const groupModel = models[`${course}Group`];
+            const groupModel = models[`${courseName}Group`];
             const group = await groupModel.findByPk(id_group);
-            if (!group) {
-                return next(ApiError.badRequest('Group not found'));
-            }
+            if (!group) return next(ApiError.badRequest('Group not found'));
 
-            // Prepare date filters
             const where = { id_group };
             if (startDate && endDate) {
-                where.date = {
-                    [Op.between]: [new Date(startDate), new Date(endDate)]
-                };
+                where.date = { [Op.between]: [new Date(startDate), new Date(endDate)] };
             } else if (startDate) {
                 where.date = { [Op.gte]: new Date(startDate) };
             } else if (endDate) {
@@ -320,8 +262,7 @@ async getSchedule(req, res, next) {
                 order: [['date', 'ASC'], ['time', 'ASC']],
                 include: [
                     {
-                        model: models[`Lecture${course}`],
-                        as: 'lecture',
+                        model: models[`Lecture${courseName}`],
                         attributes: ['id_classes', 'lecture_title', 'description']
                     }
                 ]

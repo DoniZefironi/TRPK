@@ -53,6 +53,8 @@
 }
 
 .modal-container {
+      position: relative;
+    z-index: 1001;
   background: white;
   padding: 25px;
   width: 90%;

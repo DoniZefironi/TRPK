@@ -12,7 +12,6 @@ import { clearAuthState } from './store/slice/authSlice'; // Изменено с
 import Profile from './pages/Profile/Profile.jsx';
 import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx';
 import MaterialsPage from './pages/MaterialsPage/MaterialsPage.jsx';
-import Section from './pages/Section/Section.jsx';
 import ForumPage from './pages/Forum/Forum.jsx';
 import Journal from './pages/Journal/Journal.jsx';
 import GroupsPage from './pages/Groups/Groups.jsx';
@@ -24,6 +23,10 @@ import CareerGuidanceViewPage from './components/CareerGuidanceViewPage/CareerGu
 import GroupDetailsPage from './pages/GroupDetailsPage/GroupDetailsPage.jsx'
 import ElectiveDetailsPage from './components/ElectiveDetails/ElectiveDetails.jsx';
 import Schedule from './pages/Schedule/SchedulePage.jsx';
+import SectionPage from './components/Forum/SectionPage.jsx';
+import TopicPage from './components/Forum/TopicPage.jsx';
+import Project from './pages/Project/Project.jsx';
+import Complition from './pages/Complition/Complition.jsx';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -59,11 +62,11 @@ const App = () => {
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/edit-profile" element={<EditProfileComp />} />
                     <Route path="/materials-panel" element={<MaterialsPage />} />
-                    <Route path="/section" element={<Section />} />
-                    {/* <Route path="/forum" element={<ForumPage />} />
-        <Route path="/forum/:forumId" element={<ForumPage />} />
-        <Route path="/forum/:forumId/section/:sectionId" element={<ForumPage />} />
-        <Route path="/forum/:forumId/section/:sectionId/topic/:topicId" element={<ForumPage />} /> */}
+                    <Route path="/project" element={<Project />} />
+                    <Route path="/competition" element={<Complition />} />
+                    <Route path="/forum" element={<ForumPage />} />
+                    <Route path="/forum/sections/:sectionId" element={<SectionPage />} />
+<Route path="/forum/sections/:sectionId/topics/:topicId" element={<TopicPage />} />
                 </Routes>
             </main>
         </div>

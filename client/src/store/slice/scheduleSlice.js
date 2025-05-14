@@ -80,42 +80,43 @@ export const fetchScheduleByDate = createAsyncThunk(
 );
 
 export const fetchLectures = createAsyncThunk(
-    'schedule/fetchLectures',
-    async (course, { rejectWithValue }) => {
-      try {
-        const response = await scheduleService.getLectures(course);
-        return { 
-          data: response.data || [],
-          course
-        };
-      } catch (error) {
-        return rejectWithValue({
-          message: 'Ошибка загрузки лекций',
-          course,
-          error: error.message
-        });
-      }
+  'schedule/fetchLectures',
+  async (course, { rejectWithValue }) => {
+    try {
+      const response = await scheduleService.getLectures(course);
+      return { 
+        data: response.data || [],
+        course
+      };
+    } catch (error) {
+      return rejectWithValue({
+        message: 'Ошибка загрузки лекций',
+        course,
+        error: error.message
+      });
     }
-  );
-  
-  export const fetchGroups = createAsyncThunk(
-    'schedule/fetchGroups',
-    async (course, { rejectWithValue }) => {
-      try {
-        const response = await scheduleService.getGroups(course);
-        return { 
-          data: response.data || [],
-          course
-        };
-      } catch (error) {
-        return rejectWithValue({
-          message: 'Ошибка загрузки групп',
-          course,
-          error: error.message
-        });
-      }
+  }
+);
+
+export const fetchGroups = createAsyncThunk(
+  'schedule/fetchGroups',
+  async (course, { rejectWithValue }) => {
+    try {
+      const response = await scheduleService.getGroups(course);
+      return { 
+        data: response.data || [],
+        count: response.count || 0,
+        course
+      };
+    } catch (error) {
+      return rejectWithValue({
+        message: 'Ошибка загрузки групп',
+        course,
+        error: error.message
+      });
     }
-  );
+  }
+);
 
 const initialState = {
     items: [],
@@ -245,13 +246,11 @@ const initialState = {
             .addCase(fetchLectures.pending, (state) => {
                 state.loading = true;
               })
-              .addCase(fetchLectures.fulfilled, (state, action) => {
-                state.loading = false;
-                // Обновляем только если курс совпадает
-                if (state.currentCourse === action.payload.course) {
-                  state.lectures = action.payload.data;
-                }
-              })
+.addCase(fetchLectures.fulfilled, (state, action) => {
+  state.loading = false;
+  state.lectures = action.payload.data; // Всегда обновляем лекции
+  state.currentCourse = action.payload.course; // Обновляем текущий курс
+})
               .addCase(fetchLectures.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
@@ -262,13 +261,12 @@ const initialState = {
             .addCase(fetchGroups.pending, (state) => {
                 state.loading = true;
               })
-              .addCase(fetchGroups.fulfilled, (state, action) => {
-                state.loading = false;
-                // Обновляем только если курс совпадает
-                if (state.currentCourse === action.payload.course) {
-                  state.groups = action.payload.data;
-                }
-              })
+.addCase(fetchGroups.fulfilled, (state, action) => {
+  state.loading = false;
+  state.groups = action.payload.data;
+  state.currentCourse = action.payload.course;
+  state.pagination.total = action.payload.count;
+})
               .addCase(fetchGroups.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;

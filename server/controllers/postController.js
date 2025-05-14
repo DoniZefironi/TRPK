@@ -22,7 +22,7 @@ class PostController {
           { 
             model: User, 
             attributes: ['id_user', 'username', 'avatar'],
-            as: 'user' // Убедитесь, что указано правильное имя ассоциации
+            as: 'author' // Убедитесь, что указано правильное имя ассоциации
           }
         ],
         order: [['createdAt', 'ASC']],
@@ -107,6 +107,29 @@ class PostController {
       next(ApiError.internal('Ошибка при обновлении сообщения'));
     }
   }
+
+  async delete(req, res, next) {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id_user;
+
+    const post = await ForumPost.findByPk(id);
+    if (!post) {
+      return next(ApiError.notFound('Сообщение не найдено'));
+    }
+
+    if (post.userId !== userId) {
+      return next(ApiError.forbidden('Нет прав на удаление этого сообщения'));
+    }
+
+    await post.destroy();
+    return res.json({ message: 'Сообщение удалено' });
+  } catch (e) {
+    console.error('Ошибка при удалении сообщения:', e);
+    next(ApiError.internal('Ошибка сервера'));
+  }
+}
+
 }
 
 module.exports = new PostController();

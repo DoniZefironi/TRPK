@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'; // Добавляем useSelector
+import { useDispatch, useSelector } from 'react-redux';
 import { createTopic } from '../../store/slice/forumThunks';
-import './CreateTopicForm.css';
+import './CreateTopicModal.css';
 
 const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
   
@@ -11,8 +11,7 @@ const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   
-  // Получаем ID текущего пользователя из хранилища
-  const currentUserId = useSelector(state => state.auth.user?.id_user); // Добавленная строка
+  const currentUserId = useSelector(state => state.auth.user?.id_user);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +26,7 @@ const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
         title,
         content,
         sectionId,
-        userId: currentUserId // Используем полученный ID
+        userId: currentUserId
       })).unwrap();
       onClose();
     } catch (err) {
@@ -38,18 +37,18 @@ const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
   };
 
   return (
-    <div className={`modal-overlay ${isModalOpen ? 'show' : ''}`}>
-    <div className={`modal-container ${isModalOpen ? 'show' : ''}`}>
-        <div className="modal-header">
+    <div className={`create-topic-modal-overlay ${isModalOpen ? 'show' : ''}`}>
+      <div className={`create-topic-modal-container ${isModalOpen ? 'show' : ''}`}>
+        <div className="create-topic-modal-header">
           <h2>Новая тема</h2>
-          <button onClick={onClose} className="close-btn">&times;</button>
+          <button onClick={onClose} className="create-topic-close-btn">&times;</button>
         </div>
   
-        <form onSubmit={handleSubmit} className="topic-form">
-          <div className="form-group">
-            <label htmlFor="topic-title">Заголовок</label>
+        <form onSubmit={handleSubmit} className="create-topic-form">
+          <div className="create-topic-form-group">
+            <label htmlFor="create-topic-title">Заголовок</label>
             <input
-              id="topic-title"
+              id="create-topic-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -59,10 +58,10 @@ const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
             />
           </div>
   
-          <div className="form-group">
-            <label htmlFor="topic-content">Содержание</label>
+          <div className="create-topic-form-group">
+            <label htmlFor="create-topic-content">Содержание</label>
             <textarea
-              id="topic-content"
+              id="create-topic-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Подробно опишите вашу тему"
@@ -73,7 +72,7 @@ const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
   
           {error && <div className="error-message">{error}</div>}
   
-          <div className="form-actions">
+          <div className="create-topic-form-actions">
             <button 
               type="button" 
               onClick={onClose}
@@ -94,7 +93,6 @@ const CreateTopicModal = ({ sectionId, onClose, isModalOpen }) => {
       </div>
     </div>
   );
-  
 };
 
 export default CreateTopicModal;

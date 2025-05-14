@@ -28,26 +28,29 @@ class TopicController {
                 ];
             }
 
-            const { count, rows: topics } = await ForumTopic.findAndCountAll({
-                where,
-                limit: parseInt(limit),
-                offset: (page - 1) * limit,
-                order: [['createdAt', 'DESC']],
-                include: [
-                    { 
-                        model: User,
-                        as: 'user',
-                        attributes: ['id_user', 'username', 'avatar']
-                    },
-                    {
-                        model: ForumPost,
-                        as: 'posts',
-                        attributes: ['id'],
-                        required: false
-                    }
-                ],
-                distinct: true
-            });
+const { count, rows: topics } = await ForumTopic.findAndCountAll({
+    where,
+    limit: parseInt(limit),
+    offset: (page - 1) * limit,
+    order: [['createdAt', 'DESC']],
+include: [
+  { 
+    model: User,
+    as: 'author', // Должно соответствовать алиасу в ассоциациях
+    attributes: ['id_user', 'username', 'avatar']
+  },
+  {
+    model: ForumPost,
+    as: 'ForumPosts', // ✅ Правильно
+    attributes: ['id'],
+    required: false
+  }
+],
+    distinct: true
+});
+
+
+
 
             const topicsWithCount = topics.map(topic => ({
                 ...topic.get({ plain: true }),
@@ -72,59 +75,47 @@ class TopicController {
 
     // Создание новой темы
     async create(req, res, next) {
-        try {
-            const { title, content, sectionId } = req.body;
-            const userId = req.user.id_user; // Из аутентификации
+  try {
+    const { title, content, sectionId, userId } = req.body;
 
-            if (!userId) {
-                return next(ApiError.unauthorized('Требуется авторизация'));
-            }
-
-            // Валидация обязательных полей
-            if (!title || !content || !sectionId) {
-                return next(ApiError.badRequest('Не указаны обязательные поля: title, content, sectionId'));
-            }
-
-            // Проверка существования раздела
-            const section = await ForumSection.findByPk(sectionId);
-            if (!section) {
-                return next(ApiError.notFound('Раздел не найден'));
-            }
-
-            const topic = await ForumTopic.create({
-                title,
-                content,
-                sectionId,
-                userId,
-                views: 0
-            });
-            
-            // Получаем созданную тему с дополнительной информацией
-            const newTopic = await ForumTopic.findByPk(topic.id, {
-                include: [
-                    { 
-                        model: User,
-                        as: 'user',
-                        attributes: ['id_user', 'username', 'avatar']
-                    },
-                    { 
-                        model: ForumSection,
-                        as: 'section',
-                        attributes: ['id', 'name', 'type']
-                    }
-                ]
-            });
-
-            return res.status(201).json({
-                success: true,
-                data: newTopic,
-                message: 'Тема успешно создана'
-            });
-        } catch (e) {
-            console.error('Ошибка при создании темы:', e);
-            next(ApiError.internal('Ошибка сервера при создании темы'));
-        }
+    if (!title || !content || !sectionId || !userId) {
+      return next(ApiError.badRequest('Не указаны обязательные поля'));
     }
+
+    const topic = await ForumTopic.create({
+      title,
+      content,
+      sectionId,
+      userId,
+      views: 0
+    });
+
+    // Получаем созданную тему с минимальными данными (без лишних include)
+    const newTopic = await ForumTopic.findByPk(topic.id, {
+      include: [
+        { 
+          model: User,
+          as: 'author', // Используем правильный алиас
+          attributes: ['id_user', 'username', 'avatar']
+        },
+        { 
+          model: ForumSection,
+          as: 'section',
+          attributes: ['id', 'name']
+        }
+      ]
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: newTopic,
+      message: 'Тема успешно создана'
+    });
+  } catch (e) {
+    console.error('Ошибка при создании темы:', e);
+    next(ApiError.internal('Ошибка сервера при создании темы'));
+  }
+}
 
     // Получение конкретной темы
     async getOne(req, res, next) {

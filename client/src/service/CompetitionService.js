@@ -1,59 +1,44 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:2280/api';
+const API_BASE_URL = 'http://localhost:2280/api/competitions';
 
-// Запросы для соревнований
-export const fetchCompetitions = async (type) => {
-  try {
-    const response = await axios.get(`${API_URL}/competition/${type}`);
+const competitionService = {
+  // Competition CRUD operations
+  getCompetitions: async (type, params = {}) => {
+    const response = await axios.get(`${API_BASE_URL}/${type}`, { params });
     return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка получения соревнований');
-  }
-};
+  },
 
-export const createCompetition = async (type, data) => {
-  try {
-    const response = await axios.post(`${API_URL}/competition/${type}`, data);
+  getCompetition: async (type, id) => {
+    const response = await axios.get(`${API_BASE_URL}/${type}/${id}`);
     return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка создания соревнования');
-  }
-};
+  },
 
-export const updateCompetition = async (type, id, data) => {
-  try {
-    const response = await axios.put(`${API_URL}/competition/${type}/${id}`, data);
+  createCompetition: async (type, competitionData) => {
+    const response = await axios.post(`${API_BASE_URL}/${type}`, competitionData);
     return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка обновления соревнования');
-  }
-};
+  },
 
-export const deleteCompetition = async (type, id) => {
-  try {
-    await axios.delete(`${API_URL}/competition/${type}/${id}`);
-    return id;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка удаления соревнования');
-  }
-};
-
-// Запросы для результатов
-export const fetchResults = async (type, id_competition) => {
-  try {
-    const response = await axios.get(`${API_URL}/competition/${type}/results/${id_competition}`);
+  updateCompetition: async (type, id, competitionData) => {
+    const response = await axios.put(`${API_BASE_URL}/${type}/${id}`, competitionData);
     return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка получения результатов');
+  },
+
+  deleteCompetition: async (type, id) => {
+    const response = await axios.delete(`${API_BASE_URL}/${type}/${id}`);
+    return response.data;
+  },
+
+  // Results operations
+  getResults: async (type, competitionId, params = {}) => {
+    const response = await axios.get(`${API_BASE_URL}/${type}/results/${competitionId}`, { params });
+    return response.data;
+  },
+
+  addResult: async (type, resultData) => {
+    const response = await axios.post(`${API_BASE_URL}/${type}/results`, resultData);
+    return response.data;
   }
 };
 
-export const addResult = async (type, data) => {
-  try {
-    const response = await axios.post(`${API_URL}/competition/${type}/results`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Ошибка добавления результата');
-  }
-};
+export default competitionService;

@@ -16,7 +16,7 @@ class LessonService {
   async create(course, lessonData) {
     this.#validateCourse(course);
     const response = await axios.post(`${API_URL}/${course}`, lessonData);
-    return response.data;
+   return response;
   }
 
   // Получение всех лекций курса
@@ -37,14 +37,14 @@ class LessonService {
   async getById(course, id) {
     this.#validateCourse(course);
     const response = await axios.get(`${API_URL}/${course}/${id}`);
-    return response.data;
+    return response;
   }
 
   // Обновление лекции
   async update(course, id, updatedData) {
     this.#validateCourse(course);
     const response = await axios.put(`${API_URL}/${course}/${id}`, updatedData);
-    return response.data;
+    return response;
   }
 
   // Удаление лекции

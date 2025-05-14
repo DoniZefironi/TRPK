@@ -1,15 +1,16 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const topicController = require('../controllers/topicController');
+const postRouter = require('./postRouter');
 
-router.get('/section/:sectionId', topicController.getBySection);
+// 🔧 Правильные маршруты
+router.get('/', topicController.getBySection); // /sections/:sectionId/topics
+router.post('/', topicController.create);      // /sections/:sectionId/topics
+router.get('/:id', topicController.getOne);    // /sections/:sectionId/topics/:id
+router.put('/:id', topicController.update);    // /sections/:sectionId/topics/:id
+router.delete('/:id', topicController.delete); // /sections/:sectionId/topics/:id
 
-router.post('/', topicController.create);
-
-router.get('/:id', topicController.getOne);
-
-router.put('/:id', topicController.update);
-
-router.delete('/:id', topicController.delete);
+// Посты как вложенный маршрут
+router.use('/:topicId/posts', postRouter);
 
 module.exports = router;

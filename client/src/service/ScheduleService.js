@@ -22,24 +22,24 @@ const scheduleService = {
     }
   },
 
-  async getGroups(course) {
-    try {
-      const response = await axios.get(`${API_URL}/groups/${course}`);
-      console.log('Groups response:', response.data); // Логируем ответ
-      
-      // Обрабатываем разные форматы ответа
-      if (Array.isArray(response.data)) {
-        return { data: response.data };
-      }
-      if (response.data && Array.isArray(response.data.data)) {
-        return response.data;
-      }
-      throw new Error(`Неверный формат данных групп: ${JSON.stringify(response.data)}`);
-    } catch (error) {
-      console.error('Ошибка загрузки групп:', error);
-      return { data: [] };
+async getGroups(course) {
+  try {
+    const response = await axios.get(`${API_URL}/groups/${course}`);
+    console.log('Groups response:', response.data);
+    
+    // Обрабатываем разные форматы ответа
+    if (response.data && Array.isArray(response.data.rows)) {
+      return { data: response.data.rows, count: response.data.count };
     }
-  },
+    if (Array.isArray(response.data)) {
+      return { data: response.data, count: response.data.length };
+    }
+    throw new Error(`Неверный формат данных групп: ${JSON.stringify(response.data)}`);
+  } catch (error) {
+    console.error('Ошибка загрузки групп:', error);
+    return { data: [], count: 0 };
+  }
+},
 
     async createScheduleItem(course, data) {
         try {

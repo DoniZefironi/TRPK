@@ -7,7 +7,7 @@ import {
   Typography,
   Alert
 } from '@mui/material';
-import './JournalModal.css'
+import './JournalModal.css';
 
 const JournalModal = ({ 
   open, 

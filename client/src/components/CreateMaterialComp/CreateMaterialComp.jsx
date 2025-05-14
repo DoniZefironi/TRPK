@@ -25,15 +25,15 @@ const CreateMaterialComp = ({ onClose }) => {
     };
 
     return (
-        <div className="modal-overlay active">
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="create-material-modal-overlay active">
+            <div className="create-material-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="create-material-modal-header">
                     <h2>Добавить материал</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button className="create-material-close-btn" onClick={onClose}>&times;</button>
                 </div>
                 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className="create-material-form-group">
                         <label>Тема *</label>
                         <input 
                             name="topic_materials" 
@@ -43,7 +43,7 @@ const CreateMaterialComp = ({ onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-material-form-group">
                         <label>Название *</label>
                         <input 
                             name="title" 
@@ -53,7 +53,7 @@ const CreateMaterialComp = ({ onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-material-form-group">
                         <label>Описание</label>
                         <textarea 
                             name="description" 
@@ -62,7 +62,7 @@ const CreateMaterialComp = ({ onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-group">
+                    <div className="create-material-form-group">
                         <label>Ссылка на файл</label>
                         <input 
                             name="file_url" 
@@ -71,11 +71,11 @@ const CreateMaterialComp = ({ onClose }) => {
                         />
                     </div>
                     
-                    <div className="form-actions">
-                        <button type="button" className="cancel-btn" onClick={onClose}>
+                    <div className="create-material-form-actions">
+                        <button type="button" className="create-material-cancel-btn" onClick={onClose}>
                             Закрыть
                         </button>
-                        <button type="submit" className="submit-btn">
+                        <button type="submit" className="create-material-submit-btn">
                             Добавить
                         </button>
                     </div>
