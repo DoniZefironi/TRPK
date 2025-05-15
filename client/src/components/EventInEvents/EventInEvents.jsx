@@ -14,7 +14,15 @@ import {
 import './EventInEvents.css';
 
 const LessonsListPage = () => {
-  const [course, setCourse] = useState('electric');
+const { user } = useSelector(state => state.auth);
+
+const getInitialCourse = () => {
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  return storedUser?.permissions?.toLowerCase() || 'electric';
+};
+
+const [course, setCourse] = useState(getInitialCourse());
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentLesson, setCurrentLesson] = useState(null);
@@ -153,27 +161,42 @@ const handleSubmit = async (e) => {
       <div className="lessons-header">
         <h2 className="lessons-title">Лекции</h2>
         <div className="lessons-controls">
-          <div className="course-select">
-            <label htmlFor="course-select" className="course-label">
-              Выберите курс:
-            </label>
-            <select
-              id="course-select"
-              value={course}
-              onChange={handleCourseChange}
-              className="select-input"
-            >
-              <option value="electric">Электрика</option>
-              <option value="iot">IoT</option>
-              <option value="informatics">Информатика</option>
-            </select>
-          </div>
-          <button
-            onClick={handleAddLecture}
-            className="add-button"
-          >
-            Добавить лекцию
-          </button>
+{user?.permissions === 'ADMIN' ? (
+  <div className="course-select">
+    <label htmlFor="course-select" className="course-label">
+      Выберите курс:
+    </label>
+    <select
+      id="course-select"
+      value={course}
+      onChange={handleCourseChange}
+      className="select-input"
+    >
+      <option value="electric">Электрика</option>
+      <option value="iot">IoT</option>
+      <option value="informatics">Информатика</option>
+    </select>
+  </div>
+) : (
+  <div className="course-fixed">
+    <span className="course-label">Курс:</span>
+    <span className="course-value">
+      {course === 'electric' ? 'Электрика' :
+       course === 'iot' ? 'IoT' :
+       course === 'informatics' ? 'Информатика' :
+       course}
+    </span>
+  </div>
+)}
+{user?.role !== 'USER' && (
+  <button
+    onClick={handleAddLecture}
+    className="add-button"
+  >
+    Добавить лекцию
+  </button>
+)}
+
         </div>
       </div>
 
@@ -207,20 +230,23 @@ const handleSubmit = async (e) => {
 
                   {expandedLessonId === lesson.id_classes && (
                     <div className="lesson-details">
-                      <div className="lesson-actions">
-                        <button
-                          onClick={() => handleEditLecture(lesson)}
-                          className="edit-button"
-                        >
-                          Редактировать
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLecture(lesson.id_classes)}
-                          className="delete-button"
-                        >
-                          Удалить
-                        </button>
-                      </div>
+{user?.role !== 'USER' && (
+  <div className="lesson-actions">
+    <button
+      onClick={() => handleEditLecture(lesson)}
+      className="edit-button"
+    >
+      Редактировать
+    </button>
+    <button
+      onClick={() => handleDeleteLecture(lesson.id_classes)}
+      className="delete-button"
+    >
+      Удалить
+    </button>
+  </div>
+)}
+
 
                       {lesson.description && (
                         <div className="lesson-description">

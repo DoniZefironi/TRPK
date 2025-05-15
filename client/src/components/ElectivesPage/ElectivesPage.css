@@ -54,4 +54,16 @@
     margin-right: 10px;
   }
   
-  
+  .gmail-button {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.gmail-button:hover {
+  background-color: #e35b52;
+}

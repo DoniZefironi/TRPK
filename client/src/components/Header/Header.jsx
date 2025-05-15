@@ -47,21 +47,21 @@ const Header = () => {
     <Link to="/journal">Журнал</Link>
     <Link to="/schedule">Расписание</Link>
 
-    {user.role === 'TEATCHER' && (
+    {user.role === 'TEACHER' && (
       <>
         <Link to="/users">Пользователи</Link>
         <Link to="/groups">Группы</Link>
       </>
     )}
 
-    {user.permissions?.includes('informatics') && (
+    {user.permissions?.includes('Informatics') && (
       <>
     <Link to="/career-guidance">Проф.Ориентация</Link>
         <Link to="/elective">Факультативы</Link>
     </>
     )}
 
-        {user.permissions?.includes('electric') && (
+        {user.permissions?.includes('Electric') && (
       <>
         <Link to="/project">Проекты</Link>
     </>

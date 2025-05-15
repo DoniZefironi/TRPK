@@ -21,12 +21,12 @@ import Career from './pages/Career/Career.jsx'
 import CareerGuidanceFormPage from './components/CareerGuidanceFormPage/CareerGuidanceFormPage.jsx'
 import CareerGuidanceViewPage from './components/CareerGuidanceViewPage/CareerGuidanceViewPage.jsx'
 import GroupDetailsPage from './pages/GroupDetailsPage/GroupDetailsPage.jsx'
-import ElectiveDetailsPage from './components/ElectiveDetails/ElectiveDetails.jsx';
 import Schedule from './pages/Schedule/SchedulePage.jsx';
 import SectionPage from './components/Forum/SectionPage.jsx';
 import TopicPage from './components/Forum/TopicPage.jsx';
 import Project from './pages/Project/Project.jsx';
 import Complition from './pages/Complition/Complition.jsx';
+import ElectiveDetailsPages from './pages/ElectiveDetailsPages/ElectiveDetailsPages.jsx';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -67,7 +67,7 @@ useEffect(() => {
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/events" element={<Events />} />
                     <Route path="/elective" element={<Elective />} />
-                    <Route path="/electives/:id" element={<ElectiveDetailsPage />} />
+                    <Route path="/electives/:id" element={<ElectiveDetailsPages />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/profile" element={<Profile />} />

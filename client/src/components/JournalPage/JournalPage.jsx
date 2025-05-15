@@ -14,6 +14,7 @@ const { Option } = Select;
 
 const GradeManagementPage = () => {
   const dispatch = useDispatch();
+  const [userRole, setUserRole] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [gradesData, setGradesData] = useState({});
@@ -93,6 +94,34 @@ const GradeManagementPage = () => {
       setPerformanceData(newPerformance);
     }
   }, [lectureGrades]);
+useEffect(() => {
+  try {
+    const userString = localStorage.getItem('user');
+    if (!userString) return;
+
+    const user = JSON.parse(userString);
+
+    if (user) {
+      setUserRole(user.role); // если роль хранится в user.role
+    }
+
+    if (user && user.permissions) {
+      const perm = typeof user.permissions === 'string' 
+        ? user.permissions.toLowerCase()
+        : Array.isArray(user.permissions) && user.permissions.length === 1
+          ? user.permissions[0].toLowerCase()
+          : null;
+
+      if (perm) {
+        setSelectedCourse(perm);
+        dispatch(fetchLessons(perm));
+        dispatch(getAllUsers());
+      }
+    }
+  } catch (error) {
+    console.error('Ошибка чтения пользователя из localStorage:', error);
+  }
+}, [dispatch]);
 
   // Фильтрация пользователей по курсу с учетом разных форматов permissions
   const courseUsers = useMemo(() => {
@@ -267,7 +296,33 @@ const GradeManagementPage = () => {
       )
     }
   ];
+  useEffect(() => {
+    try {
+      const userString = localStorage.getItem('user');
+      if (!userString) return;
 
+      const user = JSON.parse(userString);
+
+      if (user && user.permissions) {
+        // permissions может быть строкой (например, "Informatics")
+        // Приведем к нижнему регистру, чтобы совпадало с availableCourses
+        const perm = typeof user.permissions === 'string' 
+          ? user.permissions.toLowerCase()
+          : Array.isArray(user.permissions) && user.permissions.length === 1
+            ? user.permissions[0].toLowerCase()
+            : null;
+
+        if (perm) {
+          setSelectedCourse(perm);
+          // Можно сразу вызвать fetchLessons и getAllUsers, чтобы загрузить данные по курсу
+          dispatch(fetchLessons(perm));
+          dispatch(getAllUsers());
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка чтения пользователя из localStorage:', error);
+    }
+  }, [dispatch]);
   // Логирование для отладки
   useEffect(() => {
     if (selectedCourse) {
@@ -285,19 +340,37 @@ const GradeManagementPage = () => {
           <Col span={8}>
             <div style={{ marginBottom: '16px' }}>
               <label>Курс:</label>
-              <Select
-                style={{ width: '100%' }}
-                value={selectedCourse}
-                onChange={handleCourseSelect}
-                placeholder="Выберите курс"
-                loading={lessonsLoading}
-              >
-                {availableCourses.map(course => (
-                  <Option key={course.value} value={course.value}>
-                    {course.label}
-                  </Option>
-                ))}
-              </Select>
+{/* Селектор курса виден и доступен ТОЛЬКО если роль НЕ USER и НЕ TEACHER */}
+{userRole !== 'USER' && userRole !== 'TEACHER' ? (
+  <Select
+    style={{ width: '100%' }}
+    value={selectedCourse}
+    onChange={handleCourseSelect}
+    placeholder="Выберите курс"
+    loading={lessonsLoading}
+  >
+    {availableCourses.map(course => (
+      <Option key={course.value} value={course.value}>
+        {course.label}
+      </Option>
+    ))}
+  </Select>
+) : (
+  <Select
+    style={{ width: '100%' }}
+    value={selectedCourse}
+    disabled
+  >
+    {availableCourses
+      .filter(course => course.value === selectedCourse)
+      .map(course => (
+        <Option key={course.value} value={course.value}>
+          {course.label}
+        </Option>
+      ))}
+  </Select>
+)}
+
             </div>
           </Col>
           

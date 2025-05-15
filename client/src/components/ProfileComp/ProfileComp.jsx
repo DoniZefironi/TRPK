@@ -140,7 +140,7 @@ const ProfileComp = () => {
         <button onClick={handleEditClick} className="edit-profile-btn">
           Редактировать профиль
         </button>
-{user.role === 'TEATCHER' && (
+{user.role === 'TEACHER' && (
   <button onClick={navigateToMaterialsPanel} className="materials-panel-btn">
     Библиотека материалов
   </button>

@@ -37,6 +37,7 @@ const ElectivesPage = () => {
     setShowModal(false);
   };
 
+  
   return (
     <div className="electives-page">
       <h1>Факультативы</h1>

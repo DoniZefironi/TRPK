@@ -46,29 +46,36 @@ const AuthComp = () => {
     }
   };
 
-  const validateForm = () => {
-    const errors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (!formData.email.trim()) {
-      errors.email = 'Email обязателен';
-    } else if (!emailRegex.test(formData.email)) {
-      errors.email = 'Некорректный email';
-    }
-    
-    if (!formData.password) {
-      errors.password = 'Пароль обязателен';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Пароль должен содержать минимум 6 символов';
-    }
-    
-    if (!isLogin && !formData.username.trim()) {
-      errors.username = 'Имя обязательно';
-    }
-    
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+const validateForm = () => {
+  const errors = {};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!formData.email.trim()) {
+    errors.email = 'Email обязателен';
+  } else if (!emailRegex.test(formData.email)) {
+    errors.email = 'Некорректный email';
+  }
+
+  if (!formData.password) {
+    errors.password = 'Пароль обязателен';
+  } else if (formData.password.length < 6) {
+    errors.password = 'Пароль должен содержать минимум 6 символов';
+  }
+
+  if (!isLogin && !formData.username.trim()) {
+    errors.username = 'Имя обязательно';
+  }
+
+  if (!isLogin && !formData.permissions) {
+    errors.permissions = 'Выберите курс';
+  }
+
+  setFormErrors(errors);
+
+  return Object.keys(errors).length === 0; // <-- Важно вернуть результат проверки
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -184,16 +191,18 @@ const AuthComp = () => {
             </div>
             <div className="form-group">
               <label htmlFor="permissions">Курс</label>
-              <select
-                id="permissions"
-                name="permissions"
-                value={formData.permissions}
-                onChange={handleChange}
-              >
-                <option value="Electric">Электроника</option>
-                <option value="Informatics">Информатика</option>
-                <option value="IoT">IoT</option>
-              </select>
+<select
+  id="permissions"
+  name="permissions"
+  value={formData.permissions}
+  onChange={handleChange}
+>
+  <option value="">Выберите курс</option>  {/* пустая опция */}
+  <option value="Electric">Электроника</option>
+  <option value="Informatics">Информатика</option>
+  <option value="IoT">IoT</option>
+</select>
+
             </div>
             {error && <div className="server-error">{error}</div>}
             <button type="submit" disabled={isLoading}>

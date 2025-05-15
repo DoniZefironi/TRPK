@@ -42,40 +42,39 @@ const UserManagementPage = () => {
       members: groupMembers,
       error: groupsError
     } = useSelector(state => state.groups);
+
+    const currentUser = useSelector(state => state.auth.user);
     
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [localUsers, setLocalUsers] = useState([]);
     const [isProcessing, setIsProcessing] = useState({});
-    const [selectedCourse, setSelectedCourse] = useState('electric');
+
+    const selectedCourse = currentUser?.permissions?.toLowerCase() || 'electric';
 
     // Получаем группы только для выбранного курса
     const groupsForSelectedCourse = groups?.filter(
-        group => group.course?.toLowerCase() === selectedCourse.toLowerCase()
+        group => group.course?.toLowerCase() === selectedCourse
     ) || [];
-
     // Загрузка данных
     useEffect(() => {
         dispatch(getAllUsers());
         dispatch(fetchGroups({ course: selectedCourse }));
-        dispatch(fetchGroupMembers({ course: selectedCourse })); // Исправленный вызов
-      }, [dispatch, selectedCourse]);
+        dispatch(fetchGroupMembers({ course: selectedCourse }));
+    }, [dispatch, selectedCourse]);
 
     // Фильтрация пользователей по permissions (курсу) и добавление информации о группе
     useEffect(() => {
         if (reduxUsers.length > 0 && groupMembers) {
             const filteredUsers = reduxUsers
-                .filter(user => user.permissions?.toLowerCase() === selectedCourse.toLowerCase())
+                .filter(user => user.permissions?.toLowerCase() === selectedCourse)
                 .map(user => {
-                    // Находим запись о членстве в группе для этого пользователя
                     const membership = groupMembers.find(m => m.id_user === user.id_user);
                     const groupId = membership?.id_group || null;
-                    
                     return {
                         ...user,
                         id_group: groupId ? Number(groupId) : null
                     };
                 });
-            
             setLocalUsers(filteredUsers);
         }
     }, [reduxUsers, selectedCourse, groupMembers]);
@@ -193,16 +192,6 @@ window.location.reload(); // 👈 Добавляем перезагрузку
         <Paper className="user-management">
             <Box className="user-management-header">
                 <Typography variant="h4">Управление пользователями</Typography>
-                <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
-                    <Select
-                        value={selectedCourse}
-                        onChange={(e) => setSelectedCourse(e.target.value)}
-                    >
-                        <MenuItem value="electric">Electric</MenuItem>
-                        <MenuItem value="iot">IoT</MenuItem>
-                        <MenuItem value="informatics">Informatics</MenuItem>
-                    </Select>
-                </FormControl>
             </Box>
             
             <TableContainer component={Paper} className="user-management-table">

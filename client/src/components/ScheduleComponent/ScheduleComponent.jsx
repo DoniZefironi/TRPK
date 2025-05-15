@@ -21,12 +21,12 @@ const { Option } = Select;
 
 const SchedulePage = () => {
   const dispatch = useDispatch();
-  const { 
-    items = [], 
-    currentItem = null, 
-    lectures = [], 
-    groups = [], 
-    loading = false, 
+  const {
+    items = [],
+    currentItem = null,
+    lectures = [],
+    groups = [],
+    loading = false,
     error = null,
     pagination = {
       page: 1,
@@ -36,7 +36,16 @@ const SchedulePage = () => {
     }
   } = useSelector(state => state.schedule || {});
   
-  const [course, setCourse] = useState('electric');
+const { user } = useSelector(state => state.auth);
+
+const getInitialCourse = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  return user?.permissions?.toLowerCase() || 'electric';
+};
+
+
+const [course, setCourse] = useState(getInitialCourse());
+
   const [groupId, setGroupId] = useState(null);
   const [date, setDate] = useState(moment());
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -189,9 +198,23 @@ useEffect(() => {
       key: 'lecture'
     },
     {
-      title: 'Действия',
+  title: 'Статус',
+  key: 'status',
+  render: (_, record) => {
+    const dateTime = moment(`${record.date} ${record.time || '23:59'}`, 'YYYY-MM-DD HH:mm');
+    const now = moment();
+
+    if (dateTime.isBefore(now)) {
+      return <span style={{ color: 'green' }}>Прошла</span>;
+    }
+    return <span style={{ color: 'orange' }}>Ожидается</span>;
+  }
+},
+    {
+      title: '',
       key: 'actions',
-      render: (_, record) => (
+  render: (_, record) =>
+    user?.role === 'TEACHER' ? (
         <>
           <Button 
             type="link" 
@@ -205,7 +228,7 @@ useEffect(() => {
             onClick={() => handleDelete(record.id_schedule)}
           />
         </>
-      )
+      ) : null
     }
   ];
 
@@ -214,27 +237,31 @@ useEffect(() => {
       <Card
         title="Управление расписанием"
         extra={
-          <Button 
-            type="primary" 
-            icon={<PlusOutlined />}
-            onClick={() => showModal()}
-            disabled={!dataLoaded.groups || !dataLoaded.lectures}
-          >
-            Добавить занятие
-          </Button>
+          user?.role === 'TEACHER' && (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => showModal()}
+              disabled={!dataLoaded.groups || !dataLoaded.lectures}
+            >
+              Добавить занятие
+            </Button>
+          )
         }
       >
         <div className="filters" style={{ marginBottom: 16 }}>
-          <Select
-            value={course}
-            onChange={setCourse}
-            style={{ width: 150, marginRight: 8 }}
-            loading={loading}
-          >
-            <Option value="electric">Электрика</Option>
-            <Option value="iot">IoT</Option>
-            <Option value="informatics">Информатика</Option>
-          </Select>
+<Select
+  value={course}
+  onChange={setCourse}
+  style={{ width: 150, marginRight: 8 }}
+  loading={loading}
+  disabled={user?.role === 'USER' || user?.role === 'TEACHER'}
+>
+  <Option value="electric">Электрика</Option>
+  <Option value="iot">IoT</Option>
+  <Option value="informatics">Информатика</Option>
+</Select>
+
 
 <Select
   value={groupId}

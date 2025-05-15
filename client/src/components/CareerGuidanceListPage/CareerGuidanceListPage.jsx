@@ -11,7 +11,6 @@ import {
   Button,
   Space,
   DatePicker,
-  Input,
   Card,
   Row,
   Col,
@@ -19,11 +18,10 @@ import {
   Popconfirm,
   message,
 } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 const { RangePicker } = DatePicker;
-const { Search } = Input;
 
 const CareerGuidanceListPage = () => {
   const dispatch = useDispatch();
@@ -33,7 +31,9 @@ const CareerGuidanceListPage = () => {
     error,
     pagination,
   } = useSelector((state) => state.careerGuidance);
-  
+
+  const userRole = useSelector((state) => state.auth.user?.role); // Получение роли пользователя
+
   const [searchParams, setSearchParams] = useState({
     page: 1,
     limit: 10,
@@ -51,7 +51,6 @@ const CareerGuidanceListPage = () => {
     try {
       await dispatch(deleteCareerGuidance(id_guidance)).unwrap();
       message.success('Запись успешно удалена');
-      // Refresh the list if we're on the last page and it's the only item
       if (items.length === 1 && pagination.page > 1) {
         setSearchParams(prev => ({ ...prev, page: prev.page - 1 }));
       } else {
@@ -67,15 +66,7 @@ const CareerGuidanceListPage = () => {
       ...prev,
       dateFrom: dates ? dates[0].format('YYYY-MM-DD') : null,
       dateTo: dates ? dates[1].format('YYYY-MM-DD') : null,
-      page: 1, // Reset to first page when changing filters
-    }));
-  };
-
-  const handleSearch = (value) => {
-    setSearchParams(prev => ({
-      ...prev,
-      search: value,
-      page: 1, // Reset to first page when changing search
+      page: 1,
     }));
   };
 
@@ -101,29 +92,30 @@ const CareerGuidanceListPage = () => {
       key: 'topic',
     },
     {
-      title: 'Консультанты',
+      title: 'URL на консультацию',
       dataIndex: 'consultants',
       key: 'consultants',
       render: (text) => text || '-',
     },
     {
-      title: 'Действия',
+      title: '',
       key: 'actions',
-      render: (_, record) => (
-        <Space size="middle">
-          <Link to={`/career-guidance/edit/${record.id_guidance}`}>
-            <Button icon={<EditOutlined />} />
-          </Link>
-          <Popconfirm
-            title="Вы уверены, что хотите удалить эту запись?"
-            onConfirm={() => handleDelete(record.id_guidance)}
-            okText="Да"
-            cancelText="Нет"
-          >
-            <Button danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_, record) =>
+        userRole === 'TEACHER' && (
+          <Space size="middle">
+            <Link to={`/career-guidance/edit/${record.id_guidance}`}>
+              <Button icon={<EditOutlined />} />
+            </Link>
+            <Popconfirm
+              title="Вы уверены, что хотите удалить эту запись?"
+              onConfirm={() => handleDelete(record.id_guidance)}
+              okText="Да"
+              cancelText="Нет"
+            >
+              <Button danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        ),
     },
   ];
 
@@ -132,31 +124,15 @@ const CareerGuidanceListPage = () => {
       <Card
         title="Карьерное ориентирование"
         extra={
-          <Link to="/career-guidance/create">
-            <Button type="primary" icon={<PlusOutlined />}>
-              Добавить запись
-            </Button>
-          </Link>
+          userRole === 'TEACHER' && (
+            <Link to="/career-guidance/create">
+              <Button type="primary" icon={<PlusOutlined />}>
+                Добавить запись
+              </Button>
+            </Link>
+          )
         }
       >
-        <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-          <Col span={12}>
-            <RangePicker
-              style={{ width: '100%' }}
-              onChange={handleDateChange}
-              format="DD.MM.YYYY"
-            />
-          </Col>
-          <Col span={12}>
-            <Search
-              placeholder="Поиск по теме или консультантам"
-              allowClear
-              enterButton={<SearchOutlined />}
-              onSearch={handleSearch}
-            />
-          </Col>
-        </Row>
-
         <Table
           columns={columns}
           dataSource={items}
