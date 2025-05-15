@@ -16,7 +16,11 @@ const ElectiveDetailsPage = () => {
 
   const [showModal, setShowModal] = useState(false);
   const { users, loading: usersLoading, error: usersError } = useSelector(state => state.user);
-  const informaticsUsers = users?.filter(u => u.permissions?.toLowerCase() === 'informatics') || [];
+const informaticsUsers = users?.filter(
+  u => u.permissions?.toLowerCase?.() === 'informatics' || 
+       (Array.isArray(u.permissions) && u.permissions.includes('informatics'))
+) || [];
+
   const [selectedUserId, setSelectedUserId] = useState('');
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [error, setError] = useState(null);
@@ -111,7 +115,8 @@ const ElectiveDetailsPage = () => {
             >
               <option value="">-- Выбрать пользователя --</option>
               {availableUsers.map(user => (
-                <option key={user.id_user} value={user.id_user}>
+                <option key={user.id_user} value={String(user.id_user)}>
+
                   {user.full_name || user.name} ({user.email})
                 </option>
               ))}

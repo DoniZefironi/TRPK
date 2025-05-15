@@ -140,9 +140,12 @@ const ProfileComp = () => {
         <button onClick={handleEditClick} className="edit-profile-btn">
           Редактировать профиль
         </button>
-        <button onClick={navigateToMaterialsPanel} className="materials-panel-btn">
-          Manage Materials
-        </button>
+{user.role === 'TEATCHER' && (
+  <button onClick={navigateToMaterialsPanel} className="materials-panel-btn">
+    Библиотека материалов
+  </button>
+)}
+
       </div>
 
       {isModalOpen && (

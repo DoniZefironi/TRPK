@@ -91,7 +91,9 @@ const UserManagementPage = () => {
                 )
             );
             
-            await dispatch(changeUserRoleAction({ userId, role: newRole })).unwrap();
+await dispatch(changeUserRoleAction({ userId, role: newRole })).unwrap();
+window.location.reload(); // 👈 Добавляем перезагрузку
+
             
         } catch (error) {
             console.error('Ошибка изменения роли:', error);
@@ -136,6 +138,8 @@ const UserManagementPage = () => {
             
             // Обновляем список членов групп
             await dispatch(fetchGroupMembers({ course: selectedCourse }));
+window.location.reload(); // 👈 Добавляем перезагрузку
+
             
         } catch (error) {
             console.error('Ошибка изменения группы:', error);
@@ -186,8 +190,8 @@ const UserManagementPage = () => {
     }
 
     return (
-        <Paper style={{ padding: 20 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Paper className="user-management">
+            <Box className="user-management-header">
                 <Typography variant="h4">Управление пользователями</Typography>
                 <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
                     <Select
@@ -201,7 +205,7 @@ const UserManagementPage = () => {
                 </FormControl>
             </Box>
             
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} className="user-management-table">
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -251,7 +255,7 @@ const UserManagementPage = () => {
                                     <TableCell>
                                         <FormControl fullWidth size="small">
                                             {isProcessing[user.id_user] === 'role' ? (
-                                                <CircularProgress size={24} />
+                                                <div className="processing-spinner"><CircularProgress size={24} /></div>
                                             ) : (
                                                 <Select
                                                     value={user.role || 'USER'}

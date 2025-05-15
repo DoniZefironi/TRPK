@@ -13,6 +13,7 @@ const ElectivesPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { electives, loading } = useSelector(state => state.electives);
+  const { user } = useSelector(state => state.auth);
   const [showModal, setShowModal] = useState(false);
   const [editElective, setEditElective] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '' });
@@ -39,14 +40,22 @@ const ElectivesPage = () => {
   return (
     <div className="electives-page">
       <h1>Факультативы</h1>
-      <button className="create-button" onClick={() => handleOpenModal()}>Создать факультатив</button>
+{user?.role === 'TEATCHER' && (
+  <button className="create-button" onClick={() => handleOpenModal()}>
+    Создать факультатив
+  </button>
+)}
       {loading && <p>Загрузка...</p>}
       <ul className="electives-list">
         {electives.map(e => (
           <li key={e.id_elective}>
             <span onClick={() => navigate(`/electives/${e.id_elective}`)}>{e.name}</span>
-            <button onClick={() => handleOpenModal(e)}>Обновить</button>
-            <button onClick={() => dispatch(deleteElective(e.id_elective))}>Удалить</button>
+{user?.role === 'TEATCHER' && (
+  <>
+    <button onClick={() => handleOpenModal(e)}>Обновить</button>
+    <button onClick={() => dispatch(deleteElective(e.id_elective))}>Удалить</button>
+  </>
+)}
           </li>
         ))}
       </ul>

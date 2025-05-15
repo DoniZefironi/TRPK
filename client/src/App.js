@@ -8,7 +8,7 @@ import Contacts from './pages/Contacts/Contacts.jsx';
 import Events from './pages/Events/Events.jsx';
 import About from './pages/About/About.jsx';
 import AuthPage from './pages/Auth/Auth.jsx';
-import { clearAuthState } from './store/slice/authSlice'; // Изменено с clearState на clearAuthState
+import { refreshUserToken, clearAuthState } from './store/slice/authSlice';// Изменено с clearState на clearAuthState
 import Profile from './pages/Profile/Profile.jsx';
 import EditProfileComp from './components/EditProfileComp/EditProfileComp.jsx';
 import MaterialsPage from './pages/MaterialsPage/MaterialsPage.jsx';
@@ -31,12 +31,24 @@ import Complition from './pages/Complition/Complition.jsx';
 const App = () => {
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            dispatch(clearAuthState()); // Изменено с clearState на clearAuthState
-        }
-    }, [dispatch]);
+useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        dispatch(refreshUserToken()); // попытка обновить токен, если он есть
+    } else {
+        dispatch(clearAuthState());
+    }
+}, [dispatch]);
+
+useEffect(() => {
+    const interval = setInterval(() => {
+        dispatch(refreshUserToken());
+    }, 1000 * 60 * 10); // каждые 10 минут
+
+    return () => clearInterval(interval);
+}, [dispatch]);
+
 
     return (
         <div className="App">

@@ -37,20 +37,40 @@ const Header = () => {
           <img src={logo} alt="Логотип" />
         </div>
       </Link>
-      <nav className="navigation">
-        <Link to="/about">О нас</Link>
-        <Link to="/course">Курсы</Link>
-        <Link to="/schedule">Расписание</Link>
-        <Link to="/forum">Блог</Link>
-        <Link to="/contacts">Контакты</Link>
-        <Link to="/journal">Журнал</Link>
-        <Link to="/elective">Факультативы</Link>
+<nav className="navigation">
+  <Link to="/about">О нас</Link>
+  <Link to="/course">Курсы</Link>
+  <Link to="/contacts">Контакты</Link>
+
+{user && (
+  <>
+    <Link to="/journal">Журнал</Link>
+    <Link to="/schedule">Расписание</Link>
+
+    {user.role === 'TEATCHER' && (
+      <>
         <Link to="/users">Пользователи</Link>
-        <Link to="/career-guidance"> Проф.Ориентация</Link>
         <Link to="/groups">Группы</Link>
+      </>
+    )}
+
+    {user.permissions?.includes('informatics') && (
+      <>
+    <Link to="/career-guidance">Проф.Ориентация</Link>
+        <Link to="/elective">Факультативы</Link>
+    </>
+    )}
+
+        {user.permissions?.includes('electric') && (
+      <>
         <Link to="/project">Проекты</Link>
-        <Link to="/competition">Олимпиады</Link>
-      </nav>
+    </>
+    )}
+  </>
+)}
+</nav>
+
+
       <div className="header-actions">
         <button className="consultation-btn">Получить консультацию</button>
         {user ? (

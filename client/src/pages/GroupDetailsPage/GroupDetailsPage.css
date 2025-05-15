@@ -1,0 +1,79 @@
+/* Общий контейнер */
+.group-details-container {
+  padding: 24px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* Заголовок и кнопка "Назад" */
+.group-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.group-header h4 {
+  font-size: 2rem;
+  margin: 0;
+  color: #333;
+}
+
+/* Блок информации о группе */
+.group-info-box {
+  background-color: #ffffff;
+  padding: 20px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.group-info-box h6 {
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.group-info-box p {
+  margin: 6px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Таблица участников */
+.members-table-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.members-table th,
+.members-table td {
+  font-size: 0.95rem;
+}
+
+.members-table th {
+  background-color: #f0f2f5;
+  color: #333;
+}
+
+.members-table td {
+  color: #444;
+}
+
+/* Сообщение об отсутствии участников */
+.no-members-text {
+  margin-top: 12px;
+  color: #777;
+  font-style: italic;
+}
+
+/* Загрузка / ошибка */
+.centered-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.back-button {
+  margin-top: 16px;
+}

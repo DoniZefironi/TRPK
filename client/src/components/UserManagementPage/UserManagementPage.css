@@ -1,0 +1,25 @@
+.user-management {
+  padding: 20px;
+}
+
+.user-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.user-management-table {
+  width: 100%;
+}
+
+.user-management-error {
+  color: red;
+}
+
+.processing-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}

@@ -103,20 +103,20 @@ const GroupDetailsPage = () => {
     }
 
     return (
-        <Box p={3}>
-            <Box display="flex" alignItems="center" mb={3}>
+        <Box className="group-details-container">
+            <Box className="group-header">
                 <IconButton onClick={handleBack} sx={{ mr: 2 }}>
-                    <ArrowBackIcon />
+                <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h4">
-                    Группа: {currentGroup.name}
+                Группа: {currentGroup.name}
                 </Typography>
             </Box>
 
             {/* Информация о группе */}
-            <Box mb={4} p={2} bgcolor="background.paper" borderRadius={2}>
+            <Box className="group-info-box">
                 <Typography variant="h6" gutterBottom>
-                    Информация о группе
+                Информация о группе
                 </Typography>
                 <Typography>Описание: {currentGroup.description || 'Нет описания'}</Typography>
                 <Typography>Статус: {currentGroup.status}</Typography>
@@ -128,41 +128,40 @@ const GroupDetailsPage = () => {
                 Участники группы
             </Typography>
             
-            {members && members.length > 0 ? (
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Имя</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Роль</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        {members.map((member) => {
-    // Проверяем разные возможные пути к данным пользователя
-    const userData = member.user || member.User || member;
-    const username = userData.username || userData.user_name || 'Не указано';
-    const email = userData.email || 'Не указано';
+{members && members.length > 0 ? (
+    <TableContainer component={Paper} className="members-table-container">
+      <Table className="members-table">
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Имя</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Роль</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {members.map((member) => {
+            const userData = member.user || member.User || member;
+            const username = userData.username || userData.user_name || 'Не указано';
+            const email = userData.email || 'Не указано';
 
-    return (
-        <TableRow key={member.id_user}>
-            <TableCell>{member.id_user}</TableCell>
-            <TableCell>{username}</TableCell>
-            <TableCell>{email}</TableCell>
-            <TableCell>{member.role}</TableCell>
-        </TableRow>
-    );
-})}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            ) : (
-                <Typography variant="body1" color="textSecondary">
-                    В группе пока нет участников
-                </Typography>
-            )}
+            return (
+              <TableRow key={member.id_user}>
+                <TableCell>{member.id_user}</TableCell>
+                <TableCell>{username}</TableCell>
+                <TableCell>{email}</TableCell>
+                <TableCell>{member.role}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  ) : (
+    <Typography className="no-members-text">
+      В группе пока нет участников
+    </Typography>
+  )}
         </Box>
     );
 };
